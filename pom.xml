@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>easy.ddd.domain</groupId>
     <artifactId>easy-domain</artifactId>
-    <version>2.1.20-SNAPSHOT</version>
+    <version>1.1</version>
     <description>DDD design basic library</description>
     <developers>
         <developer>
