@@ -33,7 +33,7 @@
 <dependency>
     <groupId>easy.ddd.domain</groupId>
     <artifactId>easy-domain</artifactId>
-    <version>2.1.20-SNAPSHOT</version>
+    <version>1.1</version>
 </dependency>
 ```
 
@@ -480,3 +480,10 @@ WHERE order_id = #{order.id}
 1. 示例中的#{order.newVersion} #{order.oldVersion} 实体父类ConcurrentEntityBase的版本号字段。
 2. 示例中#{order.id} 是父类EntityBase的字段。
 3. 执行以上SQL后,通过判断sql影响的行数来确定是否更新成功。
+
+
+### 单元测试说明
+
+* easy.domain.rule 包是规则验证类的单元测试和用法示例。
+* easy.domain.event 包是基于线程池的领域事件发布订阅机制的单元测试和示例。
+* easy.domain.afull 包是领域驱动开发分层结构的示例，以及展示使用该类库的示例。
