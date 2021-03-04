@@ -1,4 +1,4 @@
-package easy.domain.afull.api;
+package easy.domain.afull.api.order;
 
 import java.util.ArrayList;
 import java.util.List;

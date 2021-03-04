@@ -1,6 +1,6 @@
 package easy.domain.afull.application.order;
 
-import easy.domain.afull.api.OrderDto;
+import easy.domain.afull.api.order.OrderDto;
 import easy.domain.afull.domain.order.event.OrderCreatedEvent;
 import easy.domain.afull.domain.order.event.OrderPayedEvent;
 import easy.domain.afull.domain.order.model.IOrderRepository;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * 订单应用服务层类，用于对订单领域对象的各种业务操作
- * 凡是要对订单领域对象进行操作，多需要通过该类，没有其他或例外
+ * 凡是要对订单领域对象进行操作，多需要通过该类，没有其他入口
  */
 public class OrderApplicationService extends BaseApplication {
 
@@ -31,7 +31,7 @@ public class OrderApplicationService extends BaseApplication {
         this.initSubscriber();
     }
 
-    public void createOrder(OrderDto orderDto) {
+    public long createOrder(OrderDto orderDto) {
         List<OrderItem> orderItemList = orderDto.orderItemDtoList.stream()
                 .map(s -> new OrderItem(s.skuId, s.number, s.price))
                 .collect(Collectors.toList());
@@ -48,7 +48,11 @@ public class OrderApplicationService extends BaseApplication {
             this.orderRepository.create(order);
             //发布订单已创建事件
             this.publishEvent(order.createdEvent());
+        } else {
+            order.throwBrokenRuleException();
         }
+
+        return newOrderId;
     }
 
 
@@ -81,6 +85,8 @@ public class OrderApplicationService extends BaseApplication {
 
             @Override
             public void handleEvent(OrderCreatedEvent aDomainEvent) {
+
+                System.out.println("sendSMS");
                 //调用发送通知用户成功的消息
             }
         }, "sendSMS");
@@ -93,6 +99,8 @@ public class OrderApplicationService extends BaseApplication {
 
             @Override
             public void handleEvent(OrderCreatedEvent aDomainEvent) {
+
+                System.out.println("noticeWarehouse");
                 //通知库房准备生产
             }
         }, "noticeWarehouse");
