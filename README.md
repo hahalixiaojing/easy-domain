@@ -1,4 +1,7 @@
+
 # 领域驱动开发实用库
+
+[![star](https://gitee.com/lixiaojing/easy-domain/badge/star.svg?theme=white)](https://gitee.com/lixiaojing/easy-domain/stargazers)
 
 领域模型实用库是为领域驱动开发设计的基础类库，主要包括实体对象通用能力支持、基于实体的业务规则验证支持、领域事件支持以及应用服务层基于领域事件的发布订阅模式支持。
 
