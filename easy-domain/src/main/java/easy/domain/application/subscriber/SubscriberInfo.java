@@ -1,4 +1,4 @@
-package easy.domain.event;
+package easy.domain.application.subscriber;
 
 import easy.domain.application.subscriber.IExecuteCondition;
 import easy.domain.application.subscriber.ISubscriber;
@@ -15,7 +15,7 @@ public class SubscriberInfo {
      */
     private final ISubscriber subscriber;
     /**
-     * 事件订单别名
+     * 事件订阅别名
      */
     private final String alias;
     /**

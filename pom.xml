@@ -8,6 +8,7 @@
     <version>1.0</version>
     <modules>
         <module>easy-domain</module>
+        <module>easy-domainevent-rocketmq</module>
     </modules>
     <packaging>pom</packaging>
 
