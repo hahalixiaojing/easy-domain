@@ -1,5 +1,6 @@
 package easy.domainevent.rocketmq;
 
+import easy.domain.application.subscriber.IExecuteCondition;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 在运行该单元测试前需要，本地部署好 rocketmq,并修改对应的nameServer地址
  * 测试基于rocketmq的领域事件发布订阅机制
  *
  * @author lixiaojing10
@@ -23,37 +25,24 @@ public class RocketMqDomainEventManagerTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
+        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+
+
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(new AbstractDomainEventSubscriber<MyDomainEvent>() {
+        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+            countDownLatch.countDown();
+            System.out.println(s.name + "test1");
+        }), "test1");
 
-            @Override
-            public Class<MyDomainEvent> subscribedToEventType() {
-                return MyDomainEvent.class;
-            }
+        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
 
-            @Override
-            public void handleEvent(MyDomainEvent aDomainEvent) {
-                countDownLatch.countDown();
-                System.out.println(aDomainEvent.name + "test1");
-            }
-        }, "test1");
+            countDownLatch.countDown();
+            System.out.println(s.name + "test2");
 
-        rocketMqDomainEventManager.registerSubscriber(new AbstractDomainEventSubscriber<MyDomainEvent>() {
-
-            @Override
-            public Class<MyDomainEvent> subscribedToEventType() {
-                return MyDomainEvent.class;
-            }
-
-            @Override
-            public void handleEvent(MyDomainEvent aDomainEvent) {
-                countDownLatch.countDown();
-                System.out.println(aDomainEvent.name + "test2");
-            }
-        }, "test2");
+        }), "test2");
         //发送一个事件，分别被订阅test1和test2 处理
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("abc"));
 
@@ -69,34 +58,26 @@ public class RocketMqDomainEventManagerTest {
     public void useShareTopicTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
+        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(new AbstractDomainEventSubscriber<ShareDomainEvent>() {
-            @Override
-            public Class<ShareDomainEvent> subscribedToEventType() {
-                return ShareDomainEvent.class;
-            }
+        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
 
-            @Override
-            public void handleEvent(ShareDomainEvent aDomainEvent) {
-                countDownLatch.countDown();
-                System.out.println(aDomainEvent.name + "shareTest1");
-            }
-        }, "shareTest1");
-        rocketMqDomainEventManager.registerSubscriber(new AbstractDomainEventSubscriber<ShareDomainEvent>() {
-            @Override
-            public Class<ShareDomainEvent> subscribedToEventType() {
-                return ShareDomainEvent.class;
-            }
+            countDownLatch.countDown();
+            System.out.println(s.name + "shareTest1");
 
-            @Override
-            public void handleEvent(ShareDomainEvent aDomainEvent) {
-                countDownLatch.countDown();
-                System.out.println(aDomainEvent.name + "shareTest2");
-            }
-        }, "shareTest2");
+        }), "shareTest1");
+
+        //ShareDomainEvent事件订阅
+        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            System.out.println(s.name + "shareTest2");
+
+        }), "shareTest2");
 
         rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "share"));
 
@@ -105,5 +86,45 @@ public class RocketMqDomainEventManagerTest {
         Thread.sleep(30000);
 
         Assert.assertEquals(0L, countDownLatch.getCount());
+    }
+
+    /**
+     * 带条件的订阅测试
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void useConditionText() throws InterruptedException {
+
+        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
+
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
+
+        rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
+        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            System.out.println("test1");
+
+        }), "test1", (IExecuteCondition<ShareDomainEvent>) iDomainEvent -> iDomainEvent.name.equals("test1"));
+
+        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            System.out.println("test2");
+
+        }), "test2", (IExecuteCondition<ShareDomainEvent>) iDomainEvent -> iDomainEvent.name.equals("test2"));
+
+        rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "test1"));
+        rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "test2"));
+
+        countDownLatch.await(30000, TimeUnit.SECONDS);
+        //需要等待mq 更新消费位点
+        Thread.sleep(30000);
+
+        Assert.assertEquals(0L, countDownLatch.getCount());
+
     }
 }
