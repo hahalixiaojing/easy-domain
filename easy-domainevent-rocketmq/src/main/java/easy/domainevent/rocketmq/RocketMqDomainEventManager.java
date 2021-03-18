@@ -14,10 +14,7 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author lixiaojing10
@@ -27,12 +24,12 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
 
 
     private final MQProducer mqProducer;
+    private final MQPushConsumer consumer;
     private final String environmentName;
-    private final IConsumerCreator consumerCreator;
     //Map key=EventName use Topic
 
-    private final Map<String, MQPushConsumer> eventNameUseTopic = new HashMap<>();
-    private final Map<String, MQPushConsumer> sharedTopic = new HashMap<>();
+    private final Set<String> eventNameUseTopicList = new HashSet<>();
+    private final Set<String> sharedTopicList = new HashSet<>();
 
     //Outer Map key= EventName;  Inner Map Key=SubscriberName
     private final Map<String, Map<String, SubscriberInfo>> subscribers = new HashMap<>();
@@ -41,8 +38,19 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
         this.mqProducer = producerCreator.create();
-        this.consumerCreator = consumerCreator;
+        this.consumer = consumerCreator.create();
         this.environmentName = (environmentName == null || environmentName.equals("")) ? "prod" : environmentName;
+
+        this.initConsumer();
+    }
+
+    private void initConsumer() {
+        try {
+            this.consumer.registerMessageListener(this);
+            this.consumer.start();
+        } catch (Exception ex) {
+            throw new RegisterDomainEventException("start consumer error", ex);
+        }
     }
 
 
@@ -50,42 +58,25 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     public void registerDomainEvent(Class<?> domainEventType) {
         EventNameInfo eventNameInfo = this.getEventName(domainEventType);
 
-        if (eventNameInfo.shareTopicName == null || eventNameInfo.shareTopicName.equals("")) {
-            if (this.eventNameUseTopic.containsKey(eventNameInfo.eventName)) {
+        if (eventNameInfo.useEventName()) {
+
+            if (!this.eventNameUseTopicList.add(eventNameInfo.eventName)) {
                 throw new RegisterDomainEventException(eventNameInfo.eventName);
             } else {
-                MQPushConsumer mqPushConsumer = this.createConsumer(eventNameInfo.eventName);
-                this.eventNameUseTopic.put(eventNameInfo.eventName, mqPushConsumer);
-            }
-        } else {
-
-            if (!this.sharedTopic.containsKey(eventNameInfo.shareTopicName)) {
-
-                MQPushConsumer mqPushConsumer = this.createConsumer(eventNameInfo.shareTopicName);
-                this.sharedTopic.put(eventNameInfo.shareTopicName, mqPushConsumer);
-
-            } else {
                 try {
-                    MQPushConsumer mqPushConsumer = this.sharedTopic.get(eventNameInfo.shareTopicName);
-                    if (mqPushConsumer != null) {
-                        mqPushConsumer.subscribe(eventNameInfo.shareTopicName, this.environmentName);
-                    }
+                    this.consumer.subscribe(eventNameInfo.eventName, this.environmentName);
                 } catch (Exception ex) {
                     throw new RegisterDomainEventException(eventNameInfo.eventName, ex);
                 }
             }
-        }
-    }
-
-    private MQPushConsumer createConsumer(String topicName) {
-        try {
-            MQPushConsumer mqPushConsumer = this.consumerCreator.create();
-            mqPushConsumer.subscribe(topicName, this.environmentName);
-            mqPushConsumer.registerMessageListener(this);
-            mqPushConsumer.start();
-            return mqPushConsumer;
-        } catch (Exception ex) {
-            throw new RegisterDomainEventException(topicName, ex);
+        } else {
+            if (this.sharedTopicList.add(eventNameInfo.shareTopicName)) {
+                try {
+                    this.consumer.subscribe(eventNameInfo.shareTopicName, this.environmentName);
+                } catch (Exception ex) {
+                    throw new RegisterDomainEventException(eventNameInfo.shareTopicName, ex);
+                }
+            }
         }
     }
 

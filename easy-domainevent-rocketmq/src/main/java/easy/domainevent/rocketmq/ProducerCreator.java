@@ -21,6 +21,11 @@ public class ProducerCreator implements IProducerCreator {
     public MQProducer create() {
         DefaultMQProducer defaultMQProducer = new DefaultMQProducer(this.group);
         defaultMQProducer.setNamesrvAddr(this.nameServer);
+        try {
+            defaultMQProducer.start();
+        } catch (Exception ex) {
+            throw new RegisterDomainEventException("start producer", ex);
+        }
         return defaultMQProducer;
     }
 }

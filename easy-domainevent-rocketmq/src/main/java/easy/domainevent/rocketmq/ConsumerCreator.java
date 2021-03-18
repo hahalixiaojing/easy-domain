@@ -19,8 +19,8 @@ public class ConsumerCreator implements IConsumerCreator {
 
     @Override
     public MQPushConsumer create() {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(this.nameServer);
-        consumer.setNamesrvAddr(this.group);
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(this.group);
+        consumer.setNamesrvAddr(this.nameServer);
         return consumer;
     }
 }

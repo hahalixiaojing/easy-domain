@@ -13,4 +13,8 @@ public class EventNameInfo {
 
     public String eventName;
     public String shareTopicName;
+
+    public boolean useEventName(){
+        return this.shareTopicName == null || this.shareTopicName.equals("");
+    }
 }

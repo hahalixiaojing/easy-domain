@@ -47,7 +47,15 @@ public class ProducerTest {
     @Test
     public void consumer() throws MQClientException, InterruptedException {
 
+        DefaultMQPushConsumer testone = this.create("TESTONE");
+
+        Thread.sleep(900000);
+
+    }
+
+    private DefaultMQPushConsumer create(String topic) throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("QQ");
+        consumer.setInstanceName(topic);
         consumer.setNamesrvAddr("localhost:9876");
 
 
@@ -59,10 +67,10 @@ public class ProducerTest {
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
         consumer.start();
-        consumer.subscribe("TESTONE", "*");
-        consumer.subscribe("TEST", "*");
-        Thread.sleep(900000);
+        consumer.subscribe(topic, "*");
 
+        return consumer;
     }
+
 
 }
