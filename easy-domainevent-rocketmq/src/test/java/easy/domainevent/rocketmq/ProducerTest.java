@@ -47,7 +47,9 @@ public class ProducerTest {
     @Test
     public void consumer() throws MQClientException, InterruptedException {
 
-        DefaultMQPushConsumer testone = this.create("TESTONE");
+        DefaultMQPushConsumer testone1 = this.create("TESTONE");
+        Thread.sleep(1000);
+        DefaultMQPushConsumer testone2 = this.create("TEST");
 
         Thread.sleep(900000);
 
@@ -55,7 +57,7 @@ public class ProducerTest {
 
     private DefaultMQPushConsumer create(String topic) throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("QQ");
-        consumer.setInstanceName(topic);
+        consumer.setInstanceName(String.valueOf(System.nanoTime()));
         consumer.setNamesrvAddr("localhost:9876");
 
 

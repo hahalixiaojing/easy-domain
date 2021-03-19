@@ -54,6 +54,11 @@ public class RocketMqDomainEventManagerTest {
         Assert.assertEquals(0L, countDownLatch.getCount());
     }
 
+    /**
+     * 使用共享topic的发布订阅测试，
+     * 多个领域事件共享一个topic
+     * @throws InterruptedException
+     */
     @Test
     public void useShareTopicTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -94,7 +99,7 @@ public class RocketMqDomainEventManagerTest {
      * @throws InterruptedException
      */
     @Test
-    public void useConditionText() throws InterruptedException {
+    public void useConditionTest() throws InterruptedException {
 
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         CountDownLatch countDownLatch = new CountDownLatch(2);

@@ -20,6 +20,7 @@ public class ConsumerCreator implements IConsumerCreator {
     @Override
     public MQPushConsumer create() {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(this.group);
+        consumer.setInstanceName("domainEvent" + System.nanoTime());
         consumer.setNamesrvAddr(this.nameServer);
         return consumer;
     }
