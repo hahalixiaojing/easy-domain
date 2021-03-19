@@ -3,6 +3,7 @@ package easy.domainevent.rocketmq;
 import easy.domain.application.BaseApplication;
 import easy.domain.application.subscriber.IDomainEventManager;
 import easy.domain.application.subscriber.ISubscriberFactory;
+import easy.domain.event.ThreadPoolSubscriberFactory;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +26,9 @@ public class MyApplicationTest {
     @Test
     public void publish() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
+        //基于rocketmq的发布订阅组件和基于线程池的发布订阅组件，可以无缝切换
         MyApplication myApplication = new MyApplication(this.rocketMqDomainEventManager, new RocketmqSubscriberFactory(), countDownLatch);
+//        MyApplication myApplication = new MyApplication(new ThreadPoolSubscriberFactory(), countDownLatch);
         myApplication.create();
         countDownLatch.await();
         //需要等待mq 更新消费位点
@@ -44,6 +47,13 @@ class MyApplication extends BaseApplication {
         this.countDownLatch = countDownLatch;
         this.initSubscriber();
     }
+
+    public MyApplication(ISubscriberFactory factory, CountDownLatch countDownLatch) {
+        this.factory = factory;
+        this.countDownLatch = countDownLatch;
+        this.initSubscriber();
+    }
+
 
     public void create() {
         //对领域模型进行操作，操作完成持久化后，发布事件

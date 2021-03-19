@@ -1,9 +1,83 @@
 # 基于RocketMQ实现的领域事件发布订阅能力
 
-
-
 ## 功能介绍
 
-在领域驱动实用库中，默认实现了使用线程池的发布订阅机制，
+基于RocketMQ的领域事件发布订阅组件，充分借助了RocketMQ可靠性能力、消息持久化能力、消息回溯能力以及分布式处理能力。同时，便于问题的排查。该实现规避了使用线程池方式领域事件发布订阅能力缺陷。该组件实现 IDomainEventManager了接口，可以无缝的在基于线程池发布订阅组件和该组件之间切换，发布和订阅的相关业务代码无需修改。
+
+> 领域事件、以及发布订阅的能力，属于一个应用内部的运行逻辑，用于领域事件的topic,一般情况下不应该被外部系统消费。如果，外部应用需要接受一个消息来触发相关的操作，那么可以单独创建一个供外部系统使用的topic,系统内部相关的领域事件，可以增加一个领域事件订阅，用户发送供外部系统使用的消息。
+
+## 版本要求
+
+* RocketMQ版本：4.7.1
+* JAVA：1.8
 
 ## 使用方法
+
+1. 在应用服务层应用服务类的父类的构造函数接受一个IDomainEventManager接口，RocketMQ领域事件发布订阅组件实现了该接口。无参数的构造函数默认使用基于线程池的组件。以下代码 1 、2处
+```java
+public abstract class BaseApplication implements IApplication {
+
+    private final IDomainEventManager manager;
+
+    /**
+     * 1
+     * 使用默认 事件处理器的构造函数
+     */
+    protected BaseApplication() {
+        this.manager = new ThreadPoolTaskDomainEventManager();
+    }
+
+    /**
+     * 2
+     * 带事件处理器的构造函数
+     *
+     * @param manager 事件处理器
+     */
+    protected BaseApplication(IDomainEventManager manager) {
+        this.manager = manager;
+    }
+    ....无关代码省略
+}
+```
+2. 使用RocketMQ领域事件发布订阅组件需要实例化RocketMqDomainEventManager类。该类接受三个参数分别是IProducerCreator、IConsumerCreator、environmentName。以下代码 1 处
+```java
+public class RocketMqDomainEventManager implements IDomainEventManager, MessageListenerConcurrently {
+    //1
+    public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
+        this.mqProducer = producerCreator.create();
+        this.consumer = consumerCreator.create();
+        this.environmentName = (environmentName == null || environmentName.equals("")) ? "prod" : environmentName;
+
+        this.initConsumer();
+    }
+       ....无关代码省略
+}
+```
+* IProducerCreator接口用于创建RocketMQ的生产者实例，ProducerCreator类是默认的实现类。可以根据具体的情况重新实现IProducerCreator接口，以满足特定的环境。
+* IConsumerCreator接口用于创建RocketMQ的消费者实例，ConsumerCreator类是默认的实现类。可以根据具体的情况重新实现IConsumerCreator接口，以满足特定的环境。
+* environmentName参数，用于实现消息的环境隔离（如，生产环境和灰度环境的消息隔离），该参数以消息Tag的方式传递。
+
+3.事件的注册需要调用registerDomainEvent方法。见代码1处。
+```java
+private void initSubscriber() {
+        // 1
+        this.registerDomainEvent(MyDomainEvent.class);
+
+        this.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+            this.countDownLatch.countDown();
+
+            System.out.println("执行相应的操作");
+
+        }), "test1");
+    }
+```
+
+4. 事件的订阅可以可以使用RocketmqSubscriberFactory类来创建，该类实现了ISubscriberFactory接口
+```java
+        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+        this.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        this.countDownLatch.countDown();
+            System.out.println("执行相应的操作");
+        }), "test1");
+
+```
