@@ -13,7 +13,7 @@
 
 ## 使用方法
 
-1. 在应用服务层应用服务类的父类的构造函数接受一个IDomainEventManager接口，RocketMQ领域事件发布订阅组件实现了该接口。无参数的构造函数默认使用基于线程池的组件。以下代码 1 、2处
+1. 应用服务层服务类的父类构造函数接受一个IDomainEventManager接口实现，RocketMQ领域事件发布订阅组件实现了该接口。无参数的构造函数默认使用基于线程池的组件。以下代码 1 、2处
 ```java
 public abstract class BaseApplication implements IApplication {
 
@@ -72,7 +72,7 @@ private void initSubscriber() {
     }
 ```
 
-4. 事件的订阅可以可以使用RocketmqSubscriberFactory类来创建，该类实现了ISubscriberFactory接口
+4. 事件的订阅可以使用RocketmqSubscriberFactory类来创建，该类实现了ISubscriberFactory接口
 ```java
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         this.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
@@ -81,3 +81,13 @@ private void initSubscriber() {
         }), "test1");
 
 ```
+5. 定义领域事件类
+```java
+@EventName(value = "ShareDomainEvent",shareTopicName = "SharedTopic")
+public class ShareDomainEvent extends BaseDomainEvent {
+   ...省略无关代码
+}
+```
+* @EventName注解 是可选项，如果不设置，需要在RocketMQ中创建和类名一样的Topic,如："ShareDomainEvent"
+* 指定@EventName注解，value值必须设置，设置value后，value的值是RocketMQ对应的Topic。
+* shareTopicName 是可选项，该值用于多个事件共用一个RocketMQ的Topic,可以在多个领域事件类中指定相同shareTopicName值。
