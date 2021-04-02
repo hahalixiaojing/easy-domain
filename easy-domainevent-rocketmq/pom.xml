@@ -7,7 +7,12 @@
     <groupId>easy-domain</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
     <version>1.0</version>
-
+    <developers>
+        <developer>
+            <name>LiXiaoJing</name>
+            <email>lee.bmw@foxmail.com</email>
+        </developer>
+    </developers>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
