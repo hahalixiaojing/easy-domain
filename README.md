@@ -6,4 +6,4 @@
 * [基于RocketMQ实现的领域事件发布订阅能力文档][2]
 
 [1]:https://gitee.com/lixiaojing/easy-domain
-[2]:https://gitee.com/lixiaojing/easy-domainevent-rocketmq
+[2]:https://gitee.com/lixiaojing/easy-domain/tree/master/easy-domainevent-rocketmq
