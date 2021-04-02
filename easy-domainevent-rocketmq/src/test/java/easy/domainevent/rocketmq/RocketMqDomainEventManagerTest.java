@@ -1,6 +1,7 @@
 package easy.domainevent.rocketmq;
 
 import easy.domain.application.subscriber.IExecuteCondition;
+import easy.domain.event.BaseDomainEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class RocketMqDomainEventManagerTest {
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "");
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
@@ -57,6 +58,7 @@ public class RocketMqDomainEventManagerTest {
     /**
      * 使用共享topic的发布订阅测试，
      * 多个领域事件共享一个topic
+     *
      * @throws InterruptedException
      */
     @Test
@@ -65,7 +67,7 @@ public class RocketMqDomainEventManagerTest {
 
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "");
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅

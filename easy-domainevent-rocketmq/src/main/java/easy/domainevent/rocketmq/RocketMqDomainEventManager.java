@@ -5,6 +5,7 @@ import easy.domain.application.subscriber.*;
 import easy.domain.event.DefaultExecuteCondition;
 import easy.domain.event.EventName;
 import easy.domain.event.IDomainEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.MQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -39,7 +40,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
         this.mqProducer = producerCreator.create();
         this.consumer = consumerCreator.create();
-        this.environmentName = (environmentName == null || environmentName.equals("")) ? "prod" : environmentName;
+        this.environmentName = environmentName == null ? "" : environmentName;
 
         this.initConsumer();
     }
@@ -64,7 +65,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
                 throw new RegisterDomainEventException(eventNameInfo.eventName);
             } else {
                 try {
-                    this.consumer.subscribe(eventNameInfo.eventName, this.environmentName);
+                    this.consumer.subscribe(eventNameInfo.eventName, "*");
                 } catch (Exception ex) {
                     throw new RegisterDomainEventException(eventNameInfo.eventName, ex);
                 }
@@ -72,7 +73,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
         } else {
             if (this.sharedTopicList.add(eventNameInfo.shareTopicName)) {
                 try {
-                    this.consumer.subscribe(eventNameInfo.shareTopicName, this.environmentName);
+                    this.consumer.subscribe(eventNameInfo.shareTopicName, "*");
                 } catch (Exception ex) {
                     throw new RegisterDomainEventException(eventNameInfo.shareTopicName, ex);
                 }
@@ -123,8 +124,8 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     private EventNameInfo getEventName(Class<?> eventType) {
         EventName alias = eventType.getAnnotation(EventName.class);
 
-        final String evtName;
-        final String shareTopicName;
+        String evtName;
+        String shareTopicName;
         if (alias == null) {
             evtName = eventType.getSimpleName();
             shareTopicName = "";
@@ -132,12 +133,12 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
             evtName = alias.value();
             shareTopicName = alias.shareTopicName();
         }
-//        if (StringUtils.isNotBlank(this.environmentName)) {
-//            evtName = this.environmentName + "_" + evtName;
-//            if (StringUtils.isNotBlank(shareTopicName)) {
-//                shareTopicName = this.environmentName + "_" + shareTopicName;
-//            }
-//        }
+        if (StringUtils.isNotBlank(this.environmentName)) {
+            evtName = this.environmentName + "_" + evtName;
+            if (StringUtils.isNotBlank(shareTopicName)) {
+                shareTopicName = this.environmentName + "_" + shareTopicName;
+            }
+        }
         return new EventNameInfo(evtName, shareTopicName);
     }
 
@@ -159,7 +160,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
                     String text = JSON.toJSONString(subscribeData);
                     byte[] bytes = this.stringToByte(text);
 
-                    Message message = new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
+                    Message message = new Message(topic, null, obj.getBusinessId(), bytes);
                     messages.add(message);
                 }
             }
