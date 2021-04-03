@@ -5,5 +5,5 @@
 * [领域模型实用核心库文档][1]
 * [基于RocketMQ实现的领域事件发布订阅能力文档][2]
 
-[1]:https://gitee.com/lixiaojing/easy-domain
+[1]:https://gitee.com/lixiaojing/easy-domain/tree/master/easy-domain
 [2]:https://gitee.com/lixiaojing/easy-domain/tree/master/easy-domainevent-rocketmq
