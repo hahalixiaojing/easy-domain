@@ -4,7 +4,7 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.MQPushConsumer;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/16 10:07 下午
  */
 public class ConsumerCreator implements IConsumerCreator {

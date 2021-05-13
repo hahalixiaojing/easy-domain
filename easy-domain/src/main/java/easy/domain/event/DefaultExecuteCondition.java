@@ -5,7 +5,7 @@ import easy.domain.application.subscriber.IExecuteCondition;
 /**
  * 默认事件订阅执行条件
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2019/3/29 2:48 PM
  */
 public class DefaultExecuteCondition<T extends IDomainEvent> implements IExecuteCondition<T> {

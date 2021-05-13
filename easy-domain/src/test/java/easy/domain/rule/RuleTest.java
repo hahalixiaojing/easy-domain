@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * 业务规则单元测试
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/2/19 10:22 上午
  */
 public class RuleTest {

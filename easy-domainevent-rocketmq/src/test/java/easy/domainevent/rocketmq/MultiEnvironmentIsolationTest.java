@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 事件消息环境隔离测试
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/25 5:12 下午
  */
 public class MultiEnvironmentIsolationTest {

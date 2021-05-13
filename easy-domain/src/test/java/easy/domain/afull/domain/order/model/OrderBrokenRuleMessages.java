@@ -3,7 +3,7 @@ package easy.domain.afull.domain.order.model;
 import easy.domain.base.BrokenRuleMessage;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:30 下午
  */
 class OrderBrokenRuleMessages extends BrokenRuleMessage {

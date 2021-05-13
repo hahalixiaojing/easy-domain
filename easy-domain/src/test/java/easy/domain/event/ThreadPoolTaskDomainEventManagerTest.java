@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 基于线程池的领域事件发布订阅管理器
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2020/9/13 12:41 下午
  */
 public class ThreadPoolTaskDomainEventManagerTest {

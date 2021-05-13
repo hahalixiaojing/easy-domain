@@ -3,7 +3,7 @@ package easy.domain.application.subscriber;
 import easy.domain.event.IDomainEvent;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2019/3/29 2:45 PM
  */
 public interface IExecuteCondition<T extends IDomainEvent> {

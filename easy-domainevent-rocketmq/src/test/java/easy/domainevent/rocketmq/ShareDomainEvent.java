@@ -4,7 +4,7 @@ import easy.domain.event.BaseDomainEvent;
 import easy.domain.event.EventName;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/18 3:02 下午
  */
 @EventName(value = "ShareDomainEvent",shareTopicName = "SharedTopic")

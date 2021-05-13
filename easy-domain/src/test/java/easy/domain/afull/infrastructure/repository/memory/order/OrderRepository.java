@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 模拟数据库操作
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:29 下午
  */
 public class OrderRepository implements IOrderRepository {

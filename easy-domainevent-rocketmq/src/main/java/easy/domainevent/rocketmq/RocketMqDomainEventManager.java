@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/16 6:27 下午
  */
 public class RocketMqDomainEventManager implements IDomainEventManager, MessageListenerConcurrently {

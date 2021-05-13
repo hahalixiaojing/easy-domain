@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 服务接口测试
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/2/4 4:50 下午
  */
 public class MainEntryTestClass implements IOrderService {

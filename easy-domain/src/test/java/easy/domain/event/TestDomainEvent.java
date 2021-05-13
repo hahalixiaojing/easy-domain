@@ -2,7 +2,7 @@ package easy.domain.event;
 
 /**
  * 领域事件对象
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/2/2 11:27 上午
  */
 public class TestDomainEvent implements IDomainEvent {

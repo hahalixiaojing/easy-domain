@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.Date;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/2/22 10:18 上午
  */
 public class EntityAndEntityRuleTest {

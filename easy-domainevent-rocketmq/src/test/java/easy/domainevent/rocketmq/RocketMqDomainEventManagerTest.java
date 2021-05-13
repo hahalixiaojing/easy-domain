@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * 在运行该单元测试前需要，本地部署好 rocketmq,并修改对应的nameServer地址
  * 测试基于rocketmq的领域事件发布订阅机制
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/17 5:22 下午
  */
 public class RocketMqDomainEventManagerTest {

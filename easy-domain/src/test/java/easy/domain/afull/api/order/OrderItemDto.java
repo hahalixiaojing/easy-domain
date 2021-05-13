@@ -3,7 +3,7 @@ package easy.domain.afull.api.order;
 import java.math.BigDecimal;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 6:06 下午
  */
 public class OrderItemDto {

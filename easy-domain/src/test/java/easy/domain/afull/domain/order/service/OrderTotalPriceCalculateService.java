@@ -9,7 +9,7 @@ import java.util.stream.DoubleStream;
 /**
  * 订单总价计算领域服务
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:59 下午
  */
 public class OrderTotalPriceCalculateService {

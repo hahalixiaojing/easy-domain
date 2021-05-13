@@ -5,7 +5,7 @@ import easy.domain.application.subscriber.ISubscriberFactory;
 import easy.domain.event.IDomainEvent;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/18 4:08 下午
  */
 public class RocketmqSubscriberFactory implements ISubscriberFactory {

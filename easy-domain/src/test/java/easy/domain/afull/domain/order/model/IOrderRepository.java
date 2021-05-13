@@ -1,7 +1,7 @@
 package easy.domain.afull.domain.order.model;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:30 下午
  */
 public interface IOrderRepository {

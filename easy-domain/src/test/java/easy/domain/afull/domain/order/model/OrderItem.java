@@ -3,7 +3,7 @@ package easy.domain.afull.domain.order.model;
 import java.math.BigDecimal;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:26 下午
  */
 public class OrderItem {

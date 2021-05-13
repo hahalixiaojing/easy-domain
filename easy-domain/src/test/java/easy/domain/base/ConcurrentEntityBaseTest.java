@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * 领域模型实例，多次调用getNewVersion()获取并发版本号的，只递增一次
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/18 6:46 下午
  */
 public class ConcurrentEntityBaseTest {

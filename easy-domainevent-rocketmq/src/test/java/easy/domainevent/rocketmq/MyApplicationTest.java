@@ -10,8 +10,7 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * 应用服务层，使用rocketmq 实现发布订阅的能力
- *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/18 4:37 下午
  */
 public class MyApplicationTest {

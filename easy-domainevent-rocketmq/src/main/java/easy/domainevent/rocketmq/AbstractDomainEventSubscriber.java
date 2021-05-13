@@ -5,7 +5,7 @@ import easy.domain.application.subscriber.IDomainEventSubscriber;
 import easy.domain.event.IDomainEvent;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/16 7:50 下午
  */
 public abstract class AbstractDomainEventSubscriber<T extends IDomainEvent> implements IDomainEventSubscriber<T> {

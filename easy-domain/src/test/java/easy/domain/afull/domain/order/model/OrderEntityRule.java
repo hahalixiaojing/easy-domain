@@ -5,7 +5,7 @@ import easy.domain.rules.EntityRule;
 import java.math.BigDecimal;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/1 5:30 下午
  */
 class OrderEntityRule extends EntityRule<Order> {

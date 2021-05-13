@@ -6,7 +6,7 @@ import easy.domain.application.subscriber.ISubscriber;
 /**
  * 事件订单对象
  *
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2019/3/29 2:46 PM
  */
 public class SubscriberInfo {

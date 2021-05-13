@@ -3,7 +3,7 @@ package easy.domain.application.subscriber;
 import easy.domain.event.IDomainEvent;
 
 /**
- * @author lixiaojing10
+ * @author lixiaojing
  * @date 2021/3/18 3:43 下午
  */
 public interface ISubscriberFactory {
