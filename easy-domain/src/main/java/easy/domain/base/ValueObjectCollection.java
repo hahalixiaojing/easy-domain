@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  */
 public class ValueObjectCollection<T> {
 
+
     private final List<T> initCollection = new ArrayList<>();
     private final List<T> appendCollection = new ArrayList<>();
     private final List<T> removeCollection = new ArrayList<>();
@@ -23,7 +24,7 @@ public class ValueObjectCollection<T> {
     }
 
     public ValueObjectCollection(List<T> initCollection) {
-        this.initCollection.addAll(initCollection);
+        this.getInitCollection().addAll(initCollection);
     }
 
     /**
@@ -32,7 +33,7 @@ public class ValueObjectCollection<T> {
      * @param item
      */
     public void append(T item) {
-        this.appendCollection.add(item);
+        this.getAppendCollection().add(item);
     }
 
     /**
@@ -41,7 +42,7 @@ public class ValueObjectCollection<T> {
      * @param items
      */
     public void append(List<T> items) {
-        this.appendCollection.addAll(items);
+        this.getAppendCollection().addAll(items);
     }
 
     /**
@@ -50,9 +51,10 @@ public class ValueObjectCollection<T> {
      * @param items
      */
     public void clearAndAppend(List<T> items) {
-        this.initCollection.clear();
-        this.appendCollection.clear();
-        this.appendCollection.addAll(items);
+        this.removeCollection.addAll(this.getInitCollection());
+        this.getInitCollection().clear();
+        this.getAppendCollection().clear();
+        this.getAppendCollection().addAll(items);
     }
 
     /**
@@ -62,23 +64,26 @@ public class ValueObjectCollection<T> {
      * @return
      */
     public List<T> removeItems(Predicate<? super T> predicate) {
-        List<T> needRemoveList = this.initCollection.stream().filter(predicate).collect(Collectors.toList());
-        this.initCollection.removeAll(needRemoveList);
-        this.removeCollection.addAll(needRemoveList);
-        return needRemoveList;
-    }
+        List<T> appendCollectionList = this.getAppendCollection().stream().filter(predicate).collect(Collectors.toList());
+        List<T> needRemoveList = this.getInitCollection().stream().filter(predicate).collect(Collectors.toList());
 
-    public void replaceItem(T newItem, Predicate<? super T> predicate) {
-        this.initCollection.removeIf(predicate);
-        this.appendCollection.add(newItem);
+        this.getInitCollection().removeAll(needRemoveList);
+        this.getRemoveCollection().addAll(needRemoveList);
+
+        ArrayList<T> allRemoved = new ArrayList<>();
+        allRemoved.addAll(appendCollectionList);
+        allRemoved.addAll(needRemoveList);
+
+        return allRemoved;
     }
 
     /**
-     * 清理所用的项
+     * 清理所有的项
      */
-    public void clearAll() {
-        this.initCollection.clear();
-        this.appendCollection.clear();
+    public void removeAll() {
+        this.getRemoveCollection().addAll(this.getInitCollection());
+        this.getInitCollection().clear();
+        this.getAppendCollection().clear();
     }
 
     /**
@@ -87,7 +92,7 @@ public class ValueObjectCollection<T> {
      * @return
      */
     public List<T> getAppendedItems() {
-        return new ArrayList<>(this.appendCollection);
+        return new ArrayList<>(this.getAppendCollection());
     }
 
     /**
@@ -96,7 +101,19 @@ public class ValueObjectCollection<T> {
      * @return
      */
     public List<T> getRemovedItems() {
-        return new ArrayList(this.removeCollection);
+        return new ArrayList(this.getRemoveCollection());
+    }
+
+    protected List<T> getInitCollection() {
+        return this.initCollection;
+    }
+
+    protected List<T> getAppendCollection() {
+        return this.appendCollection;
+    }
+
+    protected List<T> getRemoveCollection() {
+        return this.removeCollection;
     }
 
     /**
@@ -105,20 +122,10 @@ public class ValueObjectCollection<T> {
      * @return
      */
     public List<T> getAllItems() {
-        final int count = this.appendCollection.size() + this.initCollection.size();
+        final int count = this.getAppendCollection().size() + this.getInitCollection().size();
         ArrayList<T> allItems = new ArrayList<>(count);
-        allItems.addAll(this.initCollection);
-        allItems.addAll(this.appendCollection);
+        allItems.addAll(this.getInitCollection());
+        allItems.addAll(this.getAppendCollection());
         return allItems;
-    }
-
-
-    /**
-     * 是否数据项目为空
-     *
-     * @return
-     */
-    public boolean isEmpty() {
-        return this.initCollection.isEmpty() && this.appendCollection.isEmpty();
     }
 }
