@@ -4,16 +4,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author lixiaojing10
  * @date 2021/9/2 10:05 下午
  */
-public class ValueObjectCollectionTest {
+public class ValueObjectTraceCollectionTest {
 
     @Test
     public void initIsEmptyValueObjectCollections() {
-        ValueObjectCollection<Long> collection = new ValueObjectCollection<>();
+        ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>();
 
         collection.append(1L);
         collection.append(2L);
@@ -46,6 +47,18 @@ public class ValueObjectCollectionTest {
         Assert.assertEquals(4, collection.getAppendedItems().size());
         Assert.assertEquals(8L, collection.getAppendedItems().get(collection.getAppendedItems().size() - 1).longValue());
 
+        collection.process(new IValueObjectTraceCollectionHandler<Long>() {
+            @Override
+            public void appendCollectionProcess(List<Long> appendList) {
+                Assert.assertEquals(4, collection.getAppendedItems().size());
+            }
+
+            @Override
+            public void removedCollectionProcess(List<Long> removedList) {
+                Assert.assertEquals(0, removedList.size());
+            }
+        });
+
 
     }
 
@@ -56,7 +69,7 @@ public class ValueObjectCollectionTest {
         longs.add(3L);
         longs.add(4L);
 
-        ValueObjectCollection<Long> collection = new ValueObjectCollection<>(longs);
+        ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>(longs);
 
         collection.append(1L);
         collection.append(2L);
@@ -77,7 +90,7 @@ public class ValueObjectCollectionTest {
         ArrayList<Long> longs = new ArrayList<>();
         longs.add(3L);
         longs.add(4L);
-        ValueObjectCollection<Long> collection = new ValueObjectCollection<>(longs);
+        ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>(longs);
 
         collection.append(5L);
 
@@ -99,7 +112,7 @@ public class ValueObjectCollectionTest {
         longs.add(3L);
         longs.add(4L);
 
-        ValueObjectCollection<Long> collection = new ValueObjectCollection<>(longs);
+        ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>(longs);
         collection.removeItems(s ->
                 s.equals(3L)
         );

@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
  * @author lixiaojing10
  * @date 2021/9/2 9:36 下午
  */
-public class ValueObjectCollection<T> {
+public class ValueObjectTraceCollection<T> {
 
 
     private final List<T> initCollection = new ArrayList<>();
     private final List<T> appendCollection = new ArrayList<>();
     private final List<T> removeCollection = new ArrayList<>();
 
-    public ValueObjectCollection() {
+    public ValueObjectTraceCollection() {
     }
 
-    public ValueObjectCollection(List<T> initCollection) {
+    public ValueObjectTraceCollection(List<T> initCollection) {
         this.getInitCollection().addAll(initCollection);
     }
 
@@ -101,7 +101,7 @@ public class ValueObjectCollection<T> {
      * @return
      */
     public List<T> getRemovedItems() {
-        return new ArrayList(this.getRemoveCollection());
+        return new ArrayList<>(this.getRemoveCollection());
     }
 
     protected List<T> getInitCollection() {
@@ -127,5 +127,10 @@ public class ValueObjectCollection<T> {
         allItems.addAll(this.getInitCollection());
         allItems.addAll(this.getAppendCollection());
         return allItems;
+    }
+
+    public void process(IValueObjectTraceCollectionHandler<T> handler) {
+        handler.appendCollectionProcess(this.getAppendedItems());
+        handler.removedCollectionProcess(this.getRemovedItems());
     }
 }

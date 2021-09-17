@@ -1,4 +1,3 @@
-
 # 领域驱动开发实用库
 
 [![star](https://gitee.com/lixiaojing/easy-domain/badge/star.svg?theme=white)](https://gitee.com/lixiaojing/easy-domain/stargazers)
@@ -429,6 +428,46 @@ class OrderRepository implements IOrderRepository {
 1. 以上代码 OrderRepository 是基础设施层持久化实体对象数据的一个示例，该类实现一个 IOrderRepository接口，该接口定义在领域模型层和对应的实体在一个包下。
 2. 在代码1处，在对order对象持久化时 ，不做任何业务逻辑上的判断，直接将数据update到数据库，业务规则属于领域模型层的职责。
 
+## ValueObjectTraceCollection的类使用
+
+ValueObjectTraceCollection类是用于跟踪集合值类型变更的包装类，如跟踪新增项、移除项、替换项。通过对变化项进行跟踪，方便有针对性的对变化项进行相关持久化等操作。ValueObjectTraceCollection仅适用于对值类型集合处理，对聚合或实体不适用。
+
+```java
+public class ValueObjectTraceCollectionTest {
+    @Test
+    public void testValueObjectTraceCollection(){
+        ValueObjectTraceCollection<Long> collection=new   ValueObjectTraceCollection<>();
+
+        collection.append(1L);
+        collection.append(2L);
+
+        collection.process(new IValueObjectTraceCollectionHandler<Long>() {
+            @Override
+            public void appendCollectionProcess(List<Long> appendList) {
+                //处理新增或替换的List集合
+                Assert.assertEquals(2, collection.getAppendedItems().size());
+            }
+
+            @Override
+            public void removedCollectionProcess(List<Long> removedList) {
+                //处理移除的List集合
+                Assert.assertEquals(0, removedList.size());
+            }
+        });
+    }
+}
+ 
+
+```
+1. ValueObjectTraceCollection(List<T> initCollection)带参数的构造函数，用于初始化一个已经存在集合，如从数据库查询出的集合。
+2. append(T item)方法，增加一个新的项，ValueObjectTraceCollection会跟踪这个新增的项。
+3. append(List<T> items)方法，增加一批新的项，ValueObjectTraceCollection会跟踪这些新增的项。
+4. clearAndAppend(List<T> items)方法，先执行移除操作，在执行添加操作，移除操作会跟踪这些移除项，添加操作会跟踪这些新增的项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
+5. removeItems(Predicate<? super T> predicate)方法，按指定的条件移除项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
+6. removeAll()方法，移除所有的项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
+7. getAppendedItems()和getRemovedItems()方法,可以获取所有被跟踪的项，包括，新增或替换项、移除项。
+8. getAllItems()方法，用于获取所有项，不包括新增的项
+9. process(IValueObjectTraceCollectionHandler<T> handler)方法，接受一个处理跟踪项的 Handler实现。例如，可以是Handler实现中，对跟踪项进行支持化操作。
 ## 分层结构以及层之间的依赖关系
 
 领域驱动设计，将一个系统或微服务划分成四层，每一层都是不同的角色，有不同的职责。
@@ -483,7 +522,6 @@ WHERE order_id = #{order.id}
 1. 示例中的#{order.newVersion} #{order.oldVersion} 实体父类ConcurrentEntityBase的版本号字段。
 2. 示例中#{order.id} 是父类EntityBase的字段。
 3. 执行以上SQL后,通过判断sql影响的行数来确定是否更新成功。
-
 
 ### 单元测试说明
 
