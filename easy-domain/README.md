@@ -467,7 +467,7 @@ public class ValueObjectTraceCollectionTest {
 6. removeAll()方法，移除所有的项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
 7. getAppendedItems()和getRemovedItems()方法,可以获取所有被跟踪的项，包括，新增或替换项、移除项。
 8. getAllItems()方法，用于获取所有项，不包括新增的项
-9. process(IValueObjectTraceCollectionHandler<T> handler)方法，接受一个处理跟踪项的 Handler实现。例如，可以是Handler实现中，对跟踪项进行支持化操作。
+9. process(IValueObjectTraceCollectionHandler<T> handler)方法，接受一个处理跟踪项的 Handler实现。例如，可以在Handler实现中，对跟踪项进行持久化操作。
 ## 分层结构以及层之间的依赖关系
 
 领域驱动设计，将一个系统或微服务划分成四层，每一层都是不同的角色，有不同的职责。
