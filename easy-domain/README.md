@@ -445,7 +445,7 @@ public class ValueObjectTraceCollectionTest {
             @Override
             public void appendCollectionProcess(List<Long> appendList) {
                 //处理新增或替换的List集合
-                Assert.assertEquals(2, collection.getAppendedItems().size());
+                Assert.assertEquals(2, appendList.size());
             }
 
             @Override
