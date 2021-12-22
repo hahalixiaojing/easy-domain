@@ -443,14 +443,8 @@ public class ValueObjectTraceCollectionTest {
 
         collection.process(new IValueObjectTraceCollectionHandler<Long>() {
             @Override
-            public void appendCollectionProcess(List<Long> appendList) {
-                //处理新增或替换的List集合
-                Assert.assertEquals(2, appendList.size());
-            }
-
-            @Override
-            public void removedCollectionProcess(List<Long> removedList) {
-                //处理移除的List集合
+            public void process(List<Long> appendList,List<Long> removedList) {
+                Assert.assertEquals(4, collection.getAppendedItems().size());
                 Assert.assertEquals(0, removedList.size());
             }
         });

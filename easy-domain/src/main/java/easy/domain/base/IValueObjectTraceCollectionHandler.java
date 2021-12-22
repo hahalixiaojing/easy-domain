@@ -7,8 +7,5 @@ import java.util.List;
  * @date 2021/9/17 6:28 下午
  */
 public interface IValueObjectTraceCollectionHandler<T> {
-
-    void appendCollectionProcess(List<T> appendList);
-
-    void removedCollectionProcess(List<T> removedList);
+    void process(List<T> appendList,List<T> removedList);
 }

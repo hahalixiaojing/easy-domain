@@ -58,7 +58,7 @@ public class ValueObjectTraceCollection<T> {
     }
 
     /**
-     * 移除满足条件的项
+     * 移除满足条件的项，并返回移除的项
      *
      * @param predicate
      * @return
@@ -68,6 +68,7 @@ public class ValueObjectTraceCollection<T> {
         List<T> needRemoveList = this.getInitCollection().stream().filter(predicate).collect(Collectors.toList());
 
         this.getInitCollection().removeAll(needRemoveList);
+        this.getAppendCollection().removeAll(appendCollectionList);
         this.getRemoveCollection().addAll(needRemoveList);
 
         ArrayList<T> allRemoved = new ArrayList<>();
@@ -130,7 +131,6 @@ public class ValueObjectTraceCollection<T> {
     }
 
     public void process(IValueObjectTraceCollectionHandler<T> handler) {
-        handler.appendCollectionProcess(this.getAppendedItems());
-        handler.removedCollectionProcess(this.getRemovedItems());
+        handler.process(this.getAppendedItems(),this.getRemovedItems());
     }
 }

@@ -49,17 +49,11 @@ public class ValueObjectTraceCollectionTest {
 
         collection.process(new IValueObjectTraceCollectionHandler<Long>() {
             @Override
-            public void appendCollectionProcess(List<Long> appendList) {
+            public void process(List<Long> appendList,List<Long> removedList) {
                 Assert.assertEquals(4, collection.getAppendedItems().size());
-            }
-
-            @Override
-            public void removedCollectionProcess(List<Long> removedList) {
                 Assert.assertEquals(0, removedList.size());
             }
         });
-
-
     }
 
     @Test
@@ -113,10 +107,13 @@ public class ValueObjectTraceCollectionTest {
         longs.add(4L);
 
         ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>(longs);
-        collection.removeItems(s ->
+        collection.append(3L);
+        List<Long> removeItems = collection.removeItems(s ->
                 s.equals(3L)
         );
 
+
+        Assert.assertEquals(2,removeItems.size());
         Assert.assertEquals(1, collection.getRemovedItems().size());
         Assert.assertEquals(3L, collection.getRemovedItems().get(0).longValue());
         Assert.assertEquals(1, collection.getAllItems().size());
