@@ -1,8 +1,5 @@
 package easy.domain.application.subscriber;
 
-import easy.domain.application.subscriber.IExecuteCondition;
-import easy.domain.application.subscriber.ISubscriber;
-
 /**
  * 事件订单对象
  *

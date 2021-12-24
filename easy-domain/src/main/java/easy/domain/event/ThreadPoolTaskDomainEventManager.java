@@ -11,6 +11,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * 基于线程池的事件任务处理器
  */
@@ -19,6 +21,8 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     private final ConcurrentHashMap<String, List<SubscriberInfo>> subscribersMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, ScheduledThreadPoolExecutor> taskTheadMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Integer> domainEventAndThreadMap = new ConcurrentHashMap<>();
+
+    private IOrderedPerformManager performManager;
     /**
      * 订阅默认执行条件
      */
@@ -31,6 +35,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     public ThreadPoolTaskDomainEventManager() {
 
         this(10, 3, 1500);
+        this.performManager = null;
+    }
+
+    public ThreadPoolTaskDomainEventManager(IOrderedPerformManager iOrderedPerformManager) {
+        this();
+        this.performManager = iOrderedPerformManager;
     }
 
     public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime) {
@@ -41,9 +51,15 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         ThreadFactory threadFactory = this.createThreadFactory();
 
         for (int i = 0; i < this.initThreadCount; i++) {
-            ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(1, threadFactory);
+            ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(5, threadFactory);
             this.taskTheadMap.put(i, threadPoolExecutor);
         }
+        this.performManager = null;
+    }
+
+    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime, IOrderedPerformManager iOrderedPerformManager) {
+        this(initThreadCount, maxRetryTimes, retryDelayTime);
+        this.performManager = iOrderedPerformManager;
     }
 
     private ThreadFactory createThreadFactory() {
@@ -79,7 +95,15 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias) {
+        this.registerSubscriber(subscriber, alias, "");
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
         this.registerSubscriber(subscriber, alias, condition);
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(subscriber.subscribedToEventType().getName(), alias, dependSubscriber);
+        }
     }
 
     @Override
@@ -97,6 +121,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
 
+        //如果有执行顺序管理，先查找到根
+        if (this.performManager != null) {
+            List<String> rootSubscribers = this.performManager.selectRootSubscribers(domainEventName);
+            subscriberInfoList = subscriberInfoList.stream().filter(s -> rootSubscribers.contains(s.getAlias())).collect(toList());
+        }
+
         Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);
 
@@ -104,7 +134,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         for (SubscriberInfo sub : subscriberInfoList) {
             IDomainEventSubscriber<T> subscribedTo = (IDomainEventSubscriber<T>) sub.getSubscriber();
             if (subscribedTo != null && this.executeCheck(obj, sub.getCondition())) {
-                Task<T> task = new Task<>(subscribedTo, obj, this.maxRetryTimes, this.retryDelayTime, threadPoolExecutor);
+                Task<T> task = new Task<>(subscribedTo, obj, this.maxRetryTimes, this.retryDelayTime, threadPoolExecutor, s -> {
+                    if (this.performManager != null) {
+                        List<String> nextSubscriberList = this.performManager.selectNextSubscribers(domainEventName, sub.getAlias());
+                        nextSubscriberList.forEach(ss -> this.publishEvent(obj, ss, false));
+                    }
+                });
                 threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
             }
         }
@@ -113,7 +148,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber) {
+        this.publishEvent(obj, subscriber, false);
+    }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
 
@@ -123,7 +163,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         for (SubscriberInfo sub : subscriberInfoList) {
             IDomainEventSubscriber<T> subscribedTo = (IDomainEventSubscriber<T>) sub.getSubscriber();
             if (subscribedTo != null && sub.getAlias().equals(subscriber) && this.executeCheck(obj, sub.getCondition())) {
-                Task<T> task = new Task<>(subscribedTo, obj, this.maxRetryTimes, this.retryDelayTime, threadPoolExecutor);
+                Task<T> task = new Task<>(subscribedTo, obj, this.maxRetryTimes, this.retryDelayTime, threadPoolExecutor, s -> {
+                    if (this.performManager != null && !onlyThis) {
+                        List<String> nextSubscriberList = this.performManager.selectNextSubscribers(domainEventName, sub.getAlias());
+                        nextSubscriberList.forEach(ss -> this.publishEvent(obj, ss, false));
+                    }
+                });
                 threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
                 break;
             }

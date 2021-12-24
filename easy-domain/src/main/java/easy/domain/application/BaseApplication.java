@@ -48,6 +48,11 @@ public abstract class BaseApplication implements IApplication {
         this.manager.registerSubscriber(subscriber, subscriberName);
     }
 
+    public void registerSubscriber(ISubscriber subscriber, String subscriberName, String dependSubscriber) {
+        this.manager.registerSubscriber(subscriber, subscriberName, dependSubscriber);
+    }
+
+
     /**
      * 注册事件订阅
      *
@@ -57,7 +62,6 @@ public abstract class BaseApplication implements IApplication {
      */
     public void registerSubscriber(ISubscriber subscriber, String subscriberName, IExecuteCondition condition) {
         this.manager.registerSubscriber(subscriber, subscriberName, condition);
-
     }
     /**
      * 发布事件
@@ -79,5 +83,9 @@ public abstract class BaseApplication implements IApplication {
     protected <T extends IDomainEvent> void publishEvent(T obj, String subscribe) {
         this.manager.publishEvent(obj, subscribe);
 
+    }
+
+    protected <T extends IDomainEvent> void publishEvent(T obj, String subscribe, boolean onlyThis) {
+        this.manager.publishEvent(obj, subscribe, onlyThis);
     }
 }

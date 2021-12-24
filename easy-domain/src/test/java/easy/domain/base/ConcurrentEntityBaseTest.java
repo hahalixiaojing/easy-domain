@@ -3,6 +3,9 @@ package easy.domain.base;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
+
 /**
  * 领域模型实例，多次调用getNewVersion()获取并发版本号的，只递增一次
  *
@@ -17,6 +20,14 @@ public class ConcurrentEntityBaseTest {
         long newVersion = testDomainModel.getNewVersion();
         Assert.assertEquals(newVersion, testDomainModel.getNewVersion());
     }
+
+    @Test
+    public void dad(){
+        String testStr = "";
+        String sd = Optional.ofNullable(testStr).map(s -> s + "1").orElse("sd");
+        Assert.assertEquals("sd",sd);
+    }
+
 
 
     public static class TestDomainModel extends ConcurrentEntityBase<Long> {

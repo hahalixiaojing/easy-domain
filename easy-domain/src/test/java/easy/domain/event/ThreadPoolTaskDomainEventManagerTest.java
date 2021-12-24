@@ -1,5 +1,6 @@
 package easy.domain.event;
 
+import easy.domain.application.subscriber.DefaultOrderedPerformManager;
 import easy.domain.application.subscriber.IExecuteCondition;
 import easy.domain.application.subscriber.ISubscriberFactory;
 import org.junit.Assert;
@@ -16,10 +17,148 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThreadPoolTaskDomainEventManagerTest {
 
+    /**
+     * 验证发布事件，执行指定订阅，并执行指定订阅的依赖的订阅
+     * 执行 sub2 -> sub1
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void publishEventOneTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
+
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        manager.registerDomainEvent(TestDomainEvent.class);
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(1);
+
+        }), "sub1", "sub2");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(2);
+        }), "sub2", "sub3");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(3);
+        }), "sub3");
+        //发布事件，执行sub2的订阅，并执行依赖sub2的订阅sub1
+        manager.publishEvent(new TestDomainEvent(""), "sub2");
+
+        countDownLatch.await();
+
+        Assert.assertEquals(2, atomicInteger.get());
+    }
+
+    /**
+     * 验证执行指定的订阅，但只是指行当前指定的，不执行依赖的
+     * 执行 sub2
+     * @throws InterruptedException
+     */
+    @Test
+    public void publishEventOneOnlyTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
+
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        manager.registerDomainEvent(TestDomainEvent.class);
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(1);
+
+        }), "sub1", "sub2");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(2);
+        }), "sub2", "sub3");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(3);
+        }), "sub3");
+        //发布事件，但只执行sub2的订阅，不执行依赖sub2的sub1的订阅
+        manager.publishEvent(new TestDomainEvent(""), "sub2", false);
+
+        countDownLatch.await();
+
+        Assert.assertEquals(2, atomicInteger.get());
+    }
+
+    /**
+     * 验证订阅按依赖顺序执行 sub3->sub2->sub1 输出 3 2 1
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void oneEventTwoSubscriberOrderedTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
+
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        manager.registerDomainEvent(TestDomainEvent.class);
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(1);
+
+        }), "sub1", "sub2");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(2);
+        }), "sub2", "sub3");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(3);
+        }), "sub3");
+
+        manager.publishEvent(new TestDomainEvent(""));
+
+        countDownLatch.await();
+
+        Assert.assertEquals(3, atomicInteger.get());
+    }
+
+    /**
+     * 验证订阅没有依赖无特定顺序执行 输出  1 2 3
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void oneEventTwoSubscriberTest() throws InterruptedException {
 
-        CountDownLatch countDownLatch = new CountDownLatch(2);
+        CountDownLatch countDownLatch = new CountDownLatch(3);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
@@ -31,6 +170,8 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
+            System.out.println(1);
+            System.out.println(Thread.currentThread().getName());
 
         }), "sub1");
 
@@ -38,16 +179,34 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
+            System.out.println(2);
+            System.out.println(Thread.currentThread().getName());
+
 
         }), "sub2");
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(3);
+            System.out.println(Thread.currentThread().getName());
+
+
+        }), "sub3");
 
         manager.publishEvent(new TestDomainEvent(""));
 
         countDownLatch.await();
 
-        Assert.assertEquals(2, atomicInteger.get());
+        Assert.assertEquals(3, atomicInteger.get());
     }
 
+    /**
+     * 验证订阅按满足特定条件执行，输出 2
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void oneEventTwoSubscriberWithConditionTest() throws InterruptedException {
 
@@ -63,12 +222,16 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
+            System.out.println(1);
 
+            //需要满足IExecuteCondition 条件才能执行
         }), "sub1", (IExecuteCondition<TestDomainEvent>) iDomainEvent -> iDomainEvent.getBusinessId().equals("1"));
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
+            System.out.println(2);
+
 
         }), "sub2");
 
@@ -81,6 +244,11 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
     }
 
+    /**
+     * 验证订阅执行重试 输出 1 1 1 1
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void oneEventOneSubscriberUseRetry() throws InterruptedException {
 
@@ -97,6 +265,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
+            System.out.println(1);
             //模拟异常触发重试
             throw new RuntimeException();
 
