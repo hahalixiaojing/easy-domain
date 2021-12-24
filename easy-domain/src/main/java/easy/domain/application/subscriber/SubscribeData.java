@@ -9,13 +9,15 @@ public class SubscribeData {
     private String name;
     private String eventData;
     private String realEventName;
+    private Boolean onlyThis;
 
 
 
-    public SubscribeData(String name, String eventData,String realEventName) {
+    public SubscribeData(String name, String eventData,String realEventName,Boolean onlyThis) {
         this.name = name;
         this.eventData = eventData;
         this.realEventName = realEventName;
+        this.onlyThis = onlyThis;
     }
     public SubscribeData() {
     }
@@ -40,5 +42,11 @@ public class SubscribeData {
     }
     public void setRealEventName(String realEventName) {
         this.realEventName = realEventName;
+    }
+    public Boolean getOnlyThis() {
+        return onlyThis;
+    }
+    public void setOnlyThis(Boolean onlyThis) {
+        this.onlyThis = onlyThis;
     }
 }
