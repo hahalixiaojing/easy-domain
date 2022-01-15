@@ -41,6 +41,20 @@
 
 # Documentation
 
+版本日志
+
+### 计划实现的特性
+
+1. 增强实体基础类的功能，可以收集事件、操作集合
+2. 事件订阅支持通用订阅能力，如所有事件都会触发的操作
+3. 增加事件定义分组的功能，满足在不同场景下，执行不同订阅分组分组的能力
+
+### 1.3版本新增特性
+
+1. 增加ICustomValidate接口，通过该接口可以实体验证规则，通过入参动态传入
+2. 增加 IDataRoot、IValueObjectRoot 语义接口定义
+3. 事件订阅支持按指定的依赖顺序先后执行。
+
 ## 实体
 
 根据领域驱动设计中实体的定义，一个实体是一个唯一的东西，每一个实体都有一个唯一的业务身份标识，并且实体具有生命周期，在生命周期内实体的状态会不断发生变化。实体对象的每一次变化都需要使用业务规则进行验证，以保证实体状态的变更是合法有效的。
@@ -435,33 +449,36 @@ ValueObjectTraceCollection类是用于跟踪集合值类型变更的包装类，
 ```java
 public class ValueObjectTraceCollectionTest {
     @Test
-    public void testValueObjectTraceCollection(){
-        ValueObjectTraceCollection<Long> collection=new   ValueObjectTraceCollection<>();
+    public void testValueObjectTraceCollection() {
+        ValueObjectTraceCollection<Long> collection = new ValueObjectTraceCollection<>();
 
         collection.append(1L);
         collection.append(2L);
 
         collection.process(new IValueObjectTraceCollectionHandler<Long>() {
             @Override
-            public void process(List<Long> appendList,List<Long> removedList) {
+            public void process(List<Long> appendList, List<Long> removedList) {
                 Assert.assertEquals(4, collection.getAppendedItems().size());
                 Assert.assertEquals(0, removedList.size());
             }
         });
     }
 }
- 
+
 
 ```
+
 1. ValueObjectTraceCollection(List<T> initCollection)带参数的构造函数，用于初始化一个已经存在集合，如从数据库查询出的集合。
 2. append(T item)方法，增加一个新的项，ValueObjectTraceCollection会跟踪这个新增的项。
 3. append(List<T> items)方法，增加一批新的项，ValueObjectTraceCollection会跟踪这些新增的项。
 4. clearAndAppend(List<T> items)方法，先执行移除操作，在执行添加操作，移除操作会跟踪这些移除项，添加操作会跟踪这些新增的项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
-5. removeItems(Predicate<? super T> predicate)方法，按指定的条件移除项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
+5. removeItems(Predicate<? super T> predicate)方法，按指定的条件移除项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append
+   方法新增的，则不会对这些项产生跟踪。
 6. removeAll()方法，移除所有的项，ValueObjectTraceCollection会跟踪这些移除项。如果被移除项的是通过 append 方法新增的，则不会对这些项产生跟踪。
 7. getAppendedItems()和getRemovedItems()方法,可以获取所有被跟踪的项，包括，新增或替换项、移除项。
 8. getAllItems()方法，用于获取所有项，不包括新增的项
 9. process(IValueObjectTraceCollectionHandler<T> handler)方法，接受一个处理跟踪项的 Handler实现。例如，可以在Handler实现中，对跟踪项进行持久化操作。
+
 ## 分层结构以及层之间的依赖关系
 
 领域驱动设计，将一个系统或微服务划分成四层，每一层都是不同的角色，有不同的职责。

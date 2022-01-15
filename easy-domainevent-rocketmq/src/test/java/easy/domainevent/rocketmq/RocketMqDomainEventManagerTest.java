@@ -1,5 +1,6 @@
 package easy.domainevent.rocketmq;
 
+import easy.domain.application.subscriber.DefaultOrderedPerformManager;
 import easy.domain.application.subscriber.IExecuteCondition;
 import easy.domain.event.BaseDomainEvent;
 import org.junit.Assert;
@@ -133,5 +134,46 @@ public class RocketMqDomainEventManagerTest {
 
         Assert.assertEquals(0L, countDownLatch.getCount());
 
+    }
+
+    /**
+     * 测试重试执行
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void retryTest() throws InterruptedException {
+        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "", new DefaultOrderedPerformManager());
+
+
+        rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
+
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+
+        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+
+            if (countDownLatch.getCount() > 0) {
+                countDownLatch.countDown();
+                System.out.println(s.name + "run error " + countDownLatch.getCount());
+                throw new RuntimeException("test exception");
+            }
+            System.out.println("run ok");
+
+        }), "sub1");
+
+        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+            System.out.println("run ok sub2");
+
+        }), "sub2");
+
+        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
+
+
+        countDownLatch.await(30000, TimeUnit.SECONDS);
+        //需要等待mq 更新消费位点
+        Thread.sleep(60000);
+
+        Assert.assertEquals(0L, countDownLatch.getCount());
     }
 }

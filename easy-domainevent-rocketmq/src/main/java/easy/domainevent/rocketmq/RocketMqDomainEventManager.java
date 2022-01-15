@@ -138,6 +138,15 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
         this.registerSubscriber(subscriber, event.eventName, alias, condition);
     }
 
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
+        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
+        this.registerSubscriber(subscriber, event.eventName, alias, condition);
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(event.eventName, alias, dependSubscriber);
+        }
+    }
+
     private EventNameInfo getEventName(Class<?> eventType) {
         EventName alias = eventType.getAnnotation(EventName.class);
 

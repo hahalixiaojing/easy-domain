@@ -2,10 +2,7 @@ package easy.domain.application.subscriber;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,6 +13,8 @@ import static java.util.stream.Collectors.toList;
  * @date 2021/12/23 9:34 上午
  */
 public class DefaultOrderedPerformManager implements IOrderedPerformManager {
+
+    private static final String ROOT_NAME = "_root_";
 
     private final ConcurrentMap<String, HashSet<OrderData>> maps = new ConcurrentHashMap<>();
 
@@ -29,6 +28,7 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
             orderDataHashSet.add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
             this.maps.put(eventName, orderDataHashSet);
         }
+
     }
 
     @Override
@@ -42,13 +42,11 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
 
     @Override
     public List<String> selectRootSubscribers(String eventName) {
-        return this.selectNextSubscribers(eventName,"_root_");
+        return this.selectNextSubscribers(eventName, ROOT_NAME);
     }
-
-
     static class OrderData {
         public OrderData(String currentSubscriberAlias, String childSubscriberAlias) {
-            this.currentSubscriberAlias = StringUtils.isEmpty(currentSubscriberAlias) ? "_root_" : currentSubscriberAlias;
+            this.currentSubscriberAlias = StringUtils.isEmpty(currentSubscriberAlias) ? ROOT_NAME : currentSubscriberAlias;
             this.childSubscriberAlias = childSubscriberAlias;
         }
 

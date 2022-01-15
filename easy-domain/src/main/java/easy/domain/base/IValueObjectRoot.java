@@ -5,5 +5,5 @@ package easy.domain.base;
  * @author lixiaojing10
  * @date 2021/12/22 11:30 上午
  */
-public interface IValueRoot {
+public interface IValueObjectRoot {
 }

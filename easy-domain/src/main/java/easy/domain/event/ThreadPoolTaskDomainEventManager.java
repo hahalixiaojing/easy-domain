@@ -1,10 +1,10 @@
 package easy.domain.event;
 
 import easy.domain.application.subscriber.*;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -34,7 +34,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
     public ThreadPoolTaskDomainEventManager() {
 
-        this(10, 3, 1500);
+        this(60, 3, 1500);
         this.performManager = null;
     }
 
@@ -82,15 +82,8 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     public void registerDomainEvent(Class<?> domainEventType) {
 
         String domainEventName = domainEventType.getName();
-        if (!this.subscribersMap.containsKey(domainEventName)) {
-            List<SubscriberInfo> subscriberInfos = new ArrayList<>();
-            this.subscribersMap.put(domainEventName, subscriberInfos);
-
-            int i = new Random().nextInt(this.initThreadCount);
-
-            this.domainEventAndThreadMap.put(domainEventName, i);
-
-        }
+        this.subscribersMap.computeIfAbsent(domainEventName, s -> new ArrayList<>());
+        this.domainEventAndThreadMap.computeIfAbsent(domainEventName,s-> RandomUtils.nextInt(0, this.initThreadCount));
     }
 
     @Override
@@ -100,17 +93,23 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-        this.registerSubscriber(subscriber, alias, condition);
-        if (this.performManager != null) {
-            this.performManager.registerSubscriber(subscriber.subscribedToEventType().getName(), alias, dependSubscriber);
-        }
+        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
     }
 
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
+        this.registerSubscriber(subscriber, alias, condition, "");
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
         String domainEventName = subscriber.subscribedToEventType().getName();
         if (this.subscribersMap.containsKey(domainEventName)) {
             this.subscribersMap.get(domainEventName).add(new SubscriberInfo(subscriber, alias, condition));
+        }
+
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(subscriber.subscribedToEventType().getName(), alias, dependSubscriber);
         }
     }
 

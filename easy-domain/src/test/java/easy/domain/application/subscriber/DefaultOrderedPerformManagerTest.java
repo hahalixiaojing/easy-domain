@@ -11,6 +11,12 @@ import java.util.List;
  */
 public class DefaultOrderedPerformManagerTest {
 
+    /**
+     * 1. 直接循环依赖检查
+     * 2. 一个节点同时依赖多个前置节点
+     * 3. 间接循环依赖检查
+     */
+
     @Test
     public void registerSubscriberTest() {
         DefaultOrderedPerformManager defaultOrderedPerformManager = new DefaultOrderedPerformManager();
@@ -20,8 +26,8 @@ public class DefaultOrderedPerformManagerTest {
         defaultOrderedPerformManager.registerSubscriber("evt", "d", "a");
         defaultOrderedPerformManager.registerSubscriber("evt", "e", "a");
 
-        List<String> evt = defaultOrderedPerformManager.selectRootSubscribers("evt");
 
+        List<String> evt = defaultOrderedPerformManager.selectRootSubscribers("evt");
         Assert.assertEquals(3, evt.size());
 
         List<String> strings = defaultOrderedPerformManager.selectNextSubscribers("evt", "a");

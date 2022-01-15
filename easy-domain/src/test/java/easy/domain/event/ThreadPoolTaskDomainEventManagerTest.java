@@ -99,7 +99,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
             System.out.println(3);
         }), "sub3");
         //发布事件，但只执行sub2的订阅，不执行依赖sub2的sub1的订阅
-        manager.publishEvent(new TestDomainEvent(""), "sub2", false);
+        manager.publishEvent(new TestDomainEvent(""), "sub2", true);
 
         countDownLatch.await();
 
