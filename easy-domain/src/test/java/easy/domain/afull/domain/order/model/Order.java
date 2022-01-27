@@ -4,6 +4,8 @@ import easy.domain.afull.domain.order.event.OrderCreatedEvent;
 import easy.domain.afull.domain.order.event.OrderPayedEvent;
 import easy.domain.base.BrokenRuleMessage;
 import easy.domain.base.EntityBase;
+import easy.domain.base.ICustomValidate;
+import easy.domain.rules.EntityRule;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ import java.util.List;
  * @author lixiaojing
  * @date 2021/3/1 5:26 下午
  */
-public class Order extends EntityBase<Long> {
+public class Order extends EntityBase<Long> implements ICustomValidate<Order> {
 
     private final BigDecimal totalPrice;
     private final String comment;
@@ -81,6 +83,11 @@ public class Order extends EntityBase<Long> {
 
     public LocalDateTime getCreated() {
         return created;
+    }
+
+    @Override
+    public Boolean validate(EntityRule<Order> rule) {
+        return null;
     }
 }
 

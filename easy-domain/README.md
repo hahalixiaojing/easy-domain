@@ -45,13 +45,13 @@
 
 ### 计划实现的特性
 
-1. 增强实体基础类的功能，可以收集事件、操作集合
-2. 事件订阅支持通用订阅能力，如所有事件都会触发的操作
+1. 增强实体基础类的功能，可以收集事件、操作记录集合
+2. 事件订阅支持通用订阅能力，例如所有事件都会触发的操作
 3. 增加事件定义分组的功能，满足在不同场景下，执行不同订阅分组分组的能力
 
 ### 1.3版本新增特性
 
-1. 增加ICustomValidate接口，通过该接口可以实体验证规则，通过入参动态传入
+1. 增加ICustomValidate接口，通过该接口以实现实体验证规则，通过入参动态传入
 2. 增加 IDataRoot、IValueObjectRoot 语义接口定义
 3. 事件订阅支持按指定的依赖顺序先后执行。
 
@@ -65,7 +65,7 @@
 
 ```java
 class Order extends EntityBase<Long> {
-
+    
     @Override
     public Boolean validate() {
         return null;
@@ -74,6 +74,30 @@ class Order extends EntityBase<Long> {
     @Override
     protected BrokenRuleMessage getBrokenRuleMessages() {
         return null;
+    }
+}
+```
+#### 支持自定以业务规则类传入的实体定义
+
+```java
+import easy.domain.base.ICustomValidate;
+
+class Order extends EntityBase<Long> implements ICustomValidate<Order>{
+
+    // 无法动态传入验证规则类的验证方法
+    @Override
+    public Boolean validate() {
+        return new OrderEntityRule().isSatisfy(this);
+    }
+
+    @Override
+    protected BrokenRuleMessage getBrokenRuleMessages() {
+        return new OrderBrokenRuleMessages();
+    }
+    // 支持自定义传入验证规则类的方法
+    @Override
+    public Boolean validate(EntityRule<Order> rule) {
+        return  rule.isSatisfy(this);
     }
 }
 ```
@@ -99,6 +123,7 @@ class Order extends ConcurrentEntityBase<Long> {
    方法用于定义异常业务规则描述信息
 3. ConcurrentEntityBase&lt;T>类继承自EntityBase&lt;T>
    ,多出用于进行并发控制的版本号version和oldVersion字段，version是实体对象本次状态变更的最新版本号，oldVersion是实体对象最后一次变更的版本号，最终实现并发控制还需要数据库乐观锁能力一起配合。
+4. 
 
 ## 实体业务规则
 
