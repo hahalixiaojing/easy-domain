@@ -1,4 +1,4 @@
-# 领域驱动开发实用库
+#  领域驱动开发建模核心库
 
 [![star](https://gitee.com/lixiaojing/easy-domain/badge/star.svg?theme=white)](https://gitee.com/lixiaojing/easy-domain/stargazers)
 
