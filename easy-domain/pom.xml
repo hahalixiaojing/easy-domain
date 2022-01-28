@@ -4,7 +4,10 @@
     <groupId>easy.ddd.domain</groupId>
     <artifactId>easy-domain</artifactId>
     <version>1.3</version>
-    <description>DDD design basic library</description>
+    <description>
+        DDD design basic library
+        领域驱动设计建模库
+    </description>
     <developers>
         <developer>
             <name>LiXiaoJing</name>
