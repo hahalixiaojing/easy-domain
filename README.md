@@ -28,6 +28,17 @@
 </profiles>
 ```
 
+最新版本
+```xml
+
+<dependency>
+    <groupId>easy.ddd.domain</groupId>
+    <artifactId>easy-domain</artifactId>
+    <version>1.3</version>
+</dependency>
+```
+
+历史版本
 ```xml
 
 <dependency>
@@ -638,6 +649,17 @@ WHERE order_id = #{order.id}
 
 编辑您的 pom.xml 文件
 
+最新版本
+```xml
+<dependency>
+    <groupId>easy-domain</groupId>
+    <artifactId>easy-domainevent-rocketmq</artifactId>
+    <version>1.1</version>
+</dependency>
+
+
+```
+历史版本
 ```xml
 
 <dependency>
@@ -645,6 +667,7 @@ WHERE order_id = #{order.id}
     <artifactId>easy-domainevent-rocketmq</artifactId>
     <version>1.0</version>
 </dependency>
+
 ```
 
 ## 使用方法
@@ -677,9 +700,7 @@ public abstract class BaseApplication implements IApplication {
 }
 ```
 
-2.
-
-使用RocketMQ领域事件发布订阅组件需要实例化RocketMqDomainEventManager类。该类接受三个参数分别是IProducerCreator、IConsumerCreator、environmentName。以下代码 1
+2. 使用RocketMQ领域事件发布订阅组件需要实例化RocketMqDomainEventManager类。该类接受三个参数分别是IProducerCreator、IConsumerCreator、environmentName。以下代码 1
 处
 
 ```java
@@ -753,7 +774,7 @@ private void initSubscriber(){
 
 ```
 
-6. 1.3版本新增功能，按特定的依赖关系执行订阅，若一个订阅的执行必须在另一个订阅执行之后才能执行，可以为该订阅指定依赖的订阅名称,在下面的例子中，test1 的执行依赖test2的执行完成，若test2不能成功之行，则test1也不会执行。
+6. 1.1版本新增功能，按特定的依赖关系执行订阅，若一个订阅的执行必须在另一个订阅执行之后才能执行，可以为该订阅指定依赖的订阅名称,在下面的例子中，test1 的执行依赖test2的执行完成，若test2不能成功之行，则test1也不会执行。
 
     * 如果一个订阅没有达到执行的条件，那么依赖该订阅的订阅也不会执行。
     * 在配置依赖时，要必免出现 循环依赖，如test1,依赖 test2，test2依赖test1,这样会导致订阅不会被执行

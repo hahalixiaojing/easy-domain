@@ -29,7 +29,17 @@
     </profile>
 </profiles>
 ```
+最新版本
+```xml
 
+<dependency>
+    <groupId>easy.ddd.domain</groupId>
+    <artifactId>easy-domain</artifactId>
+    <version>1.3</version>
+</dependency>
+```
+
+历史版本
 ```xml
 
 <dependency>
