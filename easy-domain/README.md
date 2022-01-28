@@ -467,6 +467,8 @@ class OrderApplicationService extends BaseApplication {
    方法，返回true表示订阅可以执行，false表示订阅不执行，IExecuteCondition 是个泛型接口，T 是对应的领域事件类型。
 7. 事件订阅的执行在之前的版本中都是随机乱序执行的，1.3版本支持按依赖顺序进行执行，例如代码7处，sendMessage 订阅，将在writeCache订阅之后之后执行
 
+8. 单元测试代码
+   ThreadPoolTaskDomainEventManagerTest 包括了所有执行场景
 ## 基础设施层
 
 在领域驱动设计中，基础设施层提供具体技术上的支撑，实体对象数据的数据库持久化，面向查询的数据持久化（ES）、面向缓存的数据刷新（Redis）、外部系统远程接口调用以及发布供外部系统处理的消息等。 基础设施层主要有以下几个特点

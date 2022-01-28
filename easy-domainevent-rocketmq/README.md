@@ -192,3 +192,6 @@ public class ShareDomainEvent extends BaseDomainEvent {
 * 指定@EventName注解，value值必须设置，设置value后，value的值是RocketMQ对应的Topic。
 * shareTopicName 是可选项，该值用于多个事件共用一个RocketMQ的Topic,可以在多个领域事件类中指定相同shareTopicName值。
 * 领域事件是一个业务上的概念，它是由领域实体状态变化产生的，对领域事件的命名上应更多的体现业务含义。领域事件和领域实体紧密相连，领域事件类应和领域实体类放在相同模块或包里。
+
+8. 单元测试代码
+RocketMqDomainEventOrderedManagerTest 包括了所有执行场景
