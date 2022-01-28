@@ -30,7 +30,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
@@ -65,16 +65,17 @@ public class ThreadPoolTaskDomainEventManagerTest {
     /**
      * 验证执行指定的订阅，但只是指行当前指定的，不执行依赖的
      * 执行 sub2
+     *
      * @throws InterruptedException
      */
     @Test
     public void publishEventOneOnlyTest() throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(2);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
@@ -103,7 +104,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         countDownLatch.await();
 
-        Assert.assertEquals(2, atomicInteger.get());
+        Assert.assertEquals(1, atomicInteger.get());
     }
 
     /**
@@ -118,7 +119,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
@@ -244,6 +245,37 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
     }
 
+    @Test
+    public void orderExecuteWithConditionTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
+
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
+
+        manager.registerDomainEvent(TestDomainEvent.class);
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+                    countDownLatch.countDown();
+                    System.out.println("sub1");
+                }), "sub1", "sub2"
+        );
+
+        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+                    countDownLatch.countDown();
+                    System.out.println("sub2");
+                }), "sub2", (IExecuteCondition<TestDomainEvent>) evt -> evt.getBusinessId().equals("100")
+        );
+        //发布事件 name=100 执行 sub2 ,sub1
+        manager.publishEvent(new TestDomainEvent("100"));
+        //发布事件 name=200 不执行 sub2 和 sub1
+        manager.publishEvent(new TestDomainEvent("200"));
+
+        Thread.sleep(5000);
+
+        Assert.assertEquals(0L, countDownLatch.getCount());
+
+    }
+
     /**
      * 验证订阅执行重试 输出 1 1 1 1
      *
@@ -259,7 +291,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
 
         //最大重试次数，不算首次调用
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200);
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {

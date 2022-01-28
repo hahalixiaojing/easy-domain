@@ -33,20 +33,14 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     private final int initThreadCount;
 
     public ThreadPoolTaskDomainEventManager() {
-
-        this(60, 3, 1500);
-        this.performManager = null;
+        this(60, 3, 1500, new DefaultOrderedPerformManager());
     }
 
-    public ThreadPoolTaskDomainEventManager(IOrderedPerformManager iOrderedPerformManager) {
-        this();
-        this.performManager = iOrderedPerformManager;
-    }
-
-    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime) {
+    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime, IOrderedPerformManager iOrderedPerformManager) {
         this.initThreadCount = initThreadCount;
         this.maxRetryTimes = maxRetryTimes;
         this.retryDelayTime = retryDelayTime;
+        this.performManager = iOrderedPerformManager;
 
         ThreadFactory threadFactory = this.createThreadFactory();
 
@@ -54,12 +48,10 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
             ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(5, threadFactory);
             this.taskTheadMap.put(i, threadPoolExecutor);
         }
-        this.performManager = null;
     }
 
-    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime, IOrderedPerformManager iOrderedPerformManager) {
-        this(initThreadCount, maxRetryTimes, retryDelayTime);
-        this.performManager = iOrderedPerformManager;
+    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime) {
+        this(initThreadCount, maxRetryTimes, retryDelayTime,new DefaultOrderedPerformManager());
     }
 
     private ThreadFactory createThreadFactory() {
@@ -83,7 +75,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
         String domainEventName = domainEventType.getName();
         this.subscribersMap.computeIfAbsent(domainEventName, s -> new ArrayList<>());
-        this.domainEventAndThreadMap.computeIfAbsent(domainEventName,s-> RandomUtils.nextInt(0, this.initThreadCount));
+        this.domainEventAndThreadMap.computeIfAbsent(domainEventName, s -> RandomUtils.nextInt(0, this.initThreadCount));
     }
 
     @Override

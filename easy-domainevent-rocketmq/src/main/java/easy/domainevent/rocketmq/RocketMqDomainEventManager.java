@@ -16,8 +16,6 @@ import org.apache.rocketmq.common.message.MessageExt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -39,10 +37,10 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     private final Map<String, Map<String, SubscriberInfo>> subscribers = new HashMap<>();
     private final IExecuteCondition condition = new DefaultExecuteCondition();
 
-    private IOrderedPerformManager performManager;
+    private final IOrderedPerformManager performManager;
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
-        this(producerCreator, consumerCreator, environmentName, null);
+        this(producerCreator, consumerCreator, environmentName, new DefaultOrderedPerformManager());
     }
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName, IOrderedPerformManager performManager) {
@@ -134,8 +132,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
 
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
-        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
-        this.registerSubscriber(subscriber, event.eventName, alias, condition);
+        this.registerSubscriber(subscriber, alias, condition,"");
     }
 
     @Override

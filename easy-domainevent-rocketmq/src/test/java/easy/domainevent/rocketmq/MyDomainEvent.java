@@ -13,9 +13,9 @@ public class MyDomainEvent extends BaseDomainEvent {
     public MyDomainEvent() {
     }
 
-    public MyDomainEvent(String id) {
-        this.setBusinessId(id);
-        this.name = id;
+    public MyDomainEvent(String name) {
+        this.setBusinessId(name);
+        this.name = name;
     }
 
     public String name;
