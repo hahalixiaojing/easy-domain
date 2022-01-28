@@ -77,12 +77,30 @@ class Order extends EntityBase<Long> {
     }
 }
 ```
+
+
+#### 具有并发能力（乐观锁）的实体对象定义
+
+```java
+class Order extends ConcurrentEntityBase<Long> {
+
+    @Override
+    public Boolean validate() {
+        return null;
+    }
+
+    public BrokenRuleMessage getBrokenRuleMessages() {
+        return null;
+    }
+}
+```
+
 #### 支持自定以业务规则类传入的实体定义
 
 ```java
-import easy.domain.base.ICustomValidate;
+import easy.domain.base.ICustomValidator;
 
-class Order extends EntityBase<Long> implements ICustomValidate<Order>{
+class Order extends EntityBase<Long> implements ICustomValidator<Order>{
 
     // 无法动态传入验证规则类的验证方法
     @Override
@@ -102,28 +120,12 @@ class Order extends EntityBase<Long> implements ICustomValidate<Order>{
 }
 ```
 
-#### 具有并发能力（乐观锁）的实体对象定义
-
-```java
-class Order extends ConcurrentEntityBase<Long> {
-
-    @Override
-    public Boolean validate() {
-        return null;
-    }
-
-    public BrokenRuleMessage getBrokenRuleMessages() {
-        return null;
-    }
-}
-```
-
 1. 实体类型定义继承自 EntityBase&lt;T> 或 ConcurrentEntityBase&lt;T>，泛型 T 表示实体类唯一业务标识类型，可以是基础类型、也可以是复杂类型
 2. 继承EntityBase的实体类，需要实现 validate() 和 getBrokenRuleMessages() 抽象方法，validate()方法用于对实体对象进行业务规则验证、getBrokenRuleMessages()
    方法用于定义异常业务规则描述信息
 3. ConcurrentEntityBase&lt;T>类继承自EntityBase&lt;T>
    ,多出用于进行并发控制的版本号version和oldVersion字段，version是实体对象本次状态变更的最新版本号，oldVersion是实体对象最后一次变更的版本号，最终实现并发控制还需要数据库乐观锁能力一起配合。
-4. 
+4. 1.3版本新增ICustomValidator验证接口，用于当实体规则类需要从外部传入的情况。
 
 ## 实体业务规则
 
@@ -225,8 +227,9 @@ class Order extends EntityBase<Long> {
 
 1. 实体业务规则验证，需要和实体配合一块使用，以实体为中心展开验证，一般一个实体只对应一个实体业务规则EntityRule
 2. 在实体类中重写validate()方法，如以上示例中 1.1显示，也可以自行写一个validate()的重载，以便实现更加灵活的EntityRule类管理。
+3. 实体也可以实现ICustomValidator接口，以便能够动态传入EntityRule验证规则类。
 
-3. 在实体类中，还需要重写getBrokenRuleMessages(),直接返回实体业务规则异常描述类的一个实例，如以上的
+4. 在实体类中，还需要重写getBrokenRuleMessages(),直接返回实体业务规则异常描述类的一个实例，如以上的
    2.2，一般情况下，实体业务规则异常描述类，是线程安全的，因此，也可以定义单例模式，在getBrokenRuleMessages()方法中返回单例对象。
 
 ```java
@@ -379,6 +382,11 @@ class OrderApplicationService extends BaseApplication {
    并在代码7处，发布订单已经支付的领域事件。如果订单验证不通过，则在代码8处，抛出业务规则异常。
 
 ### 领域事件订阅实现
+
+一个事件会对应一个或多个对该事件的订阅（类似观察都模式），绝大多数情况下，每一个订阅都是一个独立业务操作单元，相互之间没有数据依赖和执行先后顺序的要求。
+
+个别场景下,如果一个订阅的执行需要依赖另一个订阅的执行完成，在1.3的版本中，增加了这种情况的支持。
+
 
 ```java
 class OrderApplicationService extends BaseApplication {

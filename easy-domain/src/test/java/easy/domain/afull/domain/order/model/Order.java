@@ -4,7 +4,7 @@ import easy.domain.afull.domain.order.event.OrderCreatedEvent;
 import easy.domain.afull.domain.order.event.OrderPayedEvent;
 import easy.domain.base.BrokenRuleMessage;
 import easy.domain.base.EntityBase;
-import easy.domain.base.ICustomValidate;
+import easy.domain.base.ICustomValidator;
 import easy.domain.rules.EntityRule;
 
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author lixiaojing
  * @date 2021/3/1 5:26 下午
  */
-public class Order extends EntityBase<Long> implements ICustomValidate<Order> {
+public class Order extends EntityBase<Long> implements ICustomValidator<Order> {
 
     private final BigDecimal totalPrice;
     private final String comment;
@@ -25,7 +25,7 @@ public class Order extends EntityBase<Long> implements ICustomValidate<Order> {
     private final LocalDateTime created;
 
 
-    public Order(long orderId,BigDecimal totalPrice, String comment, String pin, List<OrderItem> orderItemList) {
+    public Order(long orderId, BigDecimal totalPrice, String comment, String pin, List<OrderItem> orderItemList) {
         this.setId(orderId);
         this.totalPrice = totalPrice;
         this.comment = comment;

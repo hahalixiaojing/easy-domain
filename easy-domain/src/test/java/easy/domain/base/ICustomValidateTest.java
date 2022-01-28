@@ -23,7 +23,7 @@ public class ICustomValidateTest {
 }
 
 
-class DemoData extends EntityBase<Long> implements ICustomValidate<DemoData> {
+class DemoData extends EntityBase<Long> implements ICustomValidator<DemoData> {
 
     public String getName() {
         return name;
