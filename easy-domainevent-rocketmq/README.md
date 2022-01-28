@@ -38,6 +38,7 @@
     </profile>
 </profiles>
 ```
+
 编辑您的 pom.xml 文件
 
 ```xml
@@ -80,6 +81,7 @@ public abstract class BaseApplication implements IApplication {
 ```
 
 2.
+
 使用RocketMQ领域事件发布订阅组件需要实例化RocketMqDomainEventManager类。该类接受三个参数分别是IProducerCreator、IConsumerCreator、environmentName。以下代码 1
 处
 
@@ -109,7 +111,6 @@ private void initSubscriber(){
         this.registerDomainEvent(MyDomainEvent.class);
 
         this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
-        this.countDownLatch.countDown();
 
         System.out.println("执行相应的操作");
 
@@ -117,18 +118,67 @@ private void initSubscriber(){
         }
 ```
 
-4. 事件的订阅可以使用RocketmqSubscriberFactory类来创建，该类实现了ISubscriberFactory接口
+4. 事件的订阅可以使用RocketmqSubscriberFactory类来创建，该类实现了ISubscriberFactory接口，一个事件可以有一个或多个事件订阅，下例中，对事件MyDomainEvent 有两个订阅分别是 test1
+   ,test2
 
 ```java
         RocketmqSubscriberFactory factory=new RocketmqSubscriberFactory();
         this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
-        this.countDownLatch.countDown();
+
         System.out.println("执行相应的操作");
+
         }),"test1");
+
+        this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
+
+        System.out.println("执行相应的操作");
+
+        }),"test2");
 
 ```
 
-5. 定义领域事件类
+5. 默认情况下，一个事件发布以后，所有对该事件的订阅都会触发执行，若需要订阅在满足特定条件下才可以执行，可以通过参数IExecuteCondition进行设置。在下面的代码中，订阅test1只在满足 name == 100
+   的情况才会执行，而test2,则一直都会执行
+
+```java
+        RocketmqSubscriberFactory factory=new RocketmqSubscriberFactory();
+        this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
+
+        System.out.println("执行相应的操作");
+
+        }),"test1",(IExecuteCondition<MyDomainEvent>)evt->evt.name.equals("100"));
+
+        this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
+
+        System.out.println("执行相应的操作");
+
+        }),"test2");
+
+```
+
+6. 1.3版本新增功能，按特定的依赖关系执行订阅，若一个订阅的执行必须在另一个订阅执行之后才能执行，可以为该订阅指定依赖的订阅名称,在下面的例子中，test1 的执行依赖test2的执行完成，若test2不能成功之行，则test1也不会执行。
+
+   * 如果一个订阅没有达到执行的条件，那么依赖该订阅的订阅也不会执行。
+   * 在配置依赖时，要必免出现 循环依赖，如test1,依赖 test2，test2依赖test1,这样会导致订阅不会被执行
+
+```java
+        RocketmqSubscriberFactory factory=new RocketmqSubscriberFactory();
+        this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
+
+        System.out.println("执行相应的操作");
+
+        }),"test1","test2");
+
+        this.registerSubscriber(factory.build(MyDomainEvent.class,s->{
+
+        System.out.println("执行相应的操作");
+
+        }),"test2");
+
+```
+
+
+7. 定义领域事件类
 
 ```java
 
