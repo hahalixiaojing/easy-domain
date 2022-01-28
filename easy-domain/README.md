@@ -421,6 +421,29 @@ class OrderApplicationService extends BaseApplication {
                 //调用通知库房准备生产服务领域事件对上的注解
             }
         }, "noticeWarehouse");
+        
+        this.registerSubscriber(new IDomainEventSubscriber<OrderPayedEvent>(){
+            @Override
+            public Class<OrderPayedEvent> subscribedToEventType() {
+                return OrderPayedEvent.class;
+            }
+
+            @Override
+            public void handleEvent(OrderPayedEvent aDomainEvent) {
+                //写缓存
+            }
+        },"writeCache");
+        this.registerSubscriber(new IDomainEventSubscriber<OrderPayedEvent>(){
+            @Override
+            public Class<OrderPayedEvent> subscribedToEventType() {
+                return OrderPayedEvent.class;
+            }
+
+            @Override
+            public void handleEvent(OrderPayedEvent aDomainEvent) {
+                //对外发送消息
+            }
+        },"sendMessage","writeCache");//7
     }
 }
 ```
@@ -434,6 +457,7 @@ class OrderApplicationService extends BaseApplication {
    ，第二个参数是订阅的唯一名字，在同一个事件下，订阅名字不能重复。
 6. registerSubscriber()方法，还有一个三个参数的重载，第三个参数IExecuteCondition接口的实现，这个参数用于判断是否可以执行，这个接口需要实现isExecute()
    方法，返回true表示订阅可以执行，false表示订阅不执行，IExecuteCondition 是个泛型接口，T 是对应的领域事件类型。
+7. 事件订阅的执行在之前的版本中都是随机乱序执行的，1.3版本支持按依赖顺序进行执行，例如代码7处，sendMessage 订阅，将在writeCache订阅之后之后执行
 
 ## 基础设施层
 
