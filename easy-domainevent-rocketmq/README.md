@@ -46,7 +46,7 @@
 <dependency>
     <groupId>easy-domain</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 
 
@@ -168,7 +168,7 @@ private void initSubscriber(){
 
 ```
 
-6. 1.1版本新增功能，按特定的依赖关系执行订阅，若一个订阅的执行必须在另一个订阅执行之后才能执行，可以为该订阅指定依赖的订阅名称,在下面的例子中，test1 的执行依赖test2的执行完成，若test2不能成功之行，则test1也不会执行。
+6. 1.2版本新增功能，按特定的依赖关系执行订阅，若一个订阅的执行必须在另一个订阅执行之后才能执行，可以为该订阅指定依赖的订阅名称,在下面的例子中，test1 的执行依赖test2的执行完成，若test2不能成功之行，则test1也不会执行。
 
    * 如果一个订阅没有达到执行的条件，那么依赖该订阅的订阅也不会执行。
    * 在配置依赖时，要必免出现 循环依赖，如test1,依赖 test2，test2依赖test1,这样会导致订阅不会被执行
