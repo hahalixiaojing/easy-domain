@@ -30,7 +30,7 @@ public class RocketMqDomainEventManagerTest {
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "");
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "");
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
@@ -68,7 +68,7 @@ public class RocketMqDomainEventManagerTest {
 
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "");
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "");
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅
@@ -108,7 +108,7 @@ public class RocketMqDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "prod");
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
@@ -144,7 +144,7 @@ public class RocketMqDomainEventManagerTest {
     @Test
     public void retryTest() throws InterruptedException {
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);

@@ -18,7 +18,7 @@ public class MyApplicationTest {
     private final RocketMqDomainEventManager rocketMqDomainEventManager;
 
     public MyApplicationTest() {
-        this.rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), "prod");
+        this.rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "prod");
 
     }
 

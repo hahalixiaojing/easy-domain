@@ -7,5 +7,5 @@ import org.apache.rocketmq.client.consumer.MQPushConsumer;
  * @date 2021/3/16 8:18 下午
  */
 public interface IConsumerCreator {
-    MQPushConsumer create();
+    MQPushConsumer create(String consumerGroupName);
 }

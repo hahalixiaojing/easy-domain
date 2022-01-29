@@ -8,5 +8,6 @@ import org.apache.rocketmq.client.producer.MQProducer;
  */
 public interface IProducerCreator {
 
-    MQProducer create();
+    MQProducer create(String producerGroupName);
+
 }

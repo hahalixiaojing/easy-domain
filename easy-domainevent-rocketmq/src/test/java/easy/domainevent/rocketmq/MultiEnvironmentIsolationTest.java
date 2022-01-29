@@ -28,7 +28,7 @@ public class MultiEnvironmentIsolationTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876", "QQ"), new ConsumerCreator("localhost:9876", "QQ"), environmentName);
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), environmentName);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
         rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
