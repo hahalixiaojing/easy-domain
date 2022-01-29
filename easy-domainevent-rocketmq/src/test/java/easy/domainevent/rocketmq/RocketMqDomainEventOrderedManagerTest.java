@@ -47,7 +47,6 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         //需要等待mq 更新消费位点
         Thread.sleep(30000);
-
         Assert.assertEquals(0L, countDownLatch.getCount());
     }
 
