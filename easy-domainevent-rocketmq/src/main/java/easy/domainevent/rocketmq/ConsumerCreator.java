@@ -1,5 +1,6 @@
 package easy.domainevent.rocketmq;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.MQPushConsumer;
 
@@ -10,17 +11,25 @@ import org.apache.rocketmq.client.consumer.MQPushConsumer;
 public class ConsumerCreator implements IConsumerCreator {
 
     private final String nameServer;
-    private final String group;
+    private final String consumerGroup;
+    private final String instanceName;
 
-    public ConsumerCreator(String nameServer, String group) {
+    public ConsumerCreator(String nameServer, String consumerGroup) {
+        this(nameServer, consumerGroup, "");
+    }
+
+    public ConsumerCreator(String nameServer, String consumerGroup, String instanceName) {
         this.nameServer = nameServer;
-        this.group = group;
+        this.consumerGroup = consumerGroup;
+        this.instanceName = instanceName;
     }
 
     @Override
     public MQPushConsumer create() {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(this.group);
-        consumer.setInstanceName("domainEvent" + System.nanoTime());
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(this.consumerGroup);
+        if (StringUtils.isNotEmpty(this.instanceName)) {
+            consumer.setInstanceName(this.instanceName);
+        }
         consumer.setNamesrvAddr(this.nameServer);
         return consumer;
     }

@@ -1,5 +1,6 @@
 package easy.domainevent.rocketmq;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.MQProducer;
 
@@ -10,17 +11,26 @@ import org.apache.rocketmq.client.producer.MQProducer;
 public class ProducerCreator implements IProducerCreator {
 
     private final String nameServer;
-    private final String group;
+    private final String producerGroup;
+    private final String instanceName;
 
-    public ProducerCreator(String nameServer, String group) {
+    public ProducerCreator(String nameServer, String producerGroup) {
+        this(nameServer, producerGroup, "");
+    }
+
+    public ProducerCreator(String nameServer, String producerGroup, String instanceName) {
         this.nameServer = nameServer;
-        this.group = group;
+        this.producerGroup = producerGroup;
+        this.instanceName = instanceName;
     }
 
     @Override
     public MQProducer create() {
-        DefaultMQProducer defaultMQProducer = new DefaultMQProducer(this.group);
+        DefaultMQProducer defaultMQProducer = new DefaultMQProducer(this.producerGroup);
         defaultMQProducer.setNamesrvAddr(this.nameServer);
+        if (StringUtils.isNotEmpty(instanceName)) {
+            defaultMQProducer.setInstanceName(instanceName);
+        }
         try {
             defaultMQProducer.start();
         } catch (Exception ex) {
