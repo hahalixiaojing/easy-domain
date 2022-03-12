@@ -22,7 +22,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     private final ConcurrentHashMap<Integer, ScheduledThreadPoolExecutor> taskTheadMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Integer> domainEventAndThreadMap = new ConcurrentHashMap<>();
 
-    private IOrderedPerformManager performManager;
+    private final IOrderedPerformManager performManager;
     /**
      * 订阅默认执行条件
      */
