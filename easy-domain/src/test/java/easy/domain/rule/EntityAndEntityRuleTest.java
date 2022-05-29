@@ -3,6 +3,7 @@ package easy.domain.rule;
 import easy.domain.base.BrokenRuleMessage;
 import easy.domain.base.EntityBase;
 import easy.domain.rules.EntityRule;
+import easy.domain.rules.IRule;
 import easy.domain.rules.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,6 +46,24 @@ public class EntityAndEntityRuleTest {
         Assert.assertFalse(data.validate());
         Assert.assertEquals(1, data.getBrokenRules().size());
         Assert.assertEquals("张三这个名字已经使用", data.getBrokenRules().get(0).getDescription());
+
+
+    }
+
+    @Test
+    public void oneRuleTest(){
+        Data data = new Data();
+
+        DataEntityRule dataEntityRule = new DataEntityRule();
+        IRule<Data> clsRule = dataEntityRule.findRuleByMessageKey(DataBrokenRuleMessage.PRICE_ZERO_ERROR);
+
+        boolean satisfy = clsRule.isSatisfy(data);
+        Assert.assertFalse(satisfy);
+
+        IRule<Data> propertyRule = dataEntityRule.findRuleByMessageKey(DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+
+        boolean satisfy1 = propertyRule.isSatisfy(data);
+        Assert.assertFalse(satisfy1);
 
 
     }

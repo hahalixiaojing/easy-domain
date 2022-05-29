@@ -19,6 +19,19 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
         this.classRules = new ArrayList<>();
     }
 
+    public IRule<T> findRuleByMessageKey(String messageKey) {
+        return rules.values().stream().flatMap(List::stream)
+                .filter(r -> r.getMessageKey().equals(messageKey))
+                .findFirst().map(RuleItem::getRule).orElseGet(
+
+                        () -> classRules.stream()
+                                .filter(clsR -> clsR.getMessageKey().equals(messageKey))
+                                .findFirst()
+                                .map(RuleItem::getRule)
+                                .orElse(null)
+                );
+    }
+
     /**
      * 是否为null和空字符或空白字符串
      *
