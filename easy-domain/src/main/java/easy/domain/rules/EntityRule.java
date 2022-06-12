@@ -2,9 +2,7 @@ package easy.domain.rules;
 
 import easy.domain.base.BrokenRuleObject;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +28,38 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
                                 .map(RuleItem::getRule)
                                 .orElse(null)
                 );
+    }
+
+    public List<IRule<T>> findRulesByMessageKey(String... messageKeys) {
+        //todo
+        return new ArrayList<>();
+    }
+
+    public boolean replace() {
+        //todo
+        return false;
+    }
+
+    public boolean appendAfter() {
+        //todo
+        return false;
+    }
+
+    public boolean append() {
+        //todo
+        return false;
+    }
+
+    public void removeRule(String messageKey) {
+        rules.forEach((k, v) -> v.stream()
+                .filter(r -> r.getMessageKey().equals(messageKey))
+                .findFirst()
+                .ifPresent(v::remove)
+        );
+
+        classRules.stream().filter(r -> r.getMessageKey().equals(messageKey))
+                .findFirst()
+                .ifPresent(classRules::remove);
     }
 
     /**

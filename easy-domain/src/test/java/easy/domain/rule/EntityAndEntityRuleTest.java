@@ -1,7 +1,6 @@
 package easy.domain.rule;
 
-import easy.domain.base.BrokenRuleMessage;
-import easy.domain.base.EntityBase;
+import easy.domain.base.*;
 import easy.domain.rules.EntityRule;
 import easy.domain.rules.IRule;
 import easy.domain.rules.Pair;
@@ -67,6 +66,40 @@ public class EntityAndEntityRuleTest {
 
 
     }
+    @Test
+    public void removeTest(){
+        DataEntityRule dataEntityRule = new DataEntityRule();
+
+        Data data = new Data();
+        data.setPrice(2.0);
+
+        //移除之前规则
+        boolean satisfy = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy);
+
+        BrokenRule brokenRule = data.getBrokenRules().get(0);
+        Assert.assertEquals(brokenRule.getName(),DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+
+        data.clearBrokenRules();
+
+        //移除之后规则
+        dataEntityRule.removeRule(DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+        boolean satisfy1 = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy1);
+
+        data.setPrice(0.0);
+
+        data.clearBrokenRules();
+
+        boolean satisfy2 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy2);
+
+        data.clearBrokenRules();
+
+        dataEntityRule.removeRule(DataBrokenRuleMessage.PRICE_ZERO_ERROR);
+        boolean satisfy3 = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy3);
+    }
 
 
     static class DataEntityRule extends EntityRule<Data> {
@@ -78,7 +111,8 @@ public class EntityAndEntityRuleTest {
             //在特定条件下，参与验证
             this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "", model -> model.getStatus() == 1);
             //带参数的方式验证
-            this.addParamRule(model -> new Pair(false, new Object[]{model.getName()}), DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+            this.addParamRule(model -> new Pair(false, new Object[]{model.getName()}),
+                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
         }
     }
 
