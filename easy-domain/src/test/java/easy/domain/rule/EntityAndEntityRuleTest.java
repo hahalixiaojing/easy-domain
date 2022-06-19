@@ -223,5 +223,8 @@ public class EntityAndEntityRuleTest {
         public void setStatus(int status) {
             this.status = status;
         }
+
+        public void Update(){
+        }
     }
 }
