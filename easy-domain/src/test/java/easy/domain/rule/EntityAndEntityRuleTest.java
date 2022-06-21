@@ -1,9 +1,7 @@
 package easy.domain.rule;
 
 import easy.domain.base.*;
-import easy.domain.rules.EntityRule;
-import easy.domain.rules.IRule;
-import easy.domain.rules.Pair;
+import easy.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,6 +20,10 @@ public class EntityAndEntityRuleTest {
 
         EntityRule<Data> dataEntityRule = new DataEntityRule();
         Assert.assertFalse(dataEntityRule.isSatisfy(data));
+
+        BrokenRuleException brokenRuleException = data.exceptionCause();
+
+        Assert.assertEquals(brokenRuleException.getEntityInfo(),data.getId().toString());
 
     }
 
@@ -50,7 +52,7 @@ public class EntityAndEntityRuleTest {
     }
 
     @Test
-    public void oneRuleTest(){
+    public void oneRuleTest() {
         Data data = new Data();
 
         DataEntityRule dataEntityRule = new DataEntityRule();
@@ -66,8 +68,9 @@ public class EntityAndEntityRuleTest {
 
 
     }
+
     @Test
-    public void removeTest(){
+    public void removeTest() {
         DataEntityRule dataEntityRule = new DataEntityRule();
 
         Data data = new Data();
@@ -78,7 +81,7 @@ public class EntityAndEntityRuleTest {
         Assert.assertFalse(satisfy);
 
         BrokenRule brokenRule = data.getBrokenRules().get(0);
-        Assert.assertEquals(brokenRule.getName(),DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+        Assert.assertEquals(brokenRule.getName(), DataBrokenRuleMessage.NAME_EMPTY_ERROR);
 
         data.clearBrokenRules();
 
@@ -165,6 +168,9 @@ public class EntityAndEntityRuleTest {
 
         private DataExtension dataExtension;
 
+        public Data() {
+            this.setId(10000L);
+        }
 
         public Boolean getBoolInfo() {
             return boolInfo != null && boolInfo;
@@ -224,7 +230,7 @@ public class EntityAndEntityRuleTest {
             this.status = status;
         }
 
-        public void Update(){
+        public void Update() {
         }
     }
 }

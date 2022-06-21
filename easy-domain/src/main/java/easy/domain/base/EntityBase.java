@@ -3,7 +3,7 @@ package easy.domain.base;
 
 import easy.domain.event.BaseDomainEvent;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class EntityBase<T> extends BrokenRuleObject implements
         IEntity<T>, IEntityAction {
@@ -17,6 +17,11 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
     protected abstract BrokenRuleMessage getBrokenRuleMessages();
 
 
+    @Override
+    protected String takeEntityInfo() {
+        return Optional.ofNullable(this.getId()).map(Objects::toString).orElse("");
+    }
+
     protected final DomainEventCollector eventCollector = new DomainEventCollector();
     protected final EntityActionCollector actionCollector = new EntityActionCollector(this.entityActions());
 
@@ -29,7 +34,7 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
         this.id = id;
     }
 
-    public EntityActionCollector allActions(){
+    public EntityActionCollector allActions() {
         return this.actionCollector;
     }
 
