@@ -23,7 +23,7 @@ public class EntityAndEntityRuleTest {
 
         BrokenRuleException brokenRuleException = data.exceptionCause();
 
-        Assert.assertEquals(brokenRuleException.getEntityInfo(),data.getId().toString());
+        Assert.assertEquals(brokenRuleException.getEntityInfo(), data.getId().toString());
 
     }
 
@@ -70,6 +70,26 @@ public class EntityAndEntityRuleTest {
     }
 
     @Test
+    public void replaceRuleTest() {
+        DataEntityRule dataEntityRule = new DataEntityRule();
+        Data data = new Data();
+        data.setName("12");
+        data.setPrice(2.0);
+
+        boolean satisfy = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy);
+
+        dataEntityRule.replaceRule("price", s -> {
+            return s.getPrice().equals(3.0);
+        }, DataBrokenRuleMessage.price_equal_error, "¬");
+
+        data.clearBrokenRules();
+
+        boolean satisfy1 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy1);
+    }
+
+    @Test
     public void removeTest() {
         DataEntityRule dataEntityRule = new DataEntityRule();
 
@@ -111,10 +131,13 @@ public class EntityAndEntityRuleTest {
             this.isBlank("name", DataBrokenRuleMessage.NAME_EMPTY_ERROR, "");
             //自定以验证
             this.addRule(model -> model.getPrice() > 0, DataBrokenRuleMessage.PRICE_ZERO_ERROR, "");
+
+            this.numberShouldEqual("price", 2.0, DataBrokenRuleMessage.price_equal_error, "");
+
             //在特定条件下，参与验证
             this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "", model -> model.getStatus() == 1);
             //带参数的方式验证
-            this.addParamRule(model -> new Pair(false, new Object[]{model.getName()}),
+            this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
                     DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
         }
     }
@@ -124,6 +147,7 @@ public class EntityAndEntityRuleTest {
         public static final String NAME_EMPTY_ERROR = "NAME_EMPTY_ERROR";
         public static final String NAME_USED_ERROR = "NAME_USED_ERROR";
         public static final String PRICE_ZERO_ERROR = "PRICE_ZERO_ERROR";
+        public static final String price_equal_error = "price_equal_error";
         public static final String BOOLEAN_INFO_ERROR = "BOOLEAN_INFO_ERROR";
 
         @Override
@@ -134,6 +158,7 @@ public class EntityAndEntityRuleTest {
             this.getMessages().put(NAME_USED_ERROR, "%s这个名字已经使用");
             this.getMessages().put(PRICE_ZERO_ERROR, "价格不能是0");
             this.getMessages().put(BOOLEAN_INFO_ERROR, "must be TRUE");
+            this.getMessages().put(price_equal_error, "price_equal_error");
 
         }
     }

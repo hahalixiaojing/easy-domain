@@ -35,19 +35,31 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
         return new ArrayList<>();
     }
 
-    public boolean replace() {
-        //todo
-        return false;
+    public void replaceRule(String property, IRule<T> rule, String messageKey, String alias,
+                            IActiveRuleCondition<T> condition) {
+
+        List<RuleItem<T>> ruleItems = this.rules.get(property);
+        if (ruleItems == null) {
+            return;
+        }
+        for (int i = 0; i < ruleItems.size(); i++) {
+            if (ruleItems.get(0).getMessageKey().equals(messageKey)) {
+                ruleItems.set(i, new RuleItem<T>(rule, messageKey, alias, condition));
+                break;
+            }
+        }
     }
 
-    public boolean appendAfter() {
-        //todo
-        return false;
+    public void replaceRule(String property, IRule<T> rule, String messageKey, String alias) {
+        this.replaceRule(property, rule, messageKey, alias, defaultCondition);
     }
 
-    public boolean append() {
-        //todo
-        return false;
+    public void replaceRule(IRule<T> rule, String messageKey, String alias) {
+
+    }
+
+    public void replaceRule(IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
+
     }
 
     public void removeRule(String messageKey) {
