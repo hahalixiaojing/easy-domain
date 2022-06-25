@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
+public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBuild {
 
     private final ConcurrentHashMap<String, List<RuleItem<T>>> rules;
     private final List<RuleItem<T>> classRules;
@@ -15,7 +15,9 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
     public EntityRule() {
         this.rules = new ConcurrentHashMap<>();
         this.classRules = new ArrayList<>();
+        this.init();
     }
+
 
     public IRule<T> findRuleByMessageKey(String messageKey) {
         return rules.values().stream().flatMap(List::stream)
@@ -35,7 +37,8 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
         return new ArrayList<>();
     }
 
-    public void replaceRule(String property, IRule<T> rule, String messageKey, String alias,
+    public void replaceRule(String property, IRule<T> rule, String replaceMessageKey, String newMessageKey,
+                            String alias,
                             IActiveRuleCondition<T> condition) {
 
         List<RuleItem<T>> ruleItems = this.rules.get(property);
@@ -43,23 +46,34 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
             return;
         }
         for (int i = 0; i < ruleItems.size(); i++) {
-            if (ruleItems.get(0).getMessageKey().equals(messageKey)) {
-                ruleItems.set(i, new RuleItem<T>(rule, messageKey, alias, condition));
+            if (ruleItems.get(0).getMessageKey().equals(replaceMessageKey)) {
+                ruleItems.set(i, new RuleItem<T>(rule, newMessageKey, alias, condition));
                 break;
             }
         }
     }
 
-    public void replaceRule(String property, IRule<T> rule, String messageKey, String alias) {
-        this.replaceRule(property, rule, messageKey, alias, defaultCondition);
+    public void replaceRule(String property, IRule<T> rule, String replaceMessageKey,
+                            String newMessageKey,
+                            String alias) {
+        this.replaceRule(property, rule, replaceMessageKey, newMessageKey, alias, defaultCondition);
     }
 
-    public void replaceRule(IRule<T> rule, String messageKey, String alias) {
-
+    public void replaceRule(IRule<T> rule, String replaceMessageKey,
+                            String newMessageKey, String alias) {
+        this.replaceRule(rule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
     }
 
-    public void replaceRule(IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
+    public void replaceRule(IRule<T> rule, String replaceMessageKey,
+                            String newMessageKey, String alias, IActiveRuleCondition<T> condition) {
 
+        for (int i = 0; i < this.classRules.size(); i++) {
+
+            if (this.classRules.get(i).getMessageKey().equals(replaceMessageKey)) {
+                this.classRules.set(i, new RuleItem<T>(rule, newMessageKey, alias, condition));
+                break;
+            }
+        }
     }
 
     public void removeRule(String messageKey) {
@@ -296,5 +310,12 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T> {
             }
         }
         return propertyIsValid && classIsValid;
+    }
+
+    @Override
+    public void reset() {
+        this.classRules.clear();
+        this.rules.clear();
+        this.init();
     }
 }

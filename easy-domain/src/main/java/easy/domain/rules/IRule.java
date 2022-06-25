@@ -8,4 +8,6 @@ public interface IRule<T> {
      * @return true 验证成功，false 验证失败
      */
     boolean isSatisfy(T model);
+
+
 }
