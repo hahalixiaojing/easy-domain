@@ -59,6 +59,28 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.replaceRule(property, rule, replaceMessageKey, newMessageKey, alias, defaultCondition);
     }
 
+    public void replaceWithParamRule(String property, IParamRule<T> paramRule, String replaceMessageKey,
+                            String newMessageKey, String alias,
+                            IActiveRuleCondition<T> condition) {
+
+
+        List<RuleItem<T>> ruleItems = this.rules.get(property);
+        if (ruleItems == null) {
+            return;
+        }
+        for (int i = 0; i < ruleItems.size(); i++) {
+            if (ruleItems.get(0).getMessageKey().equals(replaceMessageKey)) {
+                ruleItems.set(i, new RuleItem<T>(paramRule, newMessageKey, alias, condition));
+            }
+        }
+    }
+
+    public void replaceWithParamRule(String property, IParamRule<T> paramRule, String replaceMessageKey,
+                            String newMessageKey, String alias) {
+        this.replaceWithParamRule(property, paramRule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
+    }
+
+
     public void replaceRule(IRule<T> rule, String replaceMessageKey,
                             String newMessageKey, String alias) {
         this.replaceRule(rule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
@@ -242,7 +264,8 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     }
 
-    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
+    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey, String alias,
+                             IActiveRuleCondition<T> condition) {
         if (this.rules.containsKey(property)) {
             this.rules.get(property).add(new RuleItem<>(paramRule, messageKey, alias, condition));
         }
@@ -252,7 +275,8 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.addParamRule(property, paramRule, messageKey, alias, this.defaultCondition);
     }
 
-    public void addParamRule(IParamRule<T> paramRule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
+    public void addParamRule(IParamRule<T> paramRule, String messageKey, String alias,
+                             IActiveRuleCondition<T> condition) {
         this.classRules.add(new RuleItem<>(paramRule, messageKey, alias, condition));
     }
 
