@@ -5,9 +5,11 @@ import easy.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import static easy.domain.rule.EntityAndEntityRuleTest.DataBrokenRuleMessage.*;
+import static java.lang.System.out;
 
 /**
  * @author lixiaojing
@@ -98,6 +100,19 @@ public class EntityAndEntityRuleTest {
 
         boolean satisfy2 = dataEntityRule.isSatisfy(data);
         Assert.assertFalse(satisfy2);
+    }
+
+    @Test
+    public void aa() {
+        ArrayList<String> objects = new ArrayList<>();
+        objects.add("a");
+        objects.add("b");
+        objects.add("c");
+        // =currentIndex add current before, currentIndex+1 add current after
+        objects.add(1+1+1, "d");
+
+        out.println(out);
+
     }
 
     @Test
