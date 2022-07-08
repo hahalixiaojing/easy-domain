@@ -15,6 +15,8 @@ public class ActionEntityTest {
         MyEntity myEntity = new MyEntity();
         myEntity.alter();
 
+        myEntity.validate();
+
 
         boolean b = myEntity.actionCollector.containAction(MyEntityAction.alter);
 
@@ -33,7 +35,7 @@ class MyEntity extends EntityBase<Long> {
 
     @Override
     public Boolean validate() {
-        return null;
+        return new MyEntityRule().isSatisfy(this);
     }
 
     @Override
