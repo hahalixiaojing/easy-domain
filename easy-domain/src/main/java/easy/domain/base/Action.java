@@ -3,7 +3,7 @@ package easy.domain.base;
 /**
  * @author lixiaojing10
  */
-class Action {
+public class Action {
     private final String actionCode;
     private final String description;
 
