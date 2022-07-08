@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * @author lixiaojing10
  */
-abstract class EntityAction {
+public abstract class EntityAction {
 
     public static final Action NEW = Action.build("NEW", "新建");
     public static final Action DELETE = Action.build("DELETE", "删除");

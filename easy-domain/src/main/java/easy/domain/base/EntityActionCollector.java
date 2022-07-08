@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  *
  * @author lixiaojing10
  */
-class EntityActionCollector {
+public class EntityActionCollector {
     private final HashMap<String, Action> actionHashMap = new HashMap<>();
     private final EntityAction entityAction;
 
