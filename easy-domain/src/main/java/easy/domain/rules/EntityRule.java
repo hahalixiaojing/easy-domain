@@ -5,6 +5,8 @@ import easy.domain.base.BrokenRuleObject;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBuild {
 
@@ -16,6 +18,12 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.rules = new ConcurrentHashMap<>();
         this.classRules = new ArrayList<>();
         this.init();
+    }
+
+    public List<RuleItem<T>> allRuleItems() {
+        return Stream.concat(this.rules.values().stream().flatMap(Collection::stream),
+                        this.classRules.stream())
+                .collect(Collectors.toList());
     }
 
 
@@ -39,37 +47,83 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     public void appendRule(String property, IRule<T> rule,
                            String alias,
-                           IActiveRuleCondition<T> condition,
                            int appendType,
                            String appendMessageKey,
-                           String relativeMessageKey
+                           String relativeMessageKey,
+                           IActiveRuleCondition<T> condition
     ) {
         //appendType 0= last 1= before 2=after
 
         List<RuleItem<T>> ruleItems = this.rules.get(property);
-        if (ruleItems == null) {
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, condition);
+
+        this.appendRule(ruleItems, tRuleItem, appendType, relativeMessageKey);
+    }
+
+    public void appendWithParamRule(String property, IParamRule<T> rule,
+                                    String alias,
+                                    int appendType,
+                                    String appendMessageKey,
+                                    String relativeMessageKey,
+                                    IActiveRuleCondition<T> condition) {
+        List<RuleItem<T>> ruleItems = this.rules.get(property);
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+                .orElse(this.defaultCondition));
+        this.appendRule(ruleItems, tRuleItem, appendType, relativeMessageKey);
+
+    }
+
+    public void appendRule(IRule<T> rule,
+                           String alias,
+                           int appendType,
+                           String appendMessageKey,
+                           String relativeMessageKey,
+                           IActiveRuleCondition<T> condition) {
+
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+                .orElse(this.defaultCondition));
+        this.appendRule(classRules, tRuleItem, appendType, relativeMessageKey);
+    }
+
+    public void appendWithParamRule(IParamRule<T> rule,
+                                    String alias,
+                                    int appendType,
+                                    String appendMessageKey,
+                                    String relativeMessageKey,
+                                    IActiveRuleCondition<T> condition) {
+
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+                .orElse(this.defaultCondition));
+        this.appendRule(classRules, tRuleItem, appendType, relativeMessageKey);
+
+    }
+
+
+    private void appendRule(List<RuleItem<T>> rules, RuleItem<T> rule,
+                            int appendType,
+                            String relativeMessageKey) {
+
+        if (rules == null) {
             return;
         }
 
         if (appendType == 0) {
-            ruleItems.add(new RuleItem<T>(rule, appendMessageKey, alias, condition));
+            rules.add(rule);
         } else {
             Integer index = null;
-            for (int i = 0; i < ruleItems.size(); i++) {
-                if (ruleItems.get(i).getMessageKey().equals(relativeMessageKey)) {
+            for (int i = 0; i < rules.size(); i++) {
+                if (rules.get(i).getMessageKey().equals(relativeMessageKey)) {
                     index = i;
                     break;
                 }
             }
-
             if (index != null) {
                 if (appendType == 1) {
-                    ruleItems.add(index, new RuleItem<>(rule, appendMessageKey, alias, condition));
+                    rules.add(index, rule);
                 } else if (appendType == 2) {
-                    ruleItems.add(index + 1, new RuleItem<>(rule, appendMessageKey, alias, condition));
+                    rules.add(index + 1, rule);
                 }
             }
-
         }
     }
 
@@ -93,6 +147,18 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                             String newMessageKey,
                             String alias) {
         this.replaceRule(property, rule, replaceMessageKey, newMessageKey, alias, defaultCondition);
+    }
+
+    public void replaceRule(IRule<T> rule, String replaceMessageKey,
+                            String newMessageKey, String alias) {
+        this.replaceRule(rule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
+    }
+
+    public void replaceRule(IRule<T> rule, String replaceMessageKey,
+                            String newMessageKey, String alias, IActiveRuleCondition<T> condition) {
+
+        this.replaceClassRule(replaceMessageKey, new RuleItem<T>(rule, newMessageKey, alias, condition));
+
     }
 
     public void replaceWithParamRule(String property, IParamRule<T> paramRule, String replaceMessageKey,
@@ -132,18 +198,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     }
 
-
-    public void replaceRule(IRule<T> rule, String replaceMessageKey,
-                            String newMessageKey, String alias) {
-        this.replaceRule(rule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
-    }
-
-    public void replaceRule(IRule<T> rule, String replaceMessageKey,
-                            String newMessageKey, String alias, IActiveRuleCondition<T> condition) {
-
-        this.replaceClassRule(replaceMessageKey, new RuleItem<T>(rule, newMessageKey, alias, condition));
-
-    }
 
     private void replaceClassRule(String replaceMessageKey, RuleItem<T> ruleItem) {
         for (int i = 0; i < this.classRules.size(); i++) {
