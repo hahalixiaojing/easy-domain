@@ -36,7 +36,8 @@ public interface IDomainEventManager {
      */
     void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition);
 
-    default void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
+    default void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition,
+                                    String dependSubscriber) {
     }
 
     /**
@@ -66,7 +67,4 @@ public interface IDomainEventManager {
      */
     default <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
     }
-
-    ;
-
 }
