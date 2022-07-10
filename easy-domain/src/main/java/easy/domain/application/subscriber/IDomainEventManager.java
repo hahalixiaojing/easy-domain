@@ -36,7 +36,8 @@ public interface IDomainEventManager {
      */
     void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition);
 
-    default void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
+    default void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition,
+                                    String dependSubscriber) {
     }
 
     /**
