@@ -367,11 +367,11 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
      * @param alias      别名
      */
     public void addRule(IRule<T> rule, String messageKey, String alias) {
-        this.classRules.add(new RuleItem<>(rule, messageKey, alias, this.defaultCondition));
+        this.addRule(rule, messageKey, alias, this.defaultCondition);
     }
 
     public void addRule(IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
-        this.addRule("", rule, messageKey, alias, condition);
+        this.classRules.add(new RuleItem<>(rule, messageKey, alias, condition));
 
     }
 
