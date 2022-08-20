@@ -47,67 +47,66 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     public void appendRule(String property, IRule<T> rule,
                            String alias,
-                           int appendType,
                            String appendMessageKey,
                            String relativeMessageKey,
+                           int appendPosition,
                            IActiveRuleCondition<T> condition
     ) {
-        //appendType 0= last 1= before 2=after
+        //appendPosition 0= last 1= before 2=after
 
         List<RuleItem<T>> ruleItems = this.rules.get(property);
         RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, condition);
 
-        this.appendRule(ruleItems, tRuleItem, appendType, relativeMessageKey);
+        this.appendRule(ruleItems, tRuleItem, relativeMessageKey, appendPosition);
     }
 
     public void appendWithParamRule(String property, IParamRule<T> rule,
                                     String alias,
-                                    int appendType,
                                     String appendMessageKey,
                                     String relativeMessageKey,
+                                    int appendPosition,
                                     IActiveRuleCondition<T> condition) {
         List<RuleItem<T>> ruleItems = this.rules.get(property);
         RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
-        this.appendRule(ruleItems, tRuleItem, appendType, relativeMessageKey);
+        this.appendRule(ruleItems, tRuleItem, relativeMessageKey, appendPosition);
 
     }
 
     public void appendRule(IRule<T> rule,
                            String alias,
-                           int appendType,
                            String appendMessageKey,
                            String relativeMessageKey,
+                           int appendPosition,
                            IActiveRuleCondition<T> condition) {
 
         RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
-        this.appendRule(classRules, tRuleItem, appendType, relativeMessageKey);
+        this.appendRule(classRules, tRuleItem, relativeMessageKey, appendPosition);
     }
 
     public void appendWithParamRule(IParamRule<T> rule,
                                     String alias,
-                                    int appendType,
                                     String appendMessageKey,
                                     String relativeMessageKey,
+                                    int appendPosition,
                                     IActiveRuleCondition<T> condition) {
 
         RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
-        this.appendRule(classRules, tRuleItem, appendType, relativeMessageKey);
+        this.appendRule(classRules, tRuleItem, relativeMessageKey, appendPosition);
 
     }
 
 
     private void appendRule(List<RuleItem<T>> rules, RuleItem<T> rule,
-                            int appendType,
-                            String relativeMessageKey) {
+                            String relativeMessageKey, int appendPosition) {
 
         if (rules == null) {
             return;
         }
 
-        if (appendType == 0) {
+        if (appendPosition == 0) {
             rules.add(rule);
         } else {
             Integer index = null;
@@ -118,9 +117,9 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                 }
             }
             if (index != null) {
-                if (appendType == 1) {
+                if (appendPosition == 1) {
                     rules.add(index, rule);
-                } else if (appendType == 2) {
+                } else if (appendPosition == 2) {
                     rules.add(index + 1, rule);
                 }
             }
