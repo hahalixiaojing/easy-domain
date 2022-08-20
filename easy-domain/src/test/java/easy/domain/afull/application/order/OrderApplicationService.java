@@ -47,7 +47,8 @@ public class OrderApplicationService extends BaseApplication {
             //验证通过，持久化到数据库
             this.orderRepository.create(order);
             //发布订单已创建事件
-            this.publishEvent(order.createdEvent());
+            order.allEvents().forEach(this::publishEvent);
+
         } else {
             order.throwBrokenRuleException();
         }
@@ -60,10 +61,11 @@ public class OrderApplicationService extends BaseApplication {
 
         Order order = this.orderRepository.findByOrderId(orderId);
         if (order != null) {
-            OrderPayedEvent orderPayedEvent = order.payment();
+            order.payment();
             if (order.validate()) {
                 this.orderRepository.update(order);
-                this.publishEvent(orderPayedEvent);
+                //发布订单已创建事件
+                order.allEvents().forEach(this::publishEvent);
             } else {
                 throw order.exceptionCause();
             }

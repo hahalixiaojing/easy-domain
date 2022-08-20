@@ -32,6 +32,8 @@ public class Order extends EntityBase<Long> implements ICustomValidator<Order> {
         this.pin = pin;
         this.orderItemList = orderItemList;
         this.created = LocalDateTime.now();
+        //事件收集
+        this.eventCollector.pushDelayGenerateEvent(()-> new OrderCreatedEvent(this.getId()));
 
     }
 
@@ -58,9 +60,6 @@ public class Order extends EntityBase<Long> implements ICustomValidator<Order> {
         return orderItemList;
     }
 
-    public OrderCreatedEvent createdEvent() {
-        return new OrderCreatedEvent(this.getId());
-    }
 
 
     /**
@@ -68,9 +67,11 @@ public class Order extends EntityBase<Long> implements ICustomValidator<Order> {
      *
      * @return 返回订单已支持事件
      */
-    public OrderPayedEvent payment() {
+    public void payment() {
         this.status = 3;
-        return new OrderPayedEvent(this.getId());
+        //事件收集
+        this.eventCollector.pushEvent(new OrderPayedEvent(this.getId()));
+
     }
 
     public String getComment() {
