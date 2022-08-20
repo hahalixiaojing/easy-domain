@@ -25,6 +25,7 @@ public class RuleTest {
     @Test
     public void booleanRuleTest() {
 
+
         Data data = new Data();
         data.setBoolInfo(true);
 

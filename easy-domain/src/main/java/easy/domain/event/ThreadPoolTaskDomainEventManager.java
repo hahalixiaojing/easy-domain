@@ -22,7 +22,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     private final ConcurrentHashMap<Integer, ScheduledThreadPoolExecutor> taskTheadMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Integer> domainEventAndThreadMap = new ConcurrentHashMap<>();
 
-    private IOrderedPerformManager performManager;
+    private final IOrderedPerformManager performManager;
     /**
      * 订阅默认执行条件
      */
@@ -111,6 +111,9 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
+        if(subscriberInfoList == null){
+            return;
+        }
 
         //如果有执行顺序管理，先查找到根
         if (this.performManager != null) {
@@ -147,8 +150,13 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
-
+        if(subscriberInfoList == null){
+            return;
+        }
         Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
+        if(pooledIndex == null){
+            return;
+        }
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);
 
         for (SubscriberInfo sub : subscriberInfoList) {

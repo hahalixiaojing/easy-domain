@@ -1,13 +1,15 @@
 package easy.domain.rule;
 
-import easy.domain.base.BrokenRuleMessage;
-import easy.domain.base.EntityBase;
-import easy.domain.rules.EntityRule;
-import easy.domain.rules.Pair;
+import easy.domain.base.*;
+import easy.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
+
+import static easy.domain.rule.EntityAndEntityRuleTest.DataBrokenRuleMessage.*;
+import static java.lang.System.out;
 
 /**
  * @author lixiaojing
@@ -22,6 +24,10 @@ public class EntityAndEntityRuleTest {
 
         EntityRule<Data> dataEntityRule = new DataEntityRule();
         Assert.assertFalse(dataEntityRule.isSatisfy(data));
+
+        BrokenRuleException brokenRuleException = data.exceptionCause();
+
+        Assert.assertEquals(brokenRuleException.getEntityInfo(), data.getId().toString());
 
     }
 
@@ -49,17 +55,149 @@ public class EntityAndEntityRuleTest {
 
     }
 
+    @Test
+    public void oneRuleTest() {
+        Data data = new Data();
+
+        DataEntityRule dataEntityRule = new DataEntityRule();
+        IRule<Data> clsRule = dataEntityRule.findRuleByMessageKey(PRICE_ZERO_ERROR);
+
+        boolean satisfy = clsRule.isSatisfy(data);
+        Assert.assertFalse(satisfy);
+
+        IRule<Data> propertyRule = dataEntityRule.findRuleByMessageKey(DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+
+        boolean satisfy1 = propertyRule.isSatisfy(data);
+        Assert.assertFalse(satisfy1);
+
+
+    }
+
+    @Test
+    public void replaceRuleTest() {
+        DataEntityRule dataEntityRule = new DataEntityRule();
+        Data data = new Data();
+        data.setName("12");
+        data.setPrice(2.0);
+
+        boolean satisfy = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy);
+
+        dataEntityRule.replaceRule("price", s -> {
+            return s.getPrice().equals(3.0);
+        }, price_equal_error, price_equal_error, "¬");
+
+        data.clearBrokenRules();
+
+        boolean satisfy1 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy1);
+
+        data.clearBrokenRules();
+
+        dataEntityRule.removeRule(price_equal_error);
+
+        dataEntityRule.replaceRule(s -> s.getPrice() < 0, PRICE_ZERO_ERROR, PRICE_ZERO_1_ERROR, "");
+
+        boolean satisfy2 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy2);
+    }
+
+    @Test
+    public void aa() {
+        ArrayList<String> objects = new ArrayList<>();
+        objects.add("a");
+        objects.add("b");
+        objects.add("c");
+        // =currentIndex add current before, currentIndex+1 add current after
+        objects.add(1+1+1, "d");
+
+        out.println(out);
+
+    }
+
+    @Test
+    public void removeTest() {
+        DataEntityRule dataEntityRule = new DataEntityRule();
+
+        Data data = new Data();
+        data.setPrice(2.0);
+
+        //移除之前规则
+        boolean satisfy = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy);
+
+        BrokenRule brokenRule = data.getBrokenRules().get(0);
+        Assert.assertEquals(brokenRule.getName(), DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+
+        data.clearBrokenRules();
+
+        //移除之后规则
+        dataEntityRule.removeRule(DataBrokenRuleMessage.NAME_EMPTY_ERROR);
+        boolean satisfy1 = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy1);
+
+        data.setPrice(0.0);
+
+        data.clearBrokenRules();
+
+        boolean satisfy2 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy2);
+
+        data.clearBrokenRules();
+
+        dataEntityRule.removeRule(PRICE_ZERO_ERROR);
+        dataEntityRule.removeRule(price_equal_error);
+        boolean satisfy3 = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy3);
+    }
+
+    @Test
+    public void resetTest() {
+
+        DataEntityRule dataEntityRule = new DataEntityRule();
+
+        Data data = new Data();
+        data.setPrice(2.0);
+
+        //移除之前规则
+        boolean satisfy = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy);
+
+        data.clearBrokenRules();
+
+        dataEntityRule.removeRule(NAME_EMPTY_ERROR);
+
+        boolean satisfy2 = dataEntityRule.isSatisfy(data);
+        Assert.assertTrue(satisfy2);
+
+        dataEntityRule.reset();
+
+        boolean satisfy3 = dataEntityRule.isSatisfy(data);
+        Assert.assertFalse(satisfy3);
+
+
+    }
+
 
     static class DataEntityRule extends EntityRule<Data> {
-        public DataEntityRule() {
+
+
+        @Override
+        public void init() {
             //基本验证
             this.isBlank("name", DataBrokenRuleMessage.NAME_EMPTY_ERROR, "");
             //自定以验证
-            this.addRule(model -> model.getPrice() > 0, DataBrokenRuleMessage.PRICE_ZERO_ERROR, "");
+            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
+
+            this.numberShouldEqual("price", 2.0, price_equal_error, "");
+
             //在特定条件下，参与验证
-            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "", model -> model.getStatus() == 1);
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+                    model -> model.getStatus() == 1);
             //带参数的方式验证
-            this.addParamRule(model -> new Pair(false, new Object[]{model.getName()}), DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+            this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
+                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+
         }
     }
 
@@ -68,6 +206,8 @@ public class EntityAndEntityRuleTest {
         public static final String NAME_EMPTY_ERROR = "NAME_EMPTY_ERROR";
         public static final String NAME_USED_ERROR = "NAME_USED_ERROR";
         public static final String PRICE_ZERO_ERROR = "PRICE_ZERO_ERROR";
+        public static final String PRICE_ZERO_1_ERROR = "PRICE_ZERO_1_ERROR";
+        public static final String price_equal_error = "price_equal_error";
         public static final String BOOLEAN_INFO_ERROR = "BOOLEAN_INFO_ERROR";
 
         @Override
@@ -77,7 +217,9 @@ public class EntityAndEntityRuleTest {
 
             this.getMessages().put(NAME_USED_ERROR, "%s这个名字已经使用");
             this.getMessages().put(PRICE_ZERO_ERROR, "价格不能是0");
+            this.getMessages().put(PRICE_ZERO_1_ERROR, "价格必须小于0");
             this.getMessages().put(BOOLEAN_INFO_ERROR, "must be TRUE");
+            this.getMessages().put(price_equal_error, "price_equal_error");
 
         }
     }
@@ -112,6 +254,9 @@ public class EntityAndEntityRuleTest {
 
         private DataExtension dataExtension;
 
+        public Data() {
+            this.setId(10000L);
+        }
 
         public Boolean getBoolInfo() {
             return boolInfo != null && boolInfo;
@@ -169,6 +314,9 @@ public class EntityAndEntityRuleTest {
 
         public void setStatus(int status) {
             this.status = status;
+        }
+
+        public void Update() {
         }
     }
 }

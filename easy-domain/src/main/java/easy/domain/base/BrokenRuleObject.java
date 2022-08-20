@@ -1,8 +1,6 @@
 package easy.domain.base;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class BrokenRuleObject {
 
@@ -18,6 +16,8 @@ public abstract class BrokenRuleObject {
     }
 
     protected abstract BrokenRuleMessage getBrokenRuleMessages();
+
+    protected abstract String takeEntityInfo();
 
     public abstract Boolean validate();
 
@@ -88,7 +88,11 @@ public abstract class BrokenRuleObject {
     public BrokenRuleException exceptionCause() {
         if (this.getBrokenRules().size() > 0) {
             BrokenRule brokenRule = this.getBrokenRules().get(0);
-            return new BrokenRuleException(brokenRule.getName(), brokenRule.getDescription(), brokenRule.getExtraData());
+            return new BrokenRuleException(brokenRule.getName(),
+                    brokenRule.getDescription(),
+                    this.takeEntityInfo(),
+                    brokenRule.getExtraData()
+            );
         }
         return null;
     }
@@ -99,7 +103,8 @@ public abstract class BrokenRuleObject {
             List<BrokenRuleException> brokenRuleExceptions = new ArrayList<>();
 
             for (BrokenRule message : this.getBrokenRules()) {
-                BrokenRuleException brokenRuleException = new BrokenRuleException(message.getName(), message.getDescription(), message.getExtraData());
+                BrokenRuleException brokenRuleException = new BrokenRuleException(message.getName(),
+                        message.getDescription(), this.takeEntityInfo(), message.getExtraData());
 
                 brokenRuleExceptions.add(brokenRuleException);
             }
