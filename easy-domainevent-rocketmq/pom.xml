@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>easy-domain</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
     <developers>
         <developer>
             <name>LiXiaoJing</name>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>easy.ddd.domain</groupId>
             <artifactId>easy-domain</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.80</version>
+            <version>1.2.83</version>
         </dependency>
     </dependencies>
     <build>

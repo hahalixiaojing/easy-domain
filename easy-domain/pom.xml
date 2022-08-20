@@ -3,15 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>easy.ddd.domain</groupId>
     <artifactId>easy-domain</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <description>
         DDD design basic library
         领域驱动设计建模库
     </description>
+
     <developers>
         <developer>
             <name>LiXiaoJing</name>
             <email>lee.bmw@foxmail.com</email>
+            <url>https://gitee.com/lixiaojing/easy-domain</url>
         </developer>
     </developers>
     <properties>

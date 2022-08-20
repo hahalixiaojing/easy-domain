@@ -46,14 +46,18 @@
 <dependency>
     <groupId>easy-domain</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
 </dependency>
 
 
 ```
 历史版本
 ```xml
-
+<dependency>
+    <groupId>easy-domain</groupId>
+    <artifactId>easy-domainevent-rocketmq</artifactId>
+    <version>1.2</version>
+</dependency>
 <dependency>
     <groupId>easy-domain</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
