@@ -3,13 +3,10 @@ package easy.domain.event;
 import easy.domain.application.subscriber.*;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -33,10 +30,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     private final int initThreadCount;
 
     public ThreadPoolTaskDomainEventManager() {
-        this(60, 3, 1500, new DefaultOrderedPerformManager());
+        this(60, 3, 1500,
+                new DefaultOrderedPerformManager());
     }
 
-    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime, IOrderedPerformManager iOrderedPerformManager) {
+    public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime,
+                                            IOrderedPerformManager iOrderedPerformManager) {
         this.initThreadCount = initThreadCount;
         this.maxRetryTimes = maxRetryTimes;
         this.retryDelayTime = retryDelayTime;
@@ -50,8 +49,9 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         }
     }
 
+
     public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime) {
-        this(initThreadCount, maxRetryTimes, retryDelayTime,new DefaultOrderedPerformManager());
+        this(initThreadCount, maxRetryTimes, retryDelayTime, new DefaultOrderedPerformManager());
     }
 
     private ThreadFactory createThreadFactory() {
@@ -68,6 +68,18 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
                 return thread;
             }
         };
+    }
+
+    @Override
+    public Map<String, List<String>> allEvents() {
+
+        return this.subscribersMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        v -> v.getValue().stream().map(SubscriberInfo::getAlias)
+                                .collect(toList()))
+                );
+
     }
 
     @Override
@@ -111,7 +123,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
-        if(subscriberInfoList == null){
+        if (subscriberInfoList == null) {
             return;
         }
 
@@ -150,11 +162,11 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
         String domainEventName = obj.getClass().getName();
         List<SubscriberInfo> subscriberInfoList = this.subscribersMap.get(domainEventName);
-        if(subscriberInfoList == null){
+        if (subscriberInfoList == null) {
             return;
         }
         Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
-        if(pooledIndex == null){
+        if (pooledIndex == null) {
             return;
         }
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);

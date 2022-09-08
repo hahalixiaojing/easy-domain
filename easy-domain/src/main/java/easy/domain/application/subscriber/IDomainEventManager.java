@@ -1,6 +1,10 @@
 package easy.domain.application.subscriber;
 
 import easy.domain.event.IDomainEvent;
+import org.apache.commons.lang3.NotImplementedException;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 发布和注册事件接口定义
@@ -9,6 +13,11 @@ import easy.domain.event.IDomainEvent;
  * @date 2020-02-10 23:42
  */
 public interface IDomainEventManager {
+
+    default Map<String, List<String>> allEvents() {
+        throw new NotImplementedException("NotImplemented");
+    }
+
     /**
      * 注册领域事件
      *
