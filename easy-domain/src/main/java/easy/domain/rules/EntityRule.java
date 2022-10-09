@@ -14,7 +14,14 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
     private final List<RuleItem<T>> classRules;
     private final DefaultActiveRuleCondition<T> defaultCondition = new DefaultActiveRuleCondition<>();
 
+    private final boolean failFast;
+
     public EntityRule() {
+        this(true);
+    }
+
+    public EntityRule(boolean failFast) {
+        this.failFast = failFast;
         this.rules = new ConcurrentHashMap<>();
         this.classRules = new ArrayList<>();
         this.init();
@@ -136,7 +143,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         }
         for (int i = 0; i < ruleItems.size(); i++) {
             if (ruleItems.get(i).getMessageKey().equals(replaceMessageKey)) {
-                ruleItems.set(i, new RuleItem<T>(rule, newMessageKey, alias, condition));
+                ruleItems.set(i, new RuleItem<>(rule, newMessageKey, alias, condition));
                 break;
             }
         }
@@ -156,7 +163,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
     public void replaceRule(IRule<T> rule, String replaceMessageKey,
                             String newMessageKey, String alias, IActiveRuleCondition<T> condition) {
 
-        this.replaceClassRule(replaceMessageKey, new RuleItem<T>(rule, newMessageKey, alias, condition));
+        this.replaceClassRule(replaceMessageKey, new RuleItem<>(rule, newMessageKey, alias, condition));
 
     }
 
@@ -171,7 +178,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         }
         for (int i = 0; i < ruleItems.size(); i++) {
             if (ruleItems.get(i).getMessageKey().equals(replaceMessageKey)) {
-                ruleItems.set(i, new RuleItem<T>(paramRule, newMessageKey, alias, condition));
+                ruleItems.set(i, new RuleItem<>(paramRule, newMessageKey, alias, condition));
             }
         }
     }
@@ -192,7 +199,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                                      String alias) {
 
 
-        this.replaceClassRule(replaceMessageKey, new RuleItem<T>(paramRule, newMessageKey, alias,
+        this.replaceClassRule(replaceMessageKey, new RuleItem<>(paramRule, newMessageKey, alias,
                 this.defaultCondition));
 
     }
@@ -410,6 +417,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                         propertyIsValid = false;
                         model.addParamBrokenRule(rule.getMessageKey(), entry.getKey(),
                                 result.getParams(), rule.getAlias(), result.isAutoFormat());
+                        break;
 
                     }
                 } else if (rule.getRule() != null) {
@@ -418,6 +426,11 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                         model.addBrokenRule(rule.getMessageKey(), entry.getKey(), rule.getAlias());
                         break;
                     }
+                }
+            }
+            if(!propertyIsValid){
+                if(failFast){
+                    break;
                 }
             }
         }
@@ -433,14 +446,19 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                     classIsValid = false;
                     model.addParamBrokenRule(rule.getMessageKey(), "",
                             result.getParams(), rule.getAlias(), result.isAutoFormat());
-                    break;
+
+                    if (this.failFast) {
+                        break;
+                    }
                 }
 
             } else if (rule.getRule() != null) {
                 if (!rule.getRule().isSatisfy(model)) {
                     classIsValid = false;
                     model.addBrokenRule(rule.getMessageKey(), rule.getAlias());
-                    break;
+                    if (this.failFast) {
+                        break;
+                    }
                 }
             }
         }

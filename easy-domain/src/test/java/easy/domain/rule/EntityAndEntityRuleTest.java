@@ -5,8 +5,8 @@ import easy.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static easy.domain.rule.EntityAndEntityRuleTest.DataBrokenRuleMessage.*;
 import static java.lang.System.out;
@@ -36,7 +36,7 @@ public class EntityAndEntityRuleTest {
         Data data = new Data();
 
         Assert.assertFalse(data.validate());
-        Assert.assertEquals(2, data.getBrokenRules().size());
+        Assert.assertEquals(3, data.getBrokenRules().size());
 
         data.clearBrokenRules();
         data.setStatus(1);
@@ -50,7 +50,7 @@ public class EntityAndEntityRuleTest {
 
         Assert.assertFalse(data.validate());
         Assert.assertEquals(1, data.getBrokenRules().size());
-        Assert.assertEquals("张三这个名字已经使用", data.getBrokenRules().get(0).getDescription());
+        Assert.assertEquals("price_equal_error", data.getBrokenRules().get(0).getDescription());
 
 
     }
@@ -100,19 +100,6 @@ public class EntityAndEntityRuleTest {
 
         boolean satisfy2 = dataEntityRule.isSatisfy(data);
         Assert.assertFalse(satisfy2);
-    }
-
-    @Test
-    public void aa() {
-        ArrayList<String> objects = new ArrayList<>();
-        objects.add("a");
-        objects.add("b");
-        objects.add("c");
-        // =currentIndex add current before, currentIndex+1 add current after
-        objects.add(1+1+1, "d");
-
-        out.println(out);
-
     }
 
     @Test
@@ -176,6 +163,93 @@ public class EntityAndEntityRuleTest {
         Assert.assertFalse(satisfy3);
 
 
+    }
+
+    @Test
+    public void aggeTest() {
+
+        Data data = new Data();
+
+        boolean satisfy = new DataEntityRule().isSatisfy(data);
+
+        assert !satisfy;
+
+        assert data.aggregateExceptionCause().getExceptions().size() > 0;
+    }
+
+    @Test
+    public void failFastTest() {
+        Data data = new Data();
+        data.setStatus(1);
+        boolean satisfy = new DataEntityFailFastRule(false).isSatisfy(data);
+        assert !satisfy;
+        assert data.aggregateExceptionCause().getExceptions().size() > 0;
+
+
+    }
+
+
+    @Test
+    public void failFastTest2() {
+
+        ConcurrentHashMap<String,String> vvv = new ConcurrentHashMap<>();
+
+        vvv.put("d","a");
+        vvv.put("c","c");
+
+        Data data = new Data();
+        data.setStatus(1);
+
+        boolean satisfy = new DataEntityFailFastRule2(false).isSatisfy(data);
+        assert !satisfy;
+        assert data.aggregateExceptionCause().getExceptions().size() > 0;
+    }
+
+    static class DataEntityFailFastRule2 extends EntityRule<Data> {
+
+        public DataEntityFailFastRule2(boolean failFast) {
+            super(failFast);
+        }
+
+        @Override
+        public void init() {
+
+            this.addRule("name", s -> {
+                return !Objects.equals(s.getName(), "");
+            }, NAME_EMPTY_ERROR, "");
+
+            this.addRule("price", s -> {
+                return s.getPrice() > 0;
+            }, PRICE_ZERO_ERROR, "");
+
+
+//            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
+            //在特定条件下，参与验证
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+                    model -> model.getStatus() == 1);
+            //带参数的方式验证
+            this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
+                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+        }
+    }
+
+
+    static class DataEntityFailFastRule extends EntityRule<Data> {
+
+        public DataEntityFailFastRule(boolean failFast) {
+            super(failFast);
+        }
+
+        @Override
+        public void init() {
+            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
+            //在特定条件下，参与验证
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+                    model -> model.getStatus() == 1);
+            //带参数的方式验证
+            this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
+                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+        }
     }
 
 
