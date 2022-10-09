@@ -109,7 +109,7 @@ public class EntityAndEntityRuleTest {
         objects.add("b");
         objects.add("c");
         // =currentIndex add current before, currentIndex+1 add current after
-        objects.add(1+1+1, "d");
+        objects.add(1 + 1 + 1, "d");
 
         out.println(out);
 
@@ -176,6 +176,18 @@ public class EntityAndEntityRuleTest {
         Assert.assertFalse(satisfy3);
 
 
+    }
+
+    @Test
+    public void aggeTest() {
+
+        Data data = new Data();
+
+        boolean satisfy = new DataEntityRule().isSatisfy(data);
+
+        assert !satisfy;
+
+        assert data.aggregateExceptionCause().getExceptions().size() > 0;
     }
 
 
