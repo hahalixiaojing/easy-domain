@@ -192,11 +192,6 @@ public class EntityAndEntityRuleTest {
     @Test
     public void failFastTest2() {
 
-        ConcurrentHashMap<String,String> vvv = new ConcurrentHashMap<>();
-
-        vvv.put("d","a");
-        vvv.put("c","c");
-
         Data data = new Data();
         data.setStatus(1);
 
