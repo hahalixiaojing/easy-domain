@@ -186,12 +186,6 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         }
     }
 
-    /**
-     * 订阅是否满足执行条件检查
-     *
-     * @param iExecuteCondition 执行检查逻辑
-     * @return true=可以执行， false=不可以执行
-     */
     private boolean executeCheck(final IDomainEvent t, IExecuteCondition iExecuteCondition) {
         try {
 

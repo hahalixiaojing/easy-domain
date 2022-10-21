@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * @author lixiaojing
- * @date 2021/3/1 5:51 下午
  */
 public class OrderDto {
     public String pin;

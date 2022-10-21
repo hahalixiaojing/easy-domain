@@ -6,7 +6,6 @@ import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 
 /**
  * @author lixiaojing
- * @date 2021/3/19 5:34 下午
  */
 public class ThreadPoolSubscriberFactory implements ISubscriberFactory {
     @Override

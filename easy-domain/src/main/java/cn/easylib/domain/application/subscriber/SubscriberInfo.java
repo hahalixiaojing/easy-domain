@@ -4,7 +4,6 @@ package cn.easylib.domain.application.subscriber;
  * 事件订单对象
  *
  * @author lixiaojing
- * @date 2019/3/29 2:46 PM
  */
 public class SubscriberInfo {
     /**
@@ -20,13 +19,6 @@ public class SubscriberInfo {
      */
     private final IExecuteCondition condition;
 
-    /**
-     * 构造函数
-     *
-     * @param subscriber 事件订阅程序
-     * @param alias      别名
-     * @param condition  执行条件
-     */
     public SubscriberInfo(ISubscriber subscriber, String alias, IExecuteCondition condition) {
         this.subscriber = subscriber;
         this.alias = alias;

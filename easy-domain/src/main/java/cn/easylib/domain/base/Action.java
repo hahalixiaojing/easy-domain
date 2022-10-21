@@ -1,8 +1,6 @@
 package cn.easylib.domain.base;
 
-/**
- * @author lixiaojing10
- */
+
 public class Action {
     private final String actionCode;
     private final String description;

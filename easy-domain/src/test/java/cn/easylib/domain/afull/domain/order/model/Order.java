@@ -13,7 +13,6 @@ import java.util.List;
 
 /**
  * @author lixiaojing
- * @date 2021/3/1 5:26 下午
  */
 public class Order extends EntityBase<Long> implements ICustomValidator<Order> {
 

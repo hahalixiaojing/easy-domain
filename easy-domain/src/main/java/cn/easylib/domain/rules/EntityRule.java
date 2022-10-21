@@ -227,49 +227,22 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                 .ifPresent(classRules::remove);
     }
 
-    /**
-     * 是否为null和空字符或空白字符串
-     *
-     * @param property   要验证的属性性
-     * @param messageKey 错误消息ID
-     */
     public void isBlank(String property, String messageKey, String alias) {
         IsBlankRule<T> rule = new IsBlankRule<>(property);
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
 
-    /**
-     * 是否为电子邮件字符串
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param messageKey 错误描述KEY
-     */
     public void email(String property, String messageKey, String alias) {
         EmailRule<T> rule = new EmailRule<>(property);
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
 
-    /**
-     * 数字应该大于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param v          比较值
-     * @param messageKey 错误描述KEY
-     */
     public <V extends Number> void numberShouldGreaterThan(String property,
                                                            V v, String messageKey, String alias) {
         NumberShouldGreaterThanRule<T, V> rule = new NumberShouldGreaterThanRule<>(
                 property, v);
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
-
-    /**
-     * 数字应该小于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param v          比较值
-     * @param messageKey 错误描述KEY
-     */
     public <V extends Number> void numberShouldLessThan(String property,
                                                         V v, String messageKey, String alias) {
         NumberShouldLessThanRule<T, V> rule = new NumberShouldLessThanRule<>(
@@ -278,13 +251,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
 
-    /**
-     * 日期就是大于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param date       比较值
-     * @param messageKey 错误描述KEY
-     */
     public void dateShouldGreaterThan(String property, Date date,
                                       String messageKey, String alias) {
         DateShouldGreaterThanRule<T> rule = new DateShouldGreaterThanRule<>(
@@ -292,14 +258,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
-
-    /**
-     * 日期应小于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param date       比较值
-     * @param messageKey 错误描述KEY
-     */
     public void dateShouldLessThan(String property, Date date, String messageKey, String alias) {
         DateShouldLessThanRule<T> rule = new DateShouldLessThanRule<>(
                 property, date);
@@ -308,26 +266,12 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     }
 
-    /**
-     * boolean值应该等于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param bool       比较值
-     * @param messageKey 错误描述KEY
-     */
     public void booleanShouldEqual(String property, boolean bool,
                                    String messageKey, String alias) {
         BooleanRule<T> rule = new BooleanRule<>(property, bool);
         this.addRule(property, rule, messageKey, alias, this.defaultCondition);
     }
 
-    /**
-     * 数字应该 等于
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param value      比较值
-     * @param messageKey 错误描述KEY
-     */
     public <V extends Number> void numberShouldEqual(String property,
                                                      V value, String messageKey, String alias) {
         NumberEqualRule<T, V> rule = new NumberEqualRule<>(
@@ -335,13 +279,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.addRule(property, rule, messageKey, alias, defaultCondition);
     }
 
-    /**
-     * 添加自定义规则
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param rule       自定义规则
-     * @param messageKey 错误描述KEY
-     */
     public void addRule(String property, IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
         if (this.rules.containsKey(property)) {
             this.rules.get(property).add(new RuleItem<>(rule, messageKey, alias, condition));
@@ -353,25 +290,11 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         }
     }
 
-    /**
-     * 添加自定义规则
-     *
-     * @param property   要验证的属性名称 例如：name, address.city
-     * @param rule       自定义规则
-     * @param messageKey 错误描述KEY
-     * @param alias      别名
-     */
     public void addRule(String property, IRule<T> rule, String messageKey, String alias) {
         this.addRule(property, rule, messageKey, alias, this.defaultCondition);
     }
 
-    /**
-     * 添加自定义规则
-     *
-     * @param rule       自定义规则
-     * @param messageKey 错误描述KEY
-     * @param alias      别名
-     */
+
     public void addRule(IRule<T> rule, String messageKey, String alias) {
         this.addRule(rule, messageKey, alias, this.defaultCondition);
     }
@@ -428,8 +351,8 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                     }
                 }
             }
-            if(!propertyIsValid){
-                if(failFast){
+            if (!propertyIsValid) {
+                if (failFast) {
                     break;
                 }
             }

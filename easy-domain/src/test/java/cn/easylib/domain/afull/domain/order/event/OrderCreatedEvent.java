@@ -5,7 +5,6 @@ import cn.easylib.domain.event.EventName;
 
 /**
  * @author lixiaojing
- * @date 2021/3/1 6:17 下午
  */
 @EventName(value = "OrderCreatedEvent", shareTopicName = "")
 public class OrderCreatedEvent extends BaseDomainEvent {

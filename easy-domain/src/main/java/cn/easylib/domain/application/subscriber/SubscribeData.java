@@ -2,7 +2,6 @@ package cn.easylib.domain.application.subscriber;
 
 /**
  * @author lixiaojing
- * @date 2021/3/16 7:48 下午
  */
 public class SubscribeData {
 

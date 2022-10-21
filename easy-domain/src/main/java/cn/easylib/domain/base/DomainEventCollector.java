@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author lixiaojing10
- * @date 2022/3/12 4:18 下午
+
  */
 public class DomainEventCollector {
 
