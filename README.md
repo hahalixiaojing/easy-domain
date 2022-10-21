@@ -109,7 +109,7 @@ class Order extends ConcurrentEntityBase<Long> {
 #### 支持自定以业务规则类传入的实体定义
 
 ```java
-import easy.domain.base.ICustomValidator;
+import base.cn.easylib.domain.ICustomValidator;
 
 class Order extends EntityBase<Long> implements ICustomValidator<Order>{
 

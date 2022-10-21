@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>easy-domain</groupId>
+    <groupId>cn.easylib</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
     <version>1.4-SNAPSHOT</version>
     <developers>
@@ -30,7 +30,7 @@
             <version>4.7.1</version>
         </dependency>
         <dependency>
-            <groupId>easy.ddd.domain</groupId>
+            <groupId>cn.easylib</groupId>
             <artifactId>easy-domain</artifactId>
             <version>1.5-SNAPSHOT</version>
         </dependency>

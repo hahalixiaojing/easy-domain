@@ -1,9 +1,8 @@
 package easy.domainevent.rocketmq;
 
-import easy.domain.application.BaseApplication;
-import easy.domain.application.subscriber.IDomainEventManager;
-import easy.domain.application.subscriber.ISubscriberFactory;
-import easy.domain.event.ThreadPoolSubscriberFactory;
+import cn.easylib.domain.application.BaseApplication;
+import cn.easylib.domain.application.subscriber.IDomainEventManager;
+import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;

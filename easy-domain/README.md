@@ -120,9 +120,9 @@ class Order extends ConcurrentEntityBase<Long> {
 #### 支持自定以业务规则类传入的实体定义
 
 ```java
-import easy.domain.base.ICustomValidator;
+import base.cn.easylib.domain.ICustomValidator;
 
-class Order extends EntityBase<Long> implements ICustomValidator<Order>{
+class Order extends EntityBase<Long> implements ICustomValidator<Order> {
 
     // 无法动态传入验证规则类的验证方法
     @Override
@@ -134,10 +134,11 @@ class Order extends EntityBase<Long> implements ICustomValidator<Order>{
     protected BrokenRuleMessage getBrokenRuleMessages() {
         return new OrderBrokenRuleMessages();
     }
+
     // 支持自定义传入验证规则类的方法
     @Override
     public Boolean validate(EntityRule<Order> rule) {
-        return  rule.isSatisfy(this);
+        return rule.isSatisfy(this);
     }
 }
 ```

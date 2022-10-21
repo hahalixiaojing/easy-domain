@@ -1,8 +1,7 @@
 package easy.domainevent.rocketmq;
 
-import easy.domain.application.subscriber.DefaultOrderedPerformManager;
-import easy.domain.application.subscriber.IExecuteCondition;
-import easy.domain.event.BaseDomainEvent;
+import cn.easylib.domain.application.subscriber.DefaultOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import org.junit.Assert;
 import org.junit.Test;
 

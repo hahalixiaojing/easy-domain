@@ -1,7 +1,7 @@
 package easy.domainevent.rocketmq;
 
-import easy.domain.event.BaseDomainEvent;
-import easy.domain.event.EventName;
+import cn.easylib.domain.event.BaseDomainEvent;
+import cn.easylib.domain.event.EventName;
 
 /**
  * @author lixiaojing

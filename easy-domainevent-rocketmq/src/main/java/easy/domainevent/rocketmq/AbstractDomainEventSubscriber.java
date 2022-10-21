@@ -1,8 +1,8 @@
 package easy.domainevent.rocketmq;
 
 import com.alibaba.fastjson.JSON;
-import easy.domain.application.subscriber.IDomainEventSubscriber;
-import easy.domain.event.IDomainEvent;
+import cn.easylib.domain.application.subscriber.IDomainEventSubscriber;
+import cn.easylib.domain.event.IDomainEvent;
 
 /**
  * @author lixiaojing

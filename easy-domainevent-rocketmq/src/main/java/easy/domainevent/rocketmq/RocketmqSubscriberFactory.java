@@ -1,8 +1,8 @@
 package easy.domainevent.rocketmq;
 
-import easy.domain.application.subscriber.ISubscriber;
-import easy.domain.application.subscriber.ISubscriberFactory;
-import easy.domain.event.IDomainEvent;
+import cn.easylib.domain.application.subscriber.ISubscriber;
+import cn.easylib.domain.application.subscriber.ISubscriberFactory;
+import cn.easylib.domain.event.IDomainEvent;
 
 /**
  * @author lixiaojing
