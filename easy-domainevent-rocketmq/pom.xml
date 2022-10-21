@@ -32,7 +32,7 @@
         <dependency>
             <groupId>cn.easylib</groupId>
             <artifactId>easy-domain</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

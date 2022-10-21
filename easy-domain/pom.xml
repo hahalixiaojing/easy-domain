@@ -3,17 +3,30 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.easylib</groupId>
     <artifactId>easy-domain</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
+    <name>DDD design basic library</name>
+    <url>https://gitee.com/lixiaojing/easy-domain</url>
+    <scm>
+        <url>https://gitee.com/lixiaojing/easy-domain</url>
+        <connection>https://gitee.com/lixiaojing/easy-domain.git</connection>
+        <developerConnection>https://gitee.com/lixiaojing/easy-domain.git</developerConnection>
+    </scm>
     <description>
-        DDD design basic library
-        领域驱动设计建模库
+        DDD design basic library 领域驱动设计建模库
     </description>
-
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
     <developers>
         <developer>
+            <id>LiXiaoJing</id>
             <name>LiXiaoJing</name>
             <email>lee.bmw@foxmail.com</email>
-            <url>https://gitee.com/lixiaojing/easy-domain</url>
         </developer>
     </developers>
     <properties>
@@ -34,6 +47,7 @@
         </dependency>
     </dependencies>
     <build>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
