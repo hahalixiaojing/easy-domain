@@ -4,7 +4,21 @@
 
 领域模型实用库是为领域驱动开发设计的基础类库，主要包括实体对象通用能力支持、基于实体的业务规则验证支持、领域事件支持以及应用服务层基于领域事件的发布订阅模式支持。
 
-# Maven
+
+# Maven New
+
+最新版本的grougId修改为cn.easylib,并正式推送到了Maven中央仓库,无需在配置profile repository
+
+最难版本坐标
+```xml
+<dependency>
+    <groupId>cn.easylib</groupId>
+    <artifactId>easy-domain</artifactId>
+    <version>1.5.1</version>
+</dependency>
+```
+
+# Maven Old
 
 编辑您的pom.xml文件
 
