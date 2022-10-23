@@ -1,4 +1,4 @@
-package easy.domainevent.rocketmq;
+package cn.easylib.domainevent.rocketmq;
 
 /**
  * @author lixiaojing

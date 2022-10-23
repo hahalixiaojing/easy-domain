@@ -1,4 +1,4 @@
-package easy.domainevent.rocketmq;
+package cn.easylib.domainevent.rocketmq;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;

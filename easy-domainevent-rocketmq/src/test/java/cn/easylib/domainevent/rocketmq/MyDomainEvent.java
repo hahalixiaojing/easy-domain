@@ -1,4 +1,4 @@
-package easy.domainevent.rocketmq;
+package cn.easylib.domainevent.rocketmq;
 
 import cn.easylib.domain.event.BaseDomainEvent;
 import cn.easylib.domain.event.EventName;
