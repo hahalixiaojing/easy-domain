@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.easylib</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <name>DomainEvent Library For RocketMQ</name>
     <url>https://gitee.com/lixiaojing/easy-domain</url>
     <scm>
