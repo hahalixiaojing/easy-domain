@@ -13,7 +13,23 @@
 * RocketMQ版本：4.7.1
 * JAVA：1.8
 
-## Maven
+## Maven New
+
+领域驱动开发事件发布订阅的RocketMQ实现 v1.5正式发布啦
+1. Maven groupId 调整为cn.easylib
+2. jar包正式推送到了Maven 中央仓库，可以直接依赖使用
+
+Maven 坐标
+
+```xml
+<dependency>
+    <groupId>cn.easylib</groupId>
+    <artifactId>easy-domainevent-rocketmq</artifactId>
+    <version>1.5</version>
+</dependency>
+```
+
+## Maven Old
 
 编辑您的pom.xml文件
 

@@ -9,6 +9,9 @@
     <version>1.5</version>
     <name>DomainEvent Library For RocketMQ</name>
     <url>https://gitee.com/lixiaojing/easy-domain</url>
+    <description>
+        领域驱动开发领域事件发布订阅的rocketmq实现
+    </description>
     <scm>
         <url>https://gitee.com/lixiaojing/easy-domain</url>
         <connection>https://gitee.com/lixiaojing/easy-domain.git</connection>
