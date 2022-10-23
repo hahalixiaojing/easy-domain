@@ -2,7 +2,20 @@
 [![star](https://gitee.com/lixiaojing/easy-domain/badge/star.svg?theme=white)](https://gitee.com/lixiaojing/easy-domain/stargazers)
 > 在领域驱动设计中，包括了领域实体、聚合根、值对象、领域规则、实体操作、领域服务以及领域事件等概念，当业务需求分析完成后，将基于以上概念对业务进行表达，领域驱动开发建模核心库包括了用于支持这些概念表达基础类库。
 
-## Maven依赖
+## Maven New
+
+jar包已经推送至Maven中央仓库，直接依赖Maven坐标
+
+```xml
+
+<dependency>
+    <groupId>cn.easylib</groupId>
+    <artifactId>easy-domain</artifactId>
+    <version>1.5.1</version>
+</dependency>
+```
+
+## Maven Old
 
 编辑您的pom.xml文件
 
@@ -622,7 +635,18 @@ WHERE order_id = #{order.id}
 * RocketMQ版本：4.7.1
 * JAVA：1.8
 
-## Maven
+## Maven New
+jar包已经推送至Maven中央仓库，直接依赖Maven坐标
+
+```xml
+
+<dependency>
+    <groupId>cn.easylib</groupId>
+    <artifactId>easy-domainevent-rocketmq</artifactId>
+    <version>1.5</version>
+</dependency>
+```
+## Maven Old
 
 编辑您的pom.xml文件
 
