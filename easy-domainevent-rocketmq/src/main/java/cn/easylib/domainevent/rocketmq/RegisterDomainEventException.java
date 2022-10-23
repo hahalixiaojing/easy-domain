@@ -1,9 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
-/**
- * @author lixiaojing
- * @date 2021/3/16 8:21 下午
- */
+
 public class RegisterDomainEventException extends RuntimeException {
 
     public RegisterDomainEventException(String message) {

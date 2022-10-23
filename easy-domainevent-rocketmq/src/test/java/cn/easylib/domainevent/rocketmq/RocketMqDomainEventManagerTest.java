@@ -112,15 +112,15 @@ public class RocketMqDomainEventManagerTest {
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
 
-            countDownLatch.countDown();
             System.out.println("test1");
+            countDownLatch.countDown();
 
         }), "test1", (IExecuteCondition<ShareDomainEvent>) iDomainEvent -> iDomainEvent.name.equals("test1"));
 
         rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
 
-            countDownLatch.countDown();
             System.out.println("test2");
+            countDownLatch.countDown();
 
         }), "test2", (IExecuteCondition<ShareDomainEvent>) iDomainEvent -> iDomainEvent.name.equals("test2"));
 

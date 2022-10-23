@@ -19,10 +19,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 
-/**
- * @author lixiaojing
- * @date 2021/3/16 6:27 下午
- */
+
 public class RocketMqDomainEventManager implements IDomainEventManager, MessageListenerConcurrently {
 
 
