@@ -27,7 +27,7 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
 
     private final HashMap<Class<T>, DomainModelDescriptor> domainModels = new HashMap<>();
 
-    private DomainModelVisualManager() {
+    public DomainModelVisualManager() {
     }
 
     public void register(Class<T> entityClass) {
