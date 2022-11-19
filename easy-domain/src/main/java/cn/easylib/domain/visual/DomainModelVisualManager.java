@@ -1,8 +1,9 @@
 package cn.easylib.domain.visual;
 
 import cn.easylib.domain.base.EntityBase;
-import cn.easylib.domain.visual.command.CommandDescriptor;
-import cn.easylib.domain.visual.command.CommandParser;
+import cn.easylib.domain.visual.application.ApplicationDescriptor;
+
+import cn.easylib.domain.visual.application.ApplicationServiceParser;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
 import cn.easylib.domain.visual.entity.EntityParser;
 import cn.easylib.domain.visual.event.EventDescriptor;
@@ -18,7 +19,7 @@ import java.util.*;
 public class DomainModelVisualManager<T extends EntityBase<?>> {
 
 
-    private CommandParser commandParser = new CommandParser();
+    private ApplicationServiceParser applicationServiceParser = new ApplicationServiceParser(null);
     private EntityParser entityParser = new EntityParser();
     private EventParser eventParser = new EventParser();
     private RuleParser ruleParser = new RuleParser();
@@ -50,7 +51,7 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
     private DomainModelDescriptor build(Class<T> entityClass) {
 
         EntityDescriptor entityDescriptor = this.entityParser.parse(entityClass);
-        List<CommandDescriptor> commandDescriptorList = this.commandParser.parser(entityClass,
+        List<ApplicationDescriptor> commandDescriptorList = this.applicationServiceParser.parser(entityClass,
                 null);
         List<RuleDescriptor> ruleDescriptorList = this.ruleParser.parse(entityClass,
                 null);

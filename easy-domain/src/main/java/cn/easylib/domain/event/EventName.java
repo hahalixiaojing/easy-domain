@@ -1,4 +1,5 @@
 package cn.easylib.domain.event;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -9,6 +10,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 public @interface EventName {
     String value();
+
     String shareTopicName() default "";
+    String description() default "";
 
 }

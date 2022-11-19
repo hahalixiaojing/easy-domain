@@ -1,4 +1,5 @@
 package cn.easylib.domain.application;
 
-public interface ICommandService {
+public interface ICommandService extends IApplication{
+
 }

@@ -3,14 +3,14 @@ package cn.easylib.domain.visual.event;
 public class EventSubscriberDescriptor {
     private final String subscriberKey;
     private final String subscriberDescription;
-    private final String preDependencySubscriber;
+    private final String dependsOnSubscriber;
 
     public EventSubscriberDescriptor(String subscriberKey,
                                      String subscriberDescription,
-                                     String preDependencySubscriber) {
+                                     String dependsOnSubscriber) {
         this.subscriberKey = subscriberKey;
         this.subscriberDescription = subscriberDescription;
-        this.preDependencySubscriber = preDependencySubscriber;
+        this.dependsOnSubscriber = dependsOnSubscriber;
     }
 
     public String getSubscriberKey() {
@@ -21,7 +21,7 @@ public class EventSubscriberDescriptor {
         return subscriberDescription;
     }
 
-    public String getPreDependencySubscriber() {
-        return preDependencySubscriber;
+    public String getDependsOnSubscriber() {
+        return dependsOnSubscriber;
     }
 }

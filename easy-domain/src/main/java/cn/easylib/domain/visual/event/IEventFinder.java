@@ -5,7 +5,7 @@ import cn.easylib.domain.event.BaseDomainEvent;
 
 import java.util.List;
 
-public interface IEventFinder<T extends EntityBase<?>> {
+public interface IEventFinder {
 
-    List<BaseDomainEvent> findersList(Class<T> cls, String packageName);
+    <T extends EntityBase<?>> List<BaseDomainEvent> findersList(Class<T> cls, String packageName);
 }

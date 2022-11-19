@@ -1,9 +1,8 @@
 package cn.easylib.domain.visual;
 
-import cn.easylib.domain.visual.command.CommandDescriptor;
+import cn.easylib.domain.visual.application.ApplicationDescriptor;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
 import cn.easylib.domain.visual.event.EventDescriptor;
-import cn.easylib.domain.visual.event.EventSubscriberDescriptor;
 import cn.easylib.domain.visual.rule.RuleDescriptor;
 import cn.easylib.domain.visual.service.DomainServiceDescriptor;
 
@@ -14,7 +13,7 @@ public class DomainModelDescriptor {
     private final List<RuleDescriptor> ruleDescriptorList;
     private final List<EventDescriptor> eventDescriptors;
     private final List<DomainServiceDescriptor> domainServiceDescriptors;
-    private final List<CommandDescriptor> commandDescriptorList;
+    private final List<ApplicationDescriptor> commandDescriptorList;
     private final EntityDescriptor entityDescriptor;
 
     public DomainModelDescriptor(
@@ -22,7 +21,7 @@ public class DomainModelDescriptor {
             List<RuleDescriptor> ruleDescriptorList,
             List<EventDescriptor> eventDescriptors,
             List<DomainServiceDescriptor> domainServiceDescriptors,
-            List<CommandDescriptor> commandDescriptorList) {
+            List<ApplicationDescriptor> commandDescriptorList) {
 
         this.entityDescriptor = entityDescriptor;
         this.ruleDescriptorList = ruleDescriptorList;
@@ -40,7 +39,7 @@ public class DomainModelDescriptor {
         return domainServiceDescriptors;
     }
 
-    public List<CommandDescriptor> getCommandDescriptorList() {
+    public List<ApplicationDescriptor> getCommandDescriptorList() {
         return commandDescriptorList;
     }
 

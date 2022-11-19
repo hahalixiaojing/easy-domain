@@ -106,14 +106,16 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     }
 
     @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
+    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition,
+                                   String dependSubscriber) {
         String domainEventName = subscriber.subscribedToEventType().getName();
         if (this.subscribersMap.containsKey(domainEventName)) {
             this.subscribersMap.get(domainEventName).add(new SubscriberInfo(subscriber, alias, condition));
         }
 
         if (this.performManager != null) {
-            this.performManager.registerSubscriber(subscriber.subscribedToEventType().getName(), alias, dependSubscriber);
+            this.performManager.registerSubscriber(subscriber.subscribedToEventType().getName(), alias,
+                    dependSubscriber);
         }
     }
 
