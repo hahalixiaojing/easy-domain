@@ -10,6 +10,7 @@ import java.util.List;
 public interface IOrderedPerformManager {
 
     void registerSubscriber(String eventName, String currentSubscriberAlias, String parentSubscriberAlias);
+    void registerSubscriber(String eventName,ISubscriberKey currentSubscriberAlias,ISubscriberKey parentSubscriberAlias);
 
     List<String> selectNextSubscribers(String eventName,String subscriberAlias);
     List<String> selectRootSubscribers(String eventName);

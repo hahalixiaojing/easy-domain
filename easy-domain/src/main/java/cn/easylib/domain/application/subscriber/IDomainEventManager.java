@@ -12,6 +12,8 @@ public interface IDomainEventManager {
         throw new NotImplementedException("NotImplemented");
     }
 
+
+
     /**
      * 注册领域事件
      *
@@ -19,16 +21,35 @@ public interface IDomainEventManager {
      */
     void registerDomainEvent(Class<?> domainEventType);
 
-    void registerSubscriber(ISubscriber subscriber, String alias);
+    void registerSubscriber(ISubscriber subscriber,
+                            String alias);
 
-    default void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-    }
+    default void registerSubscriber(ISubscriber subscriber,
+                                    String alias,
+                                    String dependSubscriber) {}
 
-    void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition);
+    void registerSubscriber(ISubscriber subscriber, String alias,
+                            IExecuteCondition condition);
 
-    default void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition,
+    default void registerSubscriber(ISubscriber subscriber, String alias,
+                                    IExecuteCondition condition,
                                     String dependSubscriber) {
     }
+
+    default void registerSubscriber(ISubscriber subscriber,
+                                    ISubscriberKey alias){}
+    default void registerSubscriber(ISubscriber subscriber,
+                                    ISubscriberKey alias,
+                                    ISubscriberKey dependSubscriber) {}
+
+    default void registerSubscriber(ISubscriber subscriber,
+                                    ISubscriberKey alias,
+                                    IExecuteCondition condition){}
+
+    default void registerSubscriber(ISubscriber subscriber,
+                                    ISubscriberKey alias,
+                                    IExecuteCondition condition,
+                                    ISubscriberKey dependSubscriber) {}
 
     <T extends IDomainEvent> void publishEvent(T obj);
 

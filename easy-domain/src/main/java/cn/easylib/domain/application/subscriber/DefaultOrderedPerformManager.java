@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * @author lixiaojing10
-
  */
 public class DefaultOrderedPerformManager implements IOrderedPerformManager {
 
@@ -28,8 +27,34 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
             orderDataHashSet.add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
             this.maps.put(eventName, orderDataHashSet);
         }
+    }
+
+    @Override
+    public void registerSubscriber(String eventName,
+                                   ISubscriberKey currentSubscriberKey,
+                                   ISubscriberKey parentSubscriberKey) {
+
+        String parentSubscriberAlias = Optional.ofNullable(parentSubscriberKey)
+                .map(ISubscriberKey::keyName)
+                .orElse(null);
+        String currentSubscriberAlias = currentSubscriberKey.keyName();
+
+        if (this.maps.containsKey(eventName)) {
+
+            this.maps.get(eventName).add(new OrderData(
+                    parentSubscriberAlias,
+                    currentSubscriberAlias,
+                    currentSubscriberKey,
+                    parentSubscriberKey));
+        } else {
+
+            HashSet<OrderData> orderDataHashSet = new HashSet<>();
+            orderDataHashSet.add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
+            this.maps.put(eventName, orderDataHashSet);
+        }
 
     }
+
 
     @Override
     public List<String> selectNextSubscribers(String eventName, String subscriberAlias) {
@@ -44,26 +69,50 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
     public List<String> selectRootSubscribers(String eventName) {
         return this.selectNextSubscribers(eventName, ROOT_NAME);
     }
+
     static class OrderData {
         public OrderData(String currentSubscriberAlias, String childSubscriberAlias) {
+            this(currentSubscriberAlias, childSubscriberAlias, null, null);
+
+        }
+
+
+        public OrderData(String currentSubscriberAlias,
+                         String childSubscriberAlias,
+                         ISubscriberKey currentSubscriberKey,
+                         ISubscriberKey childSubscriberKey) {
             this.currentSubscriberAlias = StringUtils.isEmpty(currentSubscriberAlias) ? ROOT_NAME : currentSubscriberAlias;
             this.childSubscriberAlias = childSubscriberAlias;
+            this.currentSubscriberKey = currentSubscriberKey;
+            this.childSubscriberKey = childSubscriberKey;
         }
 
         public final String currentSubscriberAlias;
         public final String childSubscriberAlias;
+
+        private final ISubscriberKey currentSubscriberKey;
+        private final ISubscriberKey childSubscriberKey;
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             OrderData orderData = (OrderData) o;
-            return currentSubscriberAlias.equals(orderData.currentSubscriberAlias) && childSubscriberAlias.equals(orderData.childSubscriberAlias);
+            return currentSubscriberAlias.equals(orderData.currentSubscriberAlias)
+                    && childSubscriberAlias.equals(orderData.childSubscriberAlias);
         }
 
         @Override
         public int hashCode() {
             return Objects.hash(currentSubscriberAlias, childSubscriberAlias);
+        }
+
+        public ISubscriberKey getCurrentSubscriberKey() {
+            return currentSubscriberKey;
+        }
+
+        public ISubscriberKey getChildSubscriberKey() {
+            return childSubscriberKey;
         }
     }
 }

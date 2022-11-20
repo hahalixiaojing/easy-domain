@@ -119,6 +119,45 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         }
     }
 
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias) {
+        this.registerSubscriber(subscriber, alias, condition);
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, ISubscriberKey dependSubscriber) {
+        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, IExecuteCondition condition) {
+        this.registerSubscriber(subscriber, alias, condition, null);
+
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, IExecuteCondition condition,
+                                   ISubscriberKey dependSubscriber) {
+
+        String domainEventName = subscriber.subscribedToEventType().getName();
+
+        if (this.subscribersMap.containsKey(domainEventName)) {
+
+            this.subscribersMap.get(domainEventName).add(
+                    new SubscriberInfo(subscriber,
+                            alias.keyName(),
+                            alias, condition)
+            );
+        }
+
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(
+                    subscriber.subscribedToEventType().getName(),
+                    alias,
+                    dependSubscriber);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj) {
