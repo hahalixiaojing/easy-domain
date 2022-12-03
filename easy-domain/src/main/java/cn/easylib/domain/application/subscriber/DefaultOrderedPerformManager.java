@@ -18,38 +18,38 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
     private final ConcurrentMap<String, HashSet<OrderData>> maps = new ConcurrentHashMap<>();
 
     @Override
-    public void registerSubscriber(String eventName, String currentSubscriberAlias, String parentSubscriberAlias) {
+    public void registerSubscriber(String eventName, String childSubscriberAlias, String parentSubscriberAlias) {
 
         if (this.maps.containsKey(eventName)) {
-            this.maps.get(eventName).add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
+            this.maps.get(eventName).add(new OrderData(parentSubscriberAlias, childSubscriberAlias));
         } else {
             HashSet<OrderData> orderDataHashSet = new HashSet<>();
-            orderDataHashSet.add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
+            orderDataHashSet.add(new OrderData(parentSubscriberAlias, childSubscriberAlias));
             this.maps.put(eventName, orderDataHashSet);
         }
     }
 
     @Override
     public void registerSubscriber(String eventName,
-                                   ISubscriberKey currentSubscriberKey,
+                                   ISubscriberKey childSubscriberKey,
                                    ISubscriberKey parentSubscriberKey) {
 
         String parentSubscriberAlias = Optional.ofNullable(parentSubscriberKey)
                 .map(ISubscriberKey::keyName)
                 .orElse(null);
-        String currentSubscriberAlias = currentSubscriberKey.keyName();
+        String childSubscriberAlias = childSubscriberKey.keyName();
 
         if (this.maps.containsKey(eventName)) {
 
             this.maps.get(eventName).add(new OrderData(
                     parentSubscriberAlias,
-                    currentSubscriberAlias,
-                    currentSubscriberKey,
+                    childSubscriberAlias,
+                    childSubscriberKey,
                     parentSubscriberKey));
         } else {
 
             HashSet<OrderData> orderDataHashSet = new HashSet<>();
-            orderDataHashSet.add(new OrderData(parentSubscriberAlias, currentSubscriberAlias));
+            orderDataHashSet.add(new OrderData(parentSubscriberAlias, childSubscriberAlias));
             this.maps.put(eventName, orderDataHashSet);
         }
 
@@ -61,7 +61,7 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
 
         return Optional.ofNullable(this.maps.get(eventName))
                 .orElse(new HashSet<>())
-                .stream().filter(s -> s.currentSubscriberAlias.equals(subscriberAlias))
+                .stream().filter(s -> s.parentSubscriberAlias.equals(subscriberAlias))
                 .map(s -> s.childSubscriberAlias).collect(toList());
     }
 
@@ -71,23 +71,23 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
     }
 
     static class OrderData {
-        public OrderData(String currentSubscriberAlias, String childSubscriberAlias) {
-            this(currentSubscriberAlias, childSubscriberAlias, null, null);
+        public OrderData(String parentSubscriberAlias, String childSubscriberAlias) {
+            this(parentSubscriberAlias, childSubscriberAlias, null, null);
 
         }
 
 
-        public OrderData(String currentSubscriberAlias,
+        public OrderData(String parentSubscriberAlias,
                          String childSubscriberAlias,
                          ISubscriberKey currentSubscriberKey,
                          ISubscriberKey childSubscriberKey) {
-            this.currentSubscriberAlias = StringUtils.isEmpty(currentSubscriberAlias) ? ROOT_NAME : currentSubscriberAlias;
+            this.parentSubscriberAlias = StringUtils.isEmpty(parentSubscriberAlias) ? ROOT_NAME : parentSubscriberAlias;
             this.childSubscriberAlias = childSubscriberAlias;
             this.currentSubscriberKey = currentSubscriberKey;
             this.childSubscriberKey = childSubscriberKey;
         }
 
-        public final String currentSubscriberAlias;
+        public final String parentSubscriberAlias;
         public final String childSubscriberAlias;
 
         private final ISubscriberKey currentSubscriberKey;
@@ -98,13 +98,13 @@ public class DefaultOrderedPerformManager implements IOrderedPerformManager {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             OrderData orderData = (OrderData) o;
-            return currentSubscriberAlias.equals(orderData.currentSubscriberAlias)
+            return parentSubscriberAlias.equals(orderData.parentSubscriberAlias)
                     && childSubscriberAlias.equals(orderData.childSubscriberAlias);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(currentSubscriberAlias, childSubscriberAlias);
+            return Objects.hash(parentSubscriberAlias, childSubscriberAlias);
         }
 
         public ISubscriberKey getCurrentSubscriberKey() {
