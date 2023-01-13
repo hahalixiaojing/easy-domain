@@ -1,6 +1,6 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.DefaultOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 import org.junit.Assert;
@@ -250,7 +250,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
 
         manager.registerDomainEvent(TestDomainEvent.class);
 
@@ -291,7 +291,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
 
         //最大重试次数，不算首次调用
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {

@@ -2,7 +2,6 @@ package cn.easylib.domain.visual;
 
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.application.ApplicationDescriptor;
-
 import cn.easylib.domain.visual.application.ApplicationServiceParser;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
 import cn.easylib.domain.visual.entity.EntityParser;
@@ -13,7 +12,9 @@ import cn.easylib.domain.visual.rule.RuleParser;
 import cn.easylib.domain.visual.service.DomainServiceDescriptor;
 import cn.easylib.domain.visual.service.DomainServiceParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class DomainModelVisualManager<T extends EntityBase<?>> {
@@ -21,7 +22,7 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
 
     private ApplicationServiceParser applicationServiceParser = new ApplicationServiceParser(null);
     private EntityParser entityParser = new EntityParser();
-    private EventParser eventParser = new EventParser();
+    private EventParser eventParser = new EventParser(null, null);
     private RuleParser ruleParser = new RuleParser();
     private DomainServiceParser domainServiceParser = new DomainServiceParser();
 

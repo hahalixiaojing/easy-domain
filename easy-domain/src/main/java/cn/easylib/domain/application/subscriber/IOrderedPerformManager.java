@@ -14,4 +14,6 @@ public interface IOrderedPerformManager {
 
     List<String> selectNextSubscribers(String eventName,String subscriberAlias);
     List<String> selectRootSubscribers(String eventName);
+
+    List<OrderedPerformManager.OrderData> selectEventSubscriberInfo(String eventName);
 }

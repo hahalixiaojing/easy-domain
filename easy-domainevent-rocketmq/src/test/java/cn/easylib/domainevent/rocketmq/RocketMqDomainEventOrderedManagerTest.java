@@ -1,6 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
-import cn.easylib.domain.application.subscriber.DefaultOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 import org.junit.Assert;
@@ -23,7 +23,7 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(4);
         ISubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
         rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
@@ -59,7 +59,7 @@ public class RocketMqDomainEventOrderedManagerTest {
     public void orderExecuteTest1() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(5);
         ISubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
         rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
@@ -101,7 +101,7 @@ public class RocketMqDomainEventOrderedManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅
@@ -151,7 +151,7 @@ public class RocketMqDomainEventOrderedManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(3);
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
@@ -202,7 +202,7 @@ public class RocketMqDomainEventOrderedManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
@@ -239,7 +239,7 @@ public class RocketMqDomainEventOrderedManagerTest {
     @Test
     public void retryOrderExecuteTest() throws InterruptedException {
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);

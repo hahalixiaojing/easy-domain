@@ -42,7 +42,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     private final Map<String, MQProducer> mqProducerMap = new HashMap<>();
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
-        this(producerCreator, consumerCreator, environmentName, new DefaultOrderedPerformManager());
+        this(producerCreator, consumerCreator, environmentName, new OrderedPerformManager());
     }
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName, IOrderedPerformManager performManager) {

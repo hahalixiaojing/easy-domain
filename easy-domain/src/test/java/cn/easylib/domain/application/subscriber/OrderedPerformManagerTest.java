@@ -9,7 +9,7 @@ import java.util.List;
  * @author lixiaojing10
  * @date 2021/12/23 3:44 下午
  */
-public class DefaultOrderedPerformManagerTest {
+public class OrderedPerformManagerTest {
 
     /**
      * 1. 直接循环依赖检查
@@ -19,7 +19,7 @@ public class DefaultOrderedPerformManagerTest {
 
     @Test
     public void registerSubscriberTest() {
-        DefaultOrderedPerformManager defaultOrderedPerformManager = new DefaultOrderedPerformManager();
+        OrderedPerformManager defaultOrderedPerformManager = new OrderedPerformManager();
         defaultOrderedPerformManager.registerSubscriber("evt", "a", null);
         defaultOrderedPerformManager.registerSubscriber("evt", "b", null);
         defaultOrderedPerformManager.registerSubscriber("evt", "c", null);

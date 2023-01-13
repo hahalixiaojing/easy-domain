@@ -13,6 +13,10 @@ public interface IDomainEventManager {
     }
 
 
+    default List<OrderedPerformManager.OrderData> findEventSubscriberInfo(String eventName) {
+        throw new NotImplementedException("NotImplemented");
+    }
+
 
     /**
      * 注册领域事件
@@ -26,7 +30,8 @@ public interface IDomainEventManager {
 
     default void registerSubscriber(ISubscriber subscriber,
                                     String alias,
-                                    String dependSubscriber) {}
+                                    String dependSubscriber) {
+    }
 
     void registerSubscriber(ISubscriber subscriber, String alias,
                             IExecuteCondition condition);
@@ -37,19 +42,24 @@ public interface IDomainEventManager {
     }
 
     default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias){}
-    default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias,
-                                    ISubscriberKey dependSubscriber) {}
+                                    ISubscriberKey alias) {
+    }
 
     default void registerSubscriber(ISubscriber subscriber,
                                     ISubscriberKey alias,
-                                    IExecuteCondition condition){}
+                                    ISubscriberKey dependSubscriber) {
+    }
+
+    default void registerSubscriber(ISubscriber subscriber,
+                                    ISubscriberKey alias,
+                                    IExecuteCondition condition) {
+    }
 
     default void registerSubscriber(ISubscriber subscriber,
                                     ISubscriberKey alias,
                                     IExecuteCondition condition,
-                                    ISubscriberKey dependSubscriber) {}
+                                    ISubscriberKey dependSubscriber) {
+    }
 
     <T extends IDomainEvent> void publishEvent(T obj);
 

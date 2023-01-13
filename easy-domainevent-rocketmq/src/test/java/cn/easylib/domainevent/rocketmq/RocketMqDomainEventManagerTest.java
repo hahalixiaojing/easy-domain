@@ -1,6 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
-import cn.easylib.domain.application.subscriber.DefaultOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import org.junit.Assert;
 import org.junit.Test;
@@ -143,7 +143,7 @@ public class RocketMqDomainEventManagerTest {
     @Test
     public void retryTest() throws InterruptedException {
         RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new DefaultOrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);

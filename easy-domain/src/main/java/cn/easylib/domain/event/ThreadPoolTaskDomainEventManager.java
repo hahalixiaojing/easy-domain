@@ -31,7 +31,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
     public ThreadPoolTaskDomainEventManager() {
         this(60, 3, 1500,
-                new DefaultOrderedPerformManager());
+                new OrderedPerformManager());
     }
 
     public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime,
@@ -51,7 +51,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
 
     public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime) {
-        this(initThreadCount, maxRetryTimes, retryDelayTime, new DefaultOrderedPerformManager());
+        this(initThreadCount, maxRetryTimes, retryDelayTime, new OrderedPerformManager());
     }
 
     private ThreadFactory createThreadFactory() {
@@ -79,7 +79,11 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
                         v -> v.getValue().stream().map(SubscriberInfo::getAlias)
                                 .collect(toList()))
                 );
+    }
 
+    @Override
+    public List<OrderedPerformManager.OrderData> findEventSubscriberInfo(String eventName){
+       return this.performManager.selectEventSubscriberInfo(eventName);
     }
 
     @Override

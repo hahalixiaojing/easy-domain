@@ -248,7 +248,7 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
         ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
 
         manager.registerDomainEvent(TestDomainEvent.class);
 
@@ -289,7 +289,7 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
 
 
         //最大重试次数，不算首次调用
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new DefaultOrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
