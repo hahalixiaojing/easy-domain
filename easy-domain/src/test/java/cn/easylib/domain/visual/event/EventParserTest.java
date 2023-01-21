@@ -3,8 +3,12 @@ package cn.easylib.domain.visual.event;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 import cn.easylib.domain.application.subscriber.ISubscriberKey;
+import cn.easylib.domain.base.BrokenRuleMessage;
 import cn.easylib.domain.base.EntityBase;
-import cn.easylib.domain.event.*;
+import cn.easylib.domain.event.BaseDomainEvent;
+import cn.easylib.domain.event.EventName;
+import cn.easylib.domain.event.ThreadPoolSubscriberFactory;
+import cn.easylib.domain.event.ThreadPoolTaskDomainEventManager;
 import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 
@@ -18,9 +22,9 @@ public class EventParserTest {
     @Test
     public void eventParserTest() {
 
-        EventParser eventParser = new EventParser(this.mockEventFinder(), this.mockIDomainEventManager());
-
-        List<EventDescriptor> parse = eventParser.parse(null, null);
+        EventParser eventParser = new EventParser(this.mockIDomainEventManager());
+        eventParser.registerDomainEvent(MockEntity.class,mockEventFinder());
+        List<EventDescriptor> parse = eventParser.parse(MockEntity.class);
 
         String s = JSON.toJSONString(parse);
 
@@ -33,7 +37,7 @@ public class EventParserTest {
         return new IEventFinder() {
 
             @Override
-            public <T extends EntityBase<?>> List<Class<?>> findersList(Class<T> cls, String packageName) {
+            public <T extends EntityBase<?>> List<Class<?>> findersList(Class<T> cls) {
                 return Stream.of(TestEvent.class).collect(Collectors.toList());
             }
         };
@@ -86,4 +90,17 @@ enum TestEventSubscriberKey implements ISubscriberKey {
 @EventName(value = "TestEvent", description = "测试验证")
 class TestEvent extends BaseDomainEvent {
 
+}
+
+class MockEntity extends EntityBase<Long>{
+
+    @Override
+    public Boolean validate() {
+        return null;
+    }
+
+    @Override
+    protected BrokenRuleMessage getBrokenRuleMessages() {
+        return null;
+    }
 }

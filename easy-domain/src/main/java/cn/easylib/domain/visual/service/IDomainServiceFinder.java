@@ -5,6 +5,6 @@ import cn.easylib.domain.base.IDomainService;
 
 import java.util.List;
 
-public interface IDomainServiceFinder<T extends EntityBase<?>> {
-    List<IDomainService> findList(Class<T> cls, String packageName);
+public interface IDomainServiceFinder {
+    <T extends EntityBase<?>> List<IDomainService> findList(Class<T> cls, String packageName);
 }

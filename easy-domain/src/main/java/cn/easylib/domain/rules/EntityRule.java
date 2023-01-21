@@ -28,7 +28,9 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
     }
 
     public List<RuleItem<T>> allRuleItems() {
-        return Stream.concat(this.rules.values().stream().flatMap(Collection::stream),
+        return Stream.concat(this.rules.values()
+                                .stream()
+                                .flatMap(Collection::stream),
                         this.classRules.stream())
                 .collect(Collectors.toList());
     }

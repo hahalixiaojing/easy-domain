@@ -1,25 +1,27 @@
 package cn.easylib.domain.visual.application;
 
-import cn.easylib.domain.application.*;
+import cn.easylib.domain.application.IApplication;
+import cn.easylib.domain.application.ICommandService;
+import cn.easylib.domain.application.ServiceDescriptor;
 import cn.easylib.domain.base.EntityBase;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ApplicationServiceParser {
 
 
-    private final IApplicationServiceFinder iApplicationServiceFinder;
+    private final Map<Class<?>, IApplicationServiceFinder> applicationServiceFinderMap = new HashMap<>();
 
-    public ApplicationServiceParser(IApplicationServiceFinder iApplicationServiceFinder) {
-        this.iApplicationServiceFinder = iApplicationServiceFinder;
+    public <T extends EntityBase<?>> void registerApplicationService(Class<T> entityClass,
+                                                                     IApplicationServiceFinder finder) {
+        applicationServiceFinderMap.put(entityClass, finder);
     }
 
-    public <T extends EntityBase<?>> List<ApplicationDescriptor> parser(Class<T> cls, String packageName) {
+    public <T extends EntityBase<?>> List<ApplicationDescriptor> parser(Class<T> cls) {
 
-        List<IApplication> list = this.iApplicationServiceFinder.findList(cls, packageName);
+        List<IApplication> list = this.applicationServiceFinderMap.get(cls).findList(cls);
 
         return list.stream()
                 .map(s -> Arrays.stream(s.getClass().getMethods())
@@ -42,6 +44,7 @@ public class ApplicationServiceParser {
                                     commandService
                             );
                         })
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList()))
 
                 .flatMap(List::stream)

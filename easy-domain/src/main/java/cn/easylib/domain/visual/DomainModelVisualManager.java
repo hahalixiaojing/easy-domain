@@ -1,71 +1,56 @@
 package cn.easylib.domain.visual;
 
+import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.base.EntityBase;
-import cn.easylib.domain.visual.application.ApplicationDescriptor;
 import cn.easylib.domain.visual.application.ApplicationServiceParser;
-import cn.easylib.domain.visual.entity.EntityDescriptor;
+import cn.easylib.domain.visual.application.IApplicationServiceFinder;
 import cn.easylib.domain.visual.entity.EntityParser;
-import cn.easylib.domain.visual.event.EventDescriptor;
 import cn.easylib.domain.visual.event.EventParser;
-import cn.easylib.domain.visual.rule.RuleDescriptor;
+import cn.easylib.domain.visual.event.IEventFinder;
+import cn.easylib.domain.visual.rule.IRuleFinder;
 import cn.easylib.domain.visual.rule.RuleParser;
-import cn.easylib.domain.visual.service.DomainServiceDescriptor;
 import cn.easylib.domain.visual.service.DomainServiceParser;
+import cn.easylib.domain.visual.service.IDomainServiceFinder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
 public class DomainModelVisualManager<T extends EntityBase<?>> {
 
 
-    private ApplicationServiceParser applicationServiceParser = new ApplicationServiceParser(null);
-    private EntityParser entityParser = new EntityParser();
-    private EventParser eventParser = new EventParser(null, null);
-    private RuleParser ruleParser = new RuleParser();
-    private DomainServiceParser domainServiceParser = new DomainServiceParser();
+    private final ApplicationServiceParser applicationServiceParser;
+    private final EntityParser entityParser;
+    private final EventParser eventParser;
+    private final RuleParser ruleParser;
+    private final DomainServiceParser domainServiceParser;
 
 
-    private final HashMap<Class<T>, DomainModelDescriptor> domainModels = new HashMap<>();
-
-    public DomainModelVisualManager() {
+    public DomainModelVisualManager(IDomainEventManager iDomainEventManager) {
+        this.applicationServiceParser = new ApplicationServiceParser();
+        this.entityParser = new EntityParser();
+        this.eventParser = new EventParser(iDomainEventManager);
+        this.ruleParser = new RuleParser();
+        this.domainServiceParser = new DomainServiceParser();
     }
 
-    public void register(Class<T> entityClass) {
+    public void registerDomainEntity(Class<T> entityClass) {
 
-        DomainModelDescriptor build = this.build(entityClass);
-
-        this.domainModels.put(entityClass, build);
     }
 
-    public DomainModelDescriptor get(Class<T> entityClass) {
-        return this.domainModels.get(entityClass);
+    public void registerApplicationService(Class<T> entityClass, IApplicationServiceFinder finder) {
+        this.applicationServiceParser.registerApplicationService(entityClass, finder);
     }
 
-
-    public List<DomainModelDescriptor> getDomainModelDescriptor() {
-        return new ArrayList<>(this.domainModels.values());
+    public void registerDomainEvent(Class<T> entityClass, IEventFinder finder) {
+        this.eventParser.registerDomainEvent(entityClass, finder);
     }
 
+    public void registerDomainRule(Class<T> entityClass, IRuleFinder finder) {
 
-    private DomainModelDescriptor build(Class<T> entityClass) {
-
-        EntityDescriptor entityDescriptor = this.entityParser.parse(entityClass);
-        List<ApplicationDescriptor> commandDescriptorList = this.applicationServiceParser.parser(entityClass,
-                null);
-        List<RuleDescriptor> ruleDescriptorList = this.ruleParser.parse(entityClass,
-                null);
-        List<EventDescriptor> eventDescriptors = this.eventParser.parse(entityClass,
-                null);
-        List<DomainServiceDescriptor> domainServiceDescriptors = this.domainServiceParser.parse(entityClass,
-                null);
-
-        return new DomainModelDescriptor(entityDescriptor,
-                ruleDescriptorList,
-                eventDescriptors,
-                domainServiceDescriptors,
-                commandDescriptorList);
     }
 
+    public void registerDomainService(Class<T> entityClass, IDomainServiceFinder finder) {
+
+    }
 }

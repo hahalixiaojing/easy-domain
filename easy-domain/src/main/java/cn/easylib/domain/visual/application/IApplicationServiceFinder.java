@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IApplicationServiceFinder {
 
-   <T extends EntityBase<?>> List<IApplication> findList(Class<T> cls, String packageName);
+   <T extends EntityBase<?>> List<IApplication> findList(Class<T> cls);
 
 }

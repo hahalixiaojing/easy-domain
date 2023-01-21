@@ -2,8 +2,8 @@ package cn.easylib.domain.visual.rule;
 
 public class RuleDescriptor {
 
-    private String ruleKey;
-    private String ruleDescription;
+    private final String ruleKey;
+    private final String ruleDescription;
 
     public RuleDescriptor(String ruleKey, String ruleDescription) {
         this.ruleKey = ruleKey;
