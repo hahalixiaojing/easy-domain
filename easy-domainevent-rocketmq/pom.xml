@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.easylib</groupId>
     <artifactId>easy-domainevent-rocketmq</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
     <name>DomainEvent Library For RocketMQ</name>
     <url>https://gitee.com/lixiaojing/easy-domain</url>
     <description>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>cn.easylib</groupId>
             <artifactId>easy-domain</artifactId>
-            <version>1.5.1</version>
+            <version>1.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

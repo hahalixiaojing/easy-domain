@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.easylib</groupId>
     <artifactId>easy-domain</artifactId>
-    <version>1.5.1</version>
+    <version>1.6-SNAPSHOT</version>
     <name>DDD design basic library</name>
     <url>https://gitee.com/lixiaojing/easy-domain</url>
     <scm>
