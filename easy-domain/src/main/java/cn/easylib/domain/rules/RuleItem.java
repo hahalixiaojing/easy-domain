@@ -1,6 +1,6 @@
 package cn.easylib.domain.rules;
 
-class RuleItem<T> {
+public class RuleItem<T> {
     private IRule<T> rule;
     private IParamRule<T> paramRule;
     private final IActiveRuleCondition<T> condition;
