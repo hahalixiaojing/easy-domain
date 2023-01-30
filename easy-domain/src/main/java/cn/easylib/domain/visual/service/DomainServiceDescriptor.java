@@ -1,16 +1,16 @@
 package cn.easylib.domain.visual.service;
 
 public class DomainServiceDescriptor {
-    private String name;
-    private String domainServiceDescription;
+    private final String clsName;
+    private final String domainServiceDescription;
 
-    public DomainServiceDescriptor(String name, String domainServiceDescription) {
-        this.name = name;
+    public DomainServiceDescriptor(String clsName, String domainServiceDescription) {
+        this.clsName = clsName;
         this.domainServiceDescription = domainServiceDescription;
     }
 
-    public String getName() {
-        return name;
+    public String getClsName() {
+        return clsName;
     }
 
     public String getDomainServiceDescription() {

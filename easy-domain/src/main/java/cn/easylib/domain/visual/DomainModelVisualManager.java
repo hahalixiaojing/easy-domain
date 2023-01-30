@@ -12,9 +12,6 @@ import cn.easylib.domain.visual.rule.RuleParser;
 import cn.easylib.domain.visual.service.DomainServiceParser;
 import cn.easylib.domain.visual.service.IDomainServiceFinder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class DomainModelVisualManager<T extends EntityBase<?>> {
 
@@ -35,7 +32,7 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
     }
 
     public void registerDomainEntity(Class<T> entityClass) {
-
+        this.entityParser.registerEntity(entityClass);
     }
 
     public void registerApplicationService(Class<T> entityClass, IApplicationServiceFinder finder) {
@@ -47,10 +44,10 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
     }
 
     public void registerDomainRule(Class<T> entityClass, IRuleFinder finder) {
-
+        this.ruleParser.registerDomainRule(entityClass, finder);
     }
 
     public void registerDomainService(Class<T> entityClass, IDomainServiceFinder finder) {
-
+        this.domainServiceParser.registerDomainService(entityClass, finder);
     }
 }
