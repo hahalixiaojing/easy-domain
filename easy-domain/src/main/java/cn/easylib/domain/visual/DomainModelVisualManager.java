@@ -13,7 +13,7 @@ import cn.easylib.domain.visual.service.DomainServiceParser;
 import cn.easylib.domain.visual.service.IDomainServiceFinder;
 
 
-public class DomainModelVisualManager<T extends EntityBase<?>> {
+public class DomainModelVisualManager {
 
 
     private final ApplicationServiceParser applicationServiceParser;
@@ -31,23 +31,34 @@ public class DomainModelVisualManager<T extends EntityBase<?>> {
         this.domainServiceParser = new DomainServiceParser();
     }
 
-    public void registerDomainEntity(Class<T> entityClass) {
+    public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass) {
         this.entityParser.registerEntity(entityClass);
     }
 
-    public void registerApplicationService(Class<T> entityClass, IApplicationServiceFinder finder) {
+    public <T extends EntityBase<?>> void registerApplicationService(Class<T> entityClass,
+                                                                     IApplicationServiceFinder finder) {
         this.applicationServiceParser.registerApplicationService(entityClass, finder);
     }
 
-    public void registerDomainEvent(Class<T> entityClass, IEventFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainEvent(Class<T> entityClass, IEventFinder finder) {
         this.eventParser.registerDomainEvent(entityClass, finder);
     }
 
-    public void registerDomainRule(Class<T> entityClass, IRuleFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainRule(Class<T> entityClass, IRuleFinder finder) {
         this.ruleParser.registerDomainRule(entityClass, finder);
     }
 
-    public void registerDomainService(Class<T> entityClass, IDomainServiceFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainService(Class<T> entityClass, IDomainServiceFinder finder) {
         this.domainServiceParser.registerDomainService(entityClass, finder);
+    }
+
+    public <T extends EntityBase<?>> DomainModelVisualInfo build(Class<T> entityClass){
+        return new DomainModelVisualInfo(
+                this.entityParser.parse(entityClass),
+                this.ruleParser.parse(entityClass),
+                this.eventParser.parse(entityClass),
+                this.domainServiceParser.parse(entityClass),
+                this.applicationServiceParser.parser(entityClass)
+        );
     }
 }

@@ -21,13 +21,13 @@ public class DomainServiceParser {
         List<Class<?>> domainServiceClsList = this.domainServiceMap.get(cls).findList(cls);
         return domainServiceClsList.stream().map(s -> {
 
-            if (s.isAssignableFrom(IDomainService.class)) {
+            if (Arrays.stream(s.getInterfaces()).anyMatch(inter -> inter == IDomainService.class)) {
 
                 String description = Optional.ofNullable(s.getAnnotation(IDomainServiceDescriptor.class))
                         .map(IDomainServiceDescriptor::description)
                         .orElse("");
 
-                return new DomainServiceDescriptor(s.getSimpleName(),description);
+                return new DomainServiceDescriptor(s.getSimpleName(), description);
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
