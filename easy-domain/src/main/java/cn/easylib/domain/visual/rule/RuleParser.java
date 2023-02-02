@@ -9,10 +9,7 @@ import cn.easylib.domain.rules.RuleItem;
 import cn.easylib.domain.visual.VisualException;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RuleParser {
@@ -27,10 +24,12 @@ public class RuleParser {
 
     public <T extends EntityBase<?>> List<RuleDescriptorGroup> parse(Class<T> cls) {
 
-        IRuleFinder.RuleFinderObject entityRuleInfo = this.ruleFinderMap.get(cls).findEntityRuleList(cls);
+        IRuleFinder.RuleFinderObject entityRuleInfo = Optional.ofNullable(this.ruleFinderMap.get(cls))
+                .map(f -> f.findEntityRuleList(cls)).orElse(null);
 
 
-        return entityRuleInfo.getEntityRuleCls().stream().map(s ->
+        return Optional.ofNullable(entityRuleInfo).map(IRuleFinder.RuleFinderObject::getEntityRuleCls)
+                .orElse(Collections.emptyList()).stream().map(s ->
                         Arrays.stream(s.getConstructors())
                                 .filter(c -> c.getParameterTypes().length == 0)
                                 .findFirst()

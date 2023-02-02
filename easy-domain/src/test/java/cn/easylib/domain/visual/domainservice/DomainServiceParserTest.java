@@ -1,10 +1,11 @@
 package cn.easylib.domain.visual.domainservice;
 
-import cn.easylib.domain.base.BrokenRuleMessage;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.base.IDomainService;
 import cn.easylib.domain.base.IDomainServiceDescriptor;
 import cn.easylib.domain.visual.DomainModelVisualManager;
+import cn.easylib.domain.visual.MockEntity;
+import cn.easylib.domain.visual.TestDomainService;
 import cn.easylib.domain.visual.service.DomainServiceDescriptor;
 import cn.easylib.domain.visual.service.DomainServiceParser;
 import cn.easylib.domain.visual.service.IDomainServiceFinder;
@@ -41,26 +42,6 @@ public class DomainServiceParserTest {
     }
 }
 
-@IDomainServiceDescriptor(description = "测试domainService")
-class TestDomainService implements IDomainService {
 
 
-    public void add() {
-    }
 
-
-}
-
-
-class MockEntity extends EntityBase<Long> {
-
-    @Override
-    public Boolean validate() {
-        return null;
-    }
-
-    @Override
-    protected BrokenRuleMessage getBrokenRuleMessages() {
-        return null;
-    }
-}
