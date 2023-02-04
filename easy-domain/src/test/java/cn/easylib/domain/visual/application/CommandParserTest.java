@@ -1,7 +1,6 @@
 package cn.easylib.domain.visual.application;
 
 
-import cn.easylib.domain.application.IApplication;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.MockEntity;
 import com.alibaba.fastjson.JSON;
@@ -33,9 +32,9 @@ public class CommandParserTest {
     static class MockCommandFinder implements IApplicationServiceFinder {
 
         @Override
-        public <T extends EntityBase<?>> List<IApplication> findList(Class<T> cls) {
+        public <T extends EntityBase<?>> List<Class<?>> findList(Class<T> cls) {
 
-            return Stream.of(new MockCommandService()).collect(Collectors.toList());
+            return Stream.of(MockCommandService.class).collect(Collectors.toList());
         }
     }
 }

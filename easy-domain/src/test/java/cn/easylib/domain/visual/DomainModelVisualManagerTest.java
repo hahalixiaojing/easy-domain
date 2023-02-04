@@ -58,9 +58,9 @@ public class DomainModelVisualManagerTest {
     static class MockCommandFinder implements IApplicationServiceFinder {
 
         @Override
-        public <T extends EntityBase<?>> List<IApplication> findList(Class<T> cls) {
+        public <T extends EntityBase<?>> List<Class<?>> findList(Class<T> cls) {
 
-            return Stream.of(new MockCommandService()).collect(Collectors.toList());
+            return Stream.of(MockCommandService.class).collect(Collectors.toList());
         }
     }
 

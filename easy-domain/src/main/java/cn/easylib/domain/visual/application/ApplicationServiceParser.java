@@ -21,10 +21,10 @@ public class ApplicationServiceParser {
 
     public <T extends EntityBase<?>> List<ApplicationDescriptor> parser(Class<T> cls) {
 
-        List<IApplication> list = this.applicationServiceFinderMap.get(cls).findList(cls);
+        List<Class<?>> list = this.applicationServiceFinderMap.get(cls).findList(cls);
 
         return list.stream()
-                .map(s -> Arrays.stream(s.getClass().getMethods())
+                .map(s -> Arrays.stream(s.getMethods())
                         .filter(m -> Modifier.isPublic(m.getModifiers()))
                         .map(m -> {
 
