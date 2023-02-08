@@ -1,4 +1,4 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.visual.service;
 
 import java.lang.annotation.*;
 

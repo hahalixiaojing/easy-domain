@@ -6,9 +6,29 @@ import cn.easylib.domain.base.EntityBase;
 public class MockEntity extends EntityBase<Long> {
 
 
-    private String name;
+    public String getName() {
+        return name;
+    }
 
-    public String showName(){
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAgeTest() {
+        return ageTest;
+    }
+
+    public void setAgeTest(int ageTest) {
+        this.ageTest = ageTest;
+    }
+
+    private String name;
+    private Integer age;
+    private int ageTest;
+
+    private MockValueObject mockValueObject;
+
+    public String showName() {
         return name;
     }
 
@@ -20,6 +40,22 @@ public class MockEntity extends EntityBase<Long> {
     @Override
     protected BrokenRuleMessage getBrokenRuleMessages() {
         return null;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public MockValueObject getMockValueObject() {
+        return mockValueObject;
+    }
+
+    public void setMockValueObject(MockValueObject mockValueObject) {
+        this.mockValueObject = mockValueObject;
     }
 }
 

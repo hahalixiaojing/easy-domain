@@ -1,8 +1,6 @@
 package cn.easylib.domain.visual.application;
 
-import cn.easylib.domain.application.IApplication;
 import cn.easylib.domain.application.ICommandService;
-import cn.easylib.domain.application.ServiceDescriptor;
 import cn.easylib.domain.base.EntityBase;
 
 import java.lang.reflect.Modifier;

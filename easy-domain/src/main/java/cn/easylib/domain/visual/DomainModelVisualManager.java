@@ -5,6 +5,7 @@ import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.application.ApplicationServiceParser;
 import cn.easylib.domain.visual.application.IApplicationServiceFinder;
 import cn.easylib.domain.visual.entity.EntityParser;
+import cn.easylib.domain.visual.entity.IEntityFieldFinder;
 import cn.easylib.domain.visual.event.EventParser;
 import cn.easylib.domain.visual.event.IEventFinder;
 import cn.easylib.domain.visual.rule.IRuleFinder;
@@ -31,8 +32,9 @@ public class DomainModelVisualManager {
         this.domainServiceParser = new DomainServiceParser();
     }
 
-    public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass) {
-        this.entityParser.registerEntity(entityClass);
+    public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass, IEntityFieldFinder finder,
+                                                               String entityName, String description) {
+        this.entityParser.registerEntity(entityClass, finder, entityName, description);
     }
 
     public <T extends EntityBase<?>> void registerApplicationService(Class<T> entityClass,
@@ -52,7 +54,7 @@ public class DomainModelVisualManager {
         this.domainServiceParser.registerDomainService(entityClass, finder);
     }
 
-    public <T extends EntityBase<?>> DomainModelVisualInfo build(Class<T> entityClass){
+    public <T extends EntityBase<?>> DomainModelVisualInfo build(Class<T> entityClass) {
         return new DomainModelVisualInfo(
                 this.entityParser.parse(entityClass),
                 this.ruleParser.parse(entityClass),

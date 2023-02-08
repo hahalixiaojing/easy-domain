@@ -1,8 +1,6 @@
 package cn.easylib.domain.visual.domainservice;
 
 import cn.easylib.domain.base.EntityBase;
-import cn.easylib.domain.base.IDomainService;
-import cn.easylib.domain.base.IDomainServiceDescriptor;
 import cn.easylib.domain.visual.DomainModelVisualManager;
 import cn.easylib.domain.visual.MockEntity;
 import cn.easylib.domain.visual.TestDomainService;
@@ -36,7 +34,7 @@ public class DomainServiceParserTest {
 
 
         DomainModelVisualManager domainModelVisualManager = new DomainModelVisualManager(null);
-        domainModelVisualManager.registerDomainEntity(MockEntity.class);
+        domainModelVisualManager.registerDomainEntity(MockEntity.class, null, "", "");
 
 
     }

@@ -1,7 +1,6 @@
 package cn.easylib.domain.visual.application;
 
 import cn.easylib.domain.application.ICommandService;
-import cn.easylib.domain.application.ServiceDescriptor;
 
 public class MockCommandService implements ICommandService {
 
