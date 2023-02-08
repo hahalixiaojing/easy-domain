@@ -2,7 +2,6 @@ package cn.easylib.domain.visual.service;
 
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.base.IDomainService;
-import cn.easylib.domain.base.IDomainServiceDescriptor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,13 +17,15 @@ public class DomainServiceParser {
 
     public <T extends EntityBase<?>> List<DomainServiceDescriptor> parse(Class<T> cls) {
 
-        List<Class<?>> domainServiceClsList = this.domainServiceMap.get(cls).findList(cls);
-        return domainServiceClsList.stream().map(s -> {
+        List<Class<?>> domainServiceClsList = Optional.ofNullable(this.domainServiceMap.get(cls))
+                .map(f->f.findList(cls)).orElse(null);
+
+        return Optional.ofNullable(domainServiceClsList).orElse(Collections.emptyList()).stream().map(s -> {
 
             if (Arrays.stream(s.getInterfaces()).anyMatch(inter -> inter == IDomainService.class)) {
 
-                String description = Optional.ofNullable(s.getAnnotation(IDomainServiceDescriptor.class))
-                        .map(IDomainServiceDescriptor::description)
+                String description = Optional.ofNullable(s.getAnnotation(IDomainServiceVisual.class))
+                        .map(IDomainServiceVisual::description)
                         .orElse("");
 
                 return new DomainServiceDescriptor(s.getSimpleName(), description);

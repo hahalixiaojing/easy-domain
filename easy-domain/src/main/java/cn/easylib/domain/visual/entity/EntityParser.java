@@ -2,30 +2,69 @@ package cn.easylib.domain.visual.entity;
 
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.base.IEntity;
+import cn.easylib.domain.visual.VisualException;
+import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EntityParser {
 
-    private final Set<Class<?>> entityCls = new HashSet<>();
+    private final Map<Class<?>, IEntityFieldFinder> entityCls = new HashMap<>();
 
-    public <T extends EntityBase<?>> void registerEntity(Class<T> entityClass) {
-        entityCls.add(entityClass);
-    }
 
-    public EntityDescriptor parse(Class<?> cls) {
+    public <T extends EntityBase<?>> void registerEntity(Class<T> entityClass, IEntityFieldFinder finder) {
 
-        if (entityCls.contains(cls) && cls.isAssignableFrom(IEntity.class)) {
-            return new EntityDescriptor(cls.getSimpleName(), cls.getSimpleName());
+        if (entityCls.containsKey(entityClass)) {
+            throw new VisualException("repeat register");
         }
-        return null;
+        entityCls.put(entityClass, finder);
     }
 
-    public List<EntityDescriptor> all(){
-        return this.entityCls.stream().map(this::parse).collect(Collectors.toList());
+
+    public <T extends EntityBase<?>> List<EntityDescriptor> parse(Class<T> cls) {
+        return this.privateParse(cls);
     }
+
+    private FieldInfo getFieldName(Pair<FieldGetter<?, ?>, String> p) {
+        try {
+            return p.getKey().getFieldName(p.getRight());
+        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
+                 InvocationTargetException e) {
+            throw new VisualException(e);
+        }
+    }
+
+    public List<List<EntityDescriptor>> all() {
+        return this.entityCls.keySet().stream().map(this::privateParse).collect(Collectors.toList());
+    }
+
+    private List<EntityDescriptor> privateParse(Class<?> cls) {
+
+        if (entityCls.containsKey(cls)) {
+
+            return entityCls.get(cls).fieldGetterList()
+                    .stream()
+                    .map(this::getFieldName)
+                    .collect(Collectors.groupingBy(FieldInfo::getClsType)).entrySet().stream().map(t -> {
+
+                        EntityVisual annotation = t.getKey().getAnnotation(EntityVisual.class);
+
+                        String description = Optional.ofNullable(annotation)
+                                .map(EntityVisual::description).orElse("");
+
+                        String simpleCls = t.getKey().getSimpleName();
+                        boolean isRoot = TypeUtils.isAssignable(t.getKey(), IEntity.class);
+
+                        List<FieldInfo> value = t.getValue();
+
+                        return new EntityDescriptor(simpleCls, description, value, isRoot);
+                    }).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
 
 }

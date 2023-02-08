@@ -34,6 +34,7 @@ public class EventParser {
                 .orElse(Collections.emptyList())
                 .stream().map(evt -> {
 
+                    DomainEventVisual domainEventDescriptor = evt.getAnnotation(DomainEventVisual.class);
                     EventName eventName = evt.getAnnotation(EventName.class);
 
                     List<OrderedPerformManager.OrderData> eventSubscriberInfoList =
@@ -56,7 +57,11 @@ public class EventParser {
 
                     }).collect(Collectors.toList());
 
-                    return new EventDescriptor(eventName.value(), eventName.description(),
+
+                    return new EventDescriptor(eventName.value(),
+                            Optional.ofNullable(domainEventDescriptor)
+                                    .map(DomainEventVisual::description)
+                                    .orElse(eventName.value()),
                             subscriberDescriptorList);
 
 

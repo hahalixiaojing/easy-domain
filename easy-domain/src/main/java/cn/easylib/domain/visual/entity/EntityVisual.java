@@ -1,10 +1,13 @@
-package cn.easylib.domain.rules;
+package cn.easylib.domain.visual.entity;
+
 
 import java.lang.annotation.*;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface EntityRuleDescriptor {
+public @interface EntityVisual {
+
     String description() default "";
+
 }

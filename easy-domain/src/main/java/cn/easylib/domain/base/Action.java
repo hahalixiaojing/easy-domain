@@ -1,6 +1,7 @@
 package cn.easylib.domain.base;
 
 
+
 public class Action {
     private final String actionCode;
     private final String description;

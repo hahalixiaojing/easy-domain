@@ -1,8 +1,5 @@
 package cn.easylib.domain.visual.application;
 
-import cn.easylib.domain.application.IApplication;
-import cn.easylib.domain.application.ICommandService;
-import cn.easylib.domain.application.ServiceDescriptor;
 import cn.easylib.domain.base.EntityBase;
 
 import java.lang.reflect.Modifier;
@@ -28,20 +25,39 @@ public class ApplicationServiceParser {
                         .filter(m -> Modifier.isPublic(m.getModifiers()))
                         .map(m -> {
 
-                            boolean commandService = Arrays.stream(m.getDeclaringClass().getInterfaces()).filter(
-                                    i -> i == ICommandService.class
-                            ).count() == 1;
+                            CommandServiceVisual commandServiceDescriptor =
+                                    m.getAnnotation(CommandServiceVisual.class);
 
-                            ServiceDescriptor annotation = m.getAnnotation(ServiceDescriptor.class);
-                            if (annotation == null) {
+                            ReadServiceVisual readServiceDescriptor =
+                                    m.getAnnotation(ReadServiceVisual.class);
+
+                            if (commandServiceDescriptor == null && readServiceDescriptor == null) {
                                 return null;
                             }
+
+                            String name = Optional.ofNullable(commandServiceDescriptor)
+                                    .map(CommandServiceVisual::name)
+                                    .orElse(Optional.ofNullable(readServiceDescriptor)
+                                            .map(ReadServiceVisual::name)
+                                            .orElse("")
+                                    );
+                            String description = Optional.ofNullable(commandServiceDescriptor)
+                                    .map(CommandServiceVisual::description)
+                                    .orElse(Optional.ofNullable(readServiceDescriptor)
+                                            .map(ReadServiceVisual::description)
+                                            .orElse("")
+                                    );
+                            String type = Optional.ofNullable(commandServiceDescriptor).map(t -> {
+                                return "Command";
+                            }).orElse("Query");
+
+
                             return new ApplicationDescriptor(
-                                    annotation.name(),
-                                    annotation.description(),
+                                    name,
+                                    description,
                                     m.getDeclaringClass().getSimpleName(),
                                     m.getName(),
-                                    commandService
+                                    type
                             );
                         })
                         .filter(Objects::nonNull)

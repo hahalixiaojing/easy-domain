@@ -7,19 +7,19 @@ public class ApplicationDescriptor {
     private final String clsName;
     private final String methodName;
 
-    private final boolean isCommand;
+    private final String type;
 
     public ApplicationDescriptor(String name,
                                  String applicationServiceDescription,
                                  String clsName,
                                  String methodName,
-                                 boolean isCommand
+                                 String type
     ) {
         this.name = name;
         this.applicationServiceDescription = applicationServiceDescription;
         this.clsName = clsName;
         this.methodName = methodName;
-        this.isCommand = isCommand;
+        this.type = type;
     }
 
     public String getName() {
@@ -38,7 +38,7 @@ public class ApplicationDescriptor {
         return methodName;
     }
 
-    public boolean isCommand() {
-        return isCommand;
+    public String getType() {
+        return type;
     }
 }

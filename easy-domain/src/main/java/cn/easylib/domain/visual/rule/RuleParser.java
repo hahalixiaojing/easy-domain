@@ -4,7 +4,6 @@ import cn.easylib.domain.base.BrokenRuleMessage;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.rules.DefaultActiveRuleCondition;
 import cn.easylib.domain.rules.EntityRule;
-import cn.easylib.domain.rules.EntityRuleDescriptor;
 import cn.easylib.domain.rules.RuleItem;
 import cn.easylib.domain.visual.VisualException;
 
@@ -45,7 +44,7 @@ public class RuleParser {
 
         try {
 
-            EntityRuleDescriptor annotation = constructor.getDeclaringClass().getAnnotation(EntityRuleDescriptor.class);
+            EntityRuleVisual annotation = constructor.getDeclaringClass().getAnnotation(EntityRuleVisual.class);
 
             String entityRuleDescription = "";
             if (annotation != null) {

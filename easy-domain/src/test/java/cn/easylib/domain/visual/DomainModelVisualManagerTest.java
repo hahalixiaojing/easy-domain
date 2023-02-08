@@ -1,15 +1,14 @@
 package cn.easylib.domain.visual;
 
-import cn.easylib.domain.application.IApplication;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.application.IApplicationServiceFinder;
 import cn.easylib.domain.visual.application.MockCommandService;
+import cn.easylib.domain.visual.entity.AbstractEntityFieldFinder;
 import cn.easylib.domain.visual.event.IEventFinder;
 import cn.easylib.domain.visual.rule.IRuleFinder;
 import cn.easylib.domain.visual.service.IDomainServiceFinder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,16 +19,27 @@ import java.util.stream.Stream;
 public class DomainModelVisualManagerTest {
 
     @Test
-    public void build(){
+    public void build() {
 
         DomainModelVisualManager domainModelVisualManager =
                 new DomainModelVisualManager(MockDomainEventManager.mockIDomainEventManager());
 
-        domainModelVisualManager.registerDomainEntity(MockEntity.class);
-        domainModelVisualManager.registerApplicationService(MockEntity.class,new MockCommandFinder());
-        domainModelVisualManager.registerDomainService(MockEntity.class,new MockIDomainServiceFinder());
-        domainModelVisualManager.registerDomainEvent(MockEntity.class,new MockIEventFinder());
-        domainModelVisualManager.registerDomainRule(MockEntity.class,new MockIRuleFinder());
+        domainModelVisualManager.registerDomainEntity(MockEntity.class, new AbstractEntityFieldFinder() {
+            @Override
+            protected void initFieldList() {
+
+                addField(MockEntity::getAge,"年龄");
+                addField(MockEntity::getMockValueObject,"模拟值对象");
+                addField(MockEntity::getName,"姓名");
+                addField(MockValueObject::isYes,"是");
+                addField(MockValueObject::getName,"MockValue的姓名");
+
+            }
+        }, null, null);
+        domainModelVisualManager.registerApplicationService(MockEntity.class, new MockCommandFinder());
+        domainModelVisualManager.registerDomainService(MockEntity.class, new MockIDomainServiceFinder());
+        domainModelVisualManager.registerDomainEvent(MockEntity.class, new MockIEventFinder());
+        domainModelVisualManager.registerDomainRule(MockEntity.class, new MockIRuleFinder());
 
         DomainModelVisualInfo build = domainModelVisualManager.build(MockEntity.class);
 
@@ -37,7 +47,7 @@ public class DomainModelVisualManagerTest {
 
     }
 
-    static class MockIRuleFinder implements IRuleFinder{
+    static class MockIRuleFinder implements IRuleFinder {
 
         @Override
         public <T extends EntityBase<?>> RuleFinderObject findEntityRuleList(Class<T> cls) {
@@ -47,7 +57,7 @@ public class DomainModelVisualManagerTest {
         }
     }
 
-    static class MockIEventFinder implements IEventFinder{
+    static class MockIEventFinder implements IEventFinder {
 
         @Override
         public <T extends EntityBase<?>> List<Class<?>> findersList(Class<T> cls) {
@@ -64,7 +74,7 @@ public class DomainModelVisualManagerTest {
         }
     }
 
-    static class MockIDomainServiceFinder implements IDomainServiceFinder{
+    static class MockIDomainServiceFinder implements IDomainServiceFinder {
 
         @Override
         public <T extends EntityBase<?>> List<Class<?>> findList(Class<T> cls) {

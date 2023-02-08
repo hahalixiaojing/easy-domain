@@ -76,10 +76,14 @@ public class OrderedPerformManager implements IOrderedPerformManager {
 
     @Override
     public List<OrderData> selectEventSubscriberInfo(String eventName) {
-        return new ArrayList<>(this.maps.get(eventName));
+        HashSet<OrderData> orderData = this.maps.get(eventName);
+        if(orderData == null){
+            return  Collections.emptyList();
+        }
+        return new ArrayList<>(orderData);
     }
 
-    static enum RootSubscriberKey implements ISubscriberKey {
+    enum RootSubscriberKey implements ISubscriberKey {
 
         ROOT("ROOT", "ROOT");
 

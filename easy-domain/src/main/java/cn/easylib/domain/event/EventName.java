@@ -12,6 +12,4 @@ public @interface EventName {
     String value();
 
     String shareTopicName() default "";
-    String description() default "";
-
 }

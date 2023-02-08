@@ -1,20 +1,39 @@
 package cn.easylib.domain.visual.entity;
 
+import java.util.List;
+
+
+
 public class EntityDescriptor {
-    private final String name;
+    private final String description;
+
+    private final Boolean isRoot;
+
     private final String clsName;
 
-    public EntityDescriptor(String name, String clsName) {
+    private final List<FieldInfo> fieldInfoList;
 
-        this.name = name;
+    public EntityDescriptor(String clsName, String description,List<FieldInfo> fieldInfoList,Boolean isRoot) {
+
         this.clsName = clsName;
-    }
-
-    public String getName() {
-        return name;
+        this.description = description;
+        this.fieldInfoList =fieldInfoList;
+        this.isRoot =isRoot;
     }
 
     public String getClsName() {
         return clsName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Boolean getRoot() {
+        return isRoot;
+    }
+
+    public List<FieldInfo> getFieldInfoList() {
+        return fieldInfoList;
     }
 }

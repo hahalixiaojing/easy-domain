@@ -1,10 +1,11 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.visual.event;
 
 import java.lang.annotation.*;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface IDomainServiceDescriptor {
+public @interface DomainEventVisual {
     String description() default "";
+
 }
