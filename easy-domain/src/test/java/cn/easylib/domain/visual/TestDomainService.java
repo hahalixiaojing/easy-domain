@@ -1,9 +1,9 @@
 package cn.easylib.domain.visual;
 
 import cn.easylib.domain.base.IDomainService;
-import cn.easylib.domain.visual.service.IDomainServiceDescriptor;
+import cn.easylib.domain.visual.service.DomainServiceVisual;
 
-@IDomainServiceDescriptor(description = "测试domainService")
+@DomainServiceVisual(description = "测试domainService")
 public class TestDomainService implements IDomainService {
 
 
