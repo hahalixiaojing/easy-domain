@@ -35,7 +35,7 @@ public class DomainModelVisualManagerTest {
                 addField(MockValueObject::getName,"MockValue的姓名");
 
             }
-        }, null, null);
+        });
         domainModelVisualManager.registerApplicationService(MockEntity.class, new MockCommandFinder());
         domainModelVisualManager.registerDomainService(MockEntity.class, new MockIDomainServiceFinder());
         domainModelVisualManager.registerDomainEvent(MockEntity.class, new MockIEventFinder());

@@ -24,8 +24,8 @@ public class DomainServiceParser {
 
             if (Arrays.stream(s.getInterfaces()).anyMatch(inter -> inter == IDomainService.class)) {
 
-                String description = Optional.ofNullable(s.getAnnotation(IDomainServiceVisual.class))
-                        .map(IDomainServiceVisual::description)
+                String description = Optional.ofNullable(s.getAnnotation(DomainServiceVisual.class))
+                        .map(DomainServiceVisual::description)
                         .orElse("");
 
                 return new DomainServiceDescriptor(s.getSimpleName(), description);
