@@ -8,7 +8,6 @@ public class EntityDescriptor {
     private final String description;
 
     private final Boolean isRoot;
-
     private final String clsName;
 
     private final List<FieldInfo> fieldInfoList;
