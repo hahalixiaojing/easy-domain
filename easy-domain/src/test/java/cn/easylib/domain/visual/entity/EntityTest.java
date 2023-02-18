@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntityTest {
 
@@ -15,6 +17,7 @@ public class EntityTest {
         AbstractEntityFieldFinder abstractEntityFieldFinder = new AbstractEntityFieldFinder() {
             @Override
             protected void initFieldList() {
+                addField(MockEntity::getId,"业务唯一标识");
                 addField(MockEntity::getName, "名称");
                 addField(MockEntity::getAgeTest, "年龄");
                 addField(MockEntity::getAge, "年龄");
@@ -32,6 +35,19 @@ public class EntityTest {
 
         System.out.println(JSON.toJSONString(parse));
 
+
+    }
+
+    @Test
+    public void regXTest(){
+        String test ="(Lcn/easylib/domain/visual/MockEntity;)Ljava/lang/Long;";
+
+
+        Pattern compile = Pattern.compile("\\(L(.+);\\)");
+
+        Matcher matcher = compile.matcher(test);
+
+        System.out.println(matcher.group(1));
 
     }
 }

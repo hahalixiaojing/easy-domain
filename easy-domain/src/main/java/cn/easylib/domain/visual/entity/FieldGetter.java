@@ -5,8 +5,11 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public interface FieldGetter<T, R> extends Function<T, R>, Serializable {
+    Pattern compile = Pattern.compile("\\(L(.+);\\)");
 
     default FieldInfo getFieldName(String description) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         Method method = this.getClass().getDeclaredMethod("writeReplace");
@@ -14,7 +17,12 @@ public interface FieldGetter<T, R> extends Function<T, R>, Serializable {
         SerializedLambda serializedLambda = (SerializedLambda) method.invoke(this);
         String methodName = serializedLambda.getImplMethodName();
 
-        String replace = serializedLambda.getImplClass().replace('/', '.');
+        Matcher matcher = compile.matcher(serializedLambda.getInstantiatedMethodType());
+        matcher.find();
+        String classPath = matcher.group(1);
+
+
+        String replace = classPath.replace('/', '.');
 
         Class<?> aClass = Class.forName(replace);
 
