@@ -36,8 +36,14 @@ public class MockEntity extends EntityBase<Long> {
         return name;
     }
 
-    @EntityActionVisual(classes = {TestEvent.class})
+    @EntityActionVisual(triggerEvents = {TestEvent.class})
     public void changeBasic(String name) {
+        this.name = name;
+        this.eventCollector.pushEvent(new TestEvent());
+    }
+
+    @EntityActionVisual(triggerEvents = {TestEvent.class})
+    public void changeBasic2(String name,String name2) {
         this.name = name;
         this.eventCollector.pushEvent(new TestEvent());
     }

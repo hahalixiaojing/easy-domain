@@ -60,7 +60,27 @@ public class EntityParser {
 
                         List<FieldInfo> value = t.getValue();
 
-                        return new EntityDescriptor(simpleCls, description, value, isRoot);
+                        List<EntityActionDescriptor> entityActionDescriptorList = Collections.emptyList();
+                        if (isRoot) {
+
+                            entityActionDescriptorList = Arrays
+                                    .stream(t.getKey().getDeclaredMethods())
+                                    .filter(s -> s.getAnnotation(EntityActionVisual.class) != null).map(m -> {
+
+                                        String name = m.getName();
+                                        EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
+                                        List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
+                                                .map(Class::getSimpleName)
+                                                .collect(Collectors.toList());
+
+                                        return new EntityActionDescriptor(name, "", triggerEvents);
+
+                                    }).collect(Collectors.toList());
+
+
+                        }
+
+                        return new EntityDescriptor(simpleCls, description, value, entityActionDescriptorList, isRoot);
                     }).collect(Collectors.toList());
         }
         return new ArrayList<>();
