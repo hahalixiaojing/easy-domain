@@ -6,7 +6,9 @@ import cn.easylib.domain.visual.VisualException;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +50,10 @@ public class EntityParser {
             return entityCls.get(cls).fieldGetterList()
                     .stream()
                     .map(this::getFieldName)
-                    .collect(Collectors.groupingBy(FieldInfo::getClsType)).entrySet().stream().map(t -> {
+                    .collect(Collectors.groupingBy(FieldInfo::getClsType))
+                    .entrySet()
+                    .stream()
+                    .map(t -> {
 
                         EntityVisual annotation = t.getKey().getAnnotation(EntityVisual.class);
 
@@ -60,30 +65,66 @@ public class EntityParser {
 
                         List<FieldInfo> value = t.getValue();
 
-                        List<EntityActionDescriptor> entityActionDescriptorList = Collections.emptyList();
+                        List<EntityActionDescriptor> methodEntityActionDescriptorList = Collections.emptyList();
+                        List<EntityActionDescriptor> constructorActionDescriptorList = Collections.emptyList();
                         if (isRoot) {
-
-                            entityActionDescriptorList = Arrays
-                                    .stream(t.getKey().getDeclaredMethods())
-                                    .filter(s -> s.getAnnotation(EntityActionVisual.class) != null).map(m -> {
-
-                                        String name = m.getName();
-                                        EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
-                                        List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
-                                                .map(Class::getSimpleName)
-                                                .collect(Collectors.toList());
-
-                                        return new EntityActionDescriptor(name, "", triggerEvents);
-
-                                    }).collect(Collectors.toList());
-
+                            constructorActionDescriptorList = this.buildConstructorAction(
+                                    t.getKey().getDeclaredConstructors());
+                            methodEntityActionDescriptorList = this.buildMethodAction(
+                                    t.getKey().getDeclaredMethods());
 
                         }
 
-                        return new EntityDescriptor(simpleCls, description, value, entityActionDescriptorList, isRoot);
+                        ArrayList<EntityActionDescriptor> entityActionDescriptors = new ArrayList<>();
+                        entityActionDescriptors.addAll(constructorActionDescriptorList);
+                        entityActionDescriptors.addAll(methodEntityActionDescriptorList);
+
+
+                        return new EntityDescriptor(simpleCls,
+                                description,
+                                value,
+                                entityActionDescriptors,
+                                isRoot);
                     }).collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    private List<EntityActionDescriptor> buildConstructorAction(Constructor<?>[] constructors) {
+
+        return Arrays.stream(constructors)
+                .filter(s -> s.getAnnotation(EntityActionVisual.class) != null)
+                .map(m -> {
+
+                            EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
+                            List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
+                                    .map(Class::getSimpleName)
+                                    .collect(Collectors.toList());
+
+                            return new EntityActionDescriptor("Constructor",
+                                    "构造",
+                                    triggerEvents);
+                        }
+
+                ).collect(Collectors.toList());
+
+    }
+
+    private List<EntityActionDescriptor> buildMethodAction(Method[] methods) {
+        return Arrays
+                .stream(methods)
+                .filter(s -> s.getAnnotation(EntityActionVisual.class) != null)
+                .map(m -> {
+
+                    String name = m.getName();
+                    EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
+                    List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
+                            .map(Class::getSimpleName)
+                            .collect(Collectors.toList());
+
+                    return new EntityActionDescriptor(name, "", triggerEvents);
+
+                }).collect(Collectors.toList());
     }
 
 

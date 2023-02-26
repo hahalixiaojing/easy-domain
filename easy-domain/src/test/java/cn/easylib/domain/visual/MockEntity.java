@@ -32,6 +32,19 @@ public class MockEntity extends EntityBase<Long> {
 
     private MockValueObject mockValueObject;
 
+    public MockEntity() {
+    }
+
+    @EntityActionVisual(triggerEvents = MockEntityCreatedEvent.class)
+    public MockEntity(String name, Integer age, int ageTest) {
+
+        this.name = name;
+        this.age = age;
+        this.ageTest = ageTest;
+
+        this.eventCollector.pushEvent(MockEntityCreatedEvent.buildEvent());
+    }
+
     public String showName() {
         return name;
     }
