@@ -32,7 +32,8 @@ public class DomainModelVisualManager {
         this.domainServiceParser = new DomainServiceParser();
     }
 
-    public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass, IEntityFieldFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass,
+                                                               IEntityFieldFinder finder) {
         this.entityParser.registerEntity(entityClass, finder);
     }
 
@@ -41,15 +42,18 @@ public class DomainModelVisualManager {
         this.applicationServiceParser.registerApplicationService(entityClass, finder);
     }
 
-    public <T extends EntityBase<?>> void registerDomainEvent(Class<T> entityClass, IEventFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainEvent(Class<T> entityClass,
+                                                              IEventFinder finder) {
         this.eventParser.registerDomainEvent(entityClass, finder);
     }
 
-    public <T extends EntityBase<?>> void registerDomainRule(Class<T> entityClass, IRuleFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainRule(Class<T> entityClass,
+                                                             IRuleFinder finder) {
         this.ruleParser.registerDomainRule(entityClass, finder);
     }
 
-    public <T extends EntityBase<?>> void registerDomainService(Class<T> entityClass, IDomainServiceFinder finder) {
+    public <T extends EntityBase<?>> void registerDomainService(Class<T> entityClass,
+                                                                IDomainServiceFinder finder) {
         this.domainServiceParser.registerDomainService(entityClass, finder);
     }
 
