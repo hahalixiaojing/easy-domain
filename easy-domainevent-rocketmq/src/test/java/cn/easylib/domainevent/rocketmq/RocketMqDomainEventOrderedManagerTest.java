@@ -1,8 +1,9 @@
 package cn.easylib.domainevent.rocketmq;
 
-import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriberFactory;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
+import cn.easylib.domain.event.SubscriberFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,21 +23,24 @@ public class RocketMqDomainEventOrderedManagerTest {
     public void randomExecuteTest() throws InterruptedException {
 
         CountDownLatch countDownLatch = new CountDownLatch(4);
-        ISubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
+//        ISubscriberFactory factory = new RocketmqSubscriberFactory();
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(
+                new ProducerCreator("localhost:9876"),
+                new ConsumerCreator("localhost:9876"), "",
+                new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r1");
         }), "r1");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r2");
         }), "r2");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r3");
         }), "r3");
@@ -58,20 +62,22 @@ public class RocketMqDomainEventOrderedManagerTest {
     @Test
     public void orderExecuteTest1() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(5);
-        ISubscriberFactory factory = new RocketmqSubscriberFactory();
-        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
+        RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(
+                new ProducerCreator("localhost:9876"),
+                new ConsumerCreator("localhost:9876"), "",
+                new OrderedPerformManager());
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(1);
         }), "test1", "test2");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(2);
         }), "test2", "test3");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(3);
         }), "test3");
@@ -99,13 +105,13 @@ public class RocketMqDomainEventOrderedManagerTest {
     @Test
     public void orderExecuteTest2() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest1");
@@ -113,14 +119,14 @@ public class RocketMqDomainEventOrderedManagerTest {
         }), "shareTest1", "shareTest2");
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest2");
 
         }), "shareTest2");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest3");
@@ -149,39 +155,39 @@ public class RocketMqDomainEventOrderedManagerTest {
     @Test
     public void towEventOrderExecute() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(3);
-        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("sub1");
 
         }), "sub1");
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("sub2");
 
         }), "sub2", "sub1");
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("sub3");
 
         }), "sub3", "sub1");
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest1");
         }), "shareTest1", "shareTest2");
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest2");
         }), "shareTest2");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "shareTest3");
 
@@ -201,20 +207,20 @@ public class RocketMqDomainEventOrderedManagerTest {
     public void orderExecuteWithConditionTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("sub1");
                 }), "sub1", "sub2"
         );
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
-            countDownLatch.countDown();
-            System.out.println("sub2");
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+                    countDownLatch.countDown();
+                    System.out.println("sub2");
                 }), "sub2", (IExecuteCondition<MyDomainEvent>) evt -> evt.name.equals("100")
         );
         //发布事件 name=100 执行 sub2 ,sub1
@@ -238,7 +244,7 @@ public class RocketMqDomainEventOrderedManagerTest {
      */
     @Test
     public void retryOrderExecuteTest() throws InterruptedException {
-        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
+//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
 
@@ -246,7 +252,7 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
 
             if (countDownLatch.getCount() > 0) {
                 countDownLatch.countDown();
@@ -257,7 +263,7 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         }), "sub1");
 
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("run ok sub2");
 
         }), "sub2", "sub1");

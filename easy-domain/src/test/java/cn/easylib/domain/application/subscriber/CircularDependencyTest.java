@@ -20,21 +20,21 @@ public class CircularDependencyTest {
     public void check() {
 
         //每次都从root进行检查,是否有循环依赖
-//        List<DepData> collect = Stream.of(
-//                new DepData(1, 2),
-//                new DepData(2, 3),
-//                new DepData(1, 4),
-//                new DepData(4, 5),
-//                new DepData(4, 6),
-//                new DepData(6, 7),
-//                new DepData(6, 1)
-////                new DepData(7, 5)
-//        ).collect(Collectors.toList());
-
-
         List<DepData> collect = Stream.of(
                 new DepData(1, 2),
-                new DepData(2, 1)).collect(Collectors.toList());
+                new DepData(2, 3),
+                new DepData(1, 4),
+                new DepData(4, 5),
+                new DepData(4, 6),
+                new DepData(6, 7),
+                new DepData(6, 1)
+//                new DepData(7, 5)
+        ).collect(Collectors.toList());
+
+
+//        List<DepData> collect = Stream.of(
+//                new DepData(1, 2),
+//                new DepData(2, 1)).collect(Collectors.toList());
 
 
         //root

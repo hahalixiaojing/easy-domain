@@ -1,6 +1,7 @@
 package cn.easylib.domainevent.rocketmq;
 
 import cn.easylib.domain.application.subscriber.*;
+import cn.easylib.domain.event.AbstractDomainEventSubscriber;
 import com.alibaba.fastjson.JSON;
 import cn.easylib.domain.event.DefaultExecuteCondition;
 import cn.easylib.domain.event.EventName;

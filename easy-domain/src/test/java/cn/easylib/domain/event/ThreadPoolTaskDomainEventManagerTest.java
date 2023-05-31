@@ -28,12 +28,11 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -41,21 +40,21 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         }), "sub1", "sub2");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
         }), "sub2", "sub3");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(3);
         }), "sub3");
         //发布事件，执行sub2的订阅，并执行依赖sub2的订阅sub1
-        manager.publishEvent(new TestDomainEvent(""), "sub2");
+        manager.publishEvent(new TestDomainEvent("111"), "sub2");
 
         countDownLatch.await();
 
@@ -73,12 +72,11 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -86,14 +84,14 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         }), "sub1", "sub2");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
         }), "sub2", "sub3");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -117,12 +115,11 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(3);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -130,14 +127,14 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         }), "sub1", "sub2");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
         }), "sub2", "sub3");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -162,12 +159,11 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(3);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -176,7 +172,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         }), "sub1");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -186,7 +182,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         }), "sub2");
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -214,12 +210,9 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
-
-
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -228,7 +221,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
             //需要满足IExecuteCondition 条件才能执行
         }), "sub1", (IExecuteCondition<TestDomainEvent>) iDomainEvent -> iDomainEvent.getBusinessId().equals("1"));
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
@@ -248,19 +241,18 @@ public class ThreadPoolTaskDomainEventManagerTest {
     @Test
     public void orderExecuteWithConditionTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
 
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("sub1");
                 }), "sub1", "sub2"
         );
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("sub2");
                 }), "sub2", (IExecuteCondition<TestDomainEvent>) evt -> evt.getBusinessId().equals("100")
@@ -287,14 +279,12 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(4);
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        ISubscriberFactory factory = new ThreadPoolSubscriberFactory();
-
 
         //最大重试次数，不算首次调用
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(factory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);

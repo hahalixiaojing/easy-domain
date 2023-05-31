@@ -1,8 +1,7 @@
-package cn.easylib.domainevent.rocketmq;
+package cn.easylib.domain.event;
 
-import com.alibaba.fastjson.JSON;
 import cn.easylib.domain.application.subscriber.IDomainEventSubscriber;
-import cn.easylib.domain.event.IDomainEvent;
+import com.alibaba.fastjson.JSON;
 
 public abstract class AbstractDomainEventSubscriber<T extends IDomainEvent> implements IDomainEventSubscriber<T> {
 

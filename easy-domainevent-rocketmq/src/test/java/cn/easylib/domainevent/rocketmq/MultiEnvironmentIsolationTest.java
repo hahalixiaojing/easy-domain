@@ -1,5 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
+import cn.easylib.domain.event.SubscriberFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,11 +27,10 @@ public class MultiEnvironmentIsolationTest {
 
     private void build(String environmentName, String message) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), environmentName);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(factory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + " = " + message);
         }), "test1");

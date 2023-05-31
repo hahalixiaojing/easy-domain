@@ -7,6 +7,7 @@ import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 /**
  * @author lixiaojing
  */
+@Deprecated
 public class ThreadPoolSubscriberFactory implements ISubscriberFactory {
     @Override
     public <T extends IDomainEvent> ISubscriber build(Class<T> cls, Handle<T> handle) {
