@@ -1,4 +1,4 @@
-package cn.easylib.domainevent.rocketmq;
+package cn.easylib.domain.event;
 
 
 public class RegisterDomainEventException extends RuntimeException {
