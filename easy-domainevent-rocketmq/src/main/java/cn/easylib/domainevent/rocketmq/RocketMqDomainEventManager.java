@@ -14,24 +14,17 @@ import org.apache.rocketmq.common.message.MessageExt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toMap;
 
 
-public class RocketMqDomainEventManager implements IDomainEventManager, MessageListenerConcurrently {
-
-
-    private final String environmentName;
-    //Map key=EventName use Topic
+public class RocketMqDomainEventManager extends AbstractDomainEventManager implements MessageListenerConcurrently {
 
     private final Set<String> eventNameUseTopicList = new HashSet<>();
     private final Set<String> sharedTopicList = new HashSet<>();
 
-    //Outer Map key= EventName;  Inner Map Key=SubscriberName
-    private final Map<String, Map<String, SubscriberInfo>> subscribers = new HashMap<>();
-    private final IExecuteCondition condition = new DefaultExecuteCondition();
 
-    private final IOrderedPerformManager performManager;
     private final IConsumerCreator consumerCreator;
     private final IProducerCreator producerCreator;
 
@@ -44,8 +37,7 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
     }
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName, IOrderedPerformManager performManager) {
-        this.performManager = performManager;
-        this.environmentName = environmentName == null ? "" : environmentName;
+        super(environmentName, performManager);
         this.consumerCreator = consumerCreator;
         this.producerCreator = producerCreator;
     }
@@ -103,73 +95,6 @@ public class RocketMqDomainEventManager implements IDomainEventManager, MessageL
             topic = eventNameInfo.shareTopicName;
         }
         return topic;
-    }
-
-    private void registerSubscriber(ISubscriber subscriber, String event, String alias, IExecuteCondition iExecuteCondition) {
-        if (!this.subscribers.containsKey(event)) {
-
-            Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
-            subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, iExecuteCondition));
-
-            this.subscribers.put(event, subscriberMap);
-        } else {
-            Map<String, SubscriberInfo> stringISubscriberMap = this.subscribers.get(event);
-            if (stringISubscriberMap.containsKey(alias)) {
-                throw new IllegalArgumentException(alias + " is duplication");
-            }
-
-            this.subscribers.get(event).put(alias, new SubscriberInfo(subscriber, alias, iExecuteCondition));
-        }
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias) {
-        this.registerSubscriber(subscriber, alias, "");
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-
-        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
-        this.registerSubscriber(subscriber, event.eventName, alias, condition);
-        if (this.performManager != null) {
-            this.performManager.registerSubscriber(event.eventName, alias, dependSubscriber);
-        }
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
-        this.registerSubscriber(subscriber, alias, condition, "");
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition, String dependSubscriber) {
-        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
-        this.registerSubscriber(subscriber, event.eventName, alias, condition);
-        if (this.performManager != null) {
-            this.performManager.registerSubscriber(event.eventName, alias, dependSubscriber);
-        }
-    }
-
-    private EventNameInfo getEventName(Class<?> eventType) {
-        EventName alias = eventType.getAnnotation(EventName.class);
-
-        String evtName;
-        String shareTopicName;
-        if (alias == null) {
-            evtName = eventType.getSimpleName();
-            shareTopicName = "";
-        } else {
-            evtName = alias.value();
-            shareTopicName = alias.shareTopicName();
-        }
-        if (StringUtils.isNotBlank(this.environmentName)) {
-            evtName = this.environmentName + "_" + evtName;
-            if (StringUtils.isNotBlank(shareTopicName)) {
-                shareTopicName = this.environmentName + "_" + shareTopicName;
-            }
-        }
-        return new EventNameInfo(evtName, shareTopicName);
     }
 
     @SuppressWarnings("unchecked")

@@ -2,7 +2,6 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
-import cn.easylib.domain.application.subscriber.ISubscriberFactory;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -5,14 +5,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractDomainEventManager implements IDomainEventManager {
 
-    private final String environmentName;
-    private final Map<String, Map<String, SubscriberInfo>> subscribers = new HashMap<>();
+    protected final String environmentName;
+    protected final ConcurrentHashMap<String, Map<String, SubscriberInfo>> subscribers = new ConcurrentHashMap<>();
     private final IExecuteCondition<IDomainEvent> condition = new DefaultExecuteCondition<>();
 
-    private final IOrderedPerformManager performManager;
+    protected final IOrderedPerformManager performManager;
 
     public AbstractDomainEventManager(String environmentName, IOrderedPerformManager performManager) {
         this.environmentName = environmentName;
@@ -39,30 +40,49 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
         return new EventNameInfo(evtName, shareTopicName);
     }
 
-    protected String getTopicName(EventNameInfo eventNameInfo){
-        String topic;
-        if (eventNameInfo.shareTopicName == null || eventNameInfo.shareTopicName.equals("")) {
-            topic = eventNameInfo.eventName;
-        } else {
-            topic = eventNameInfo.shareTopicName;
-        }
-        return topic;
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias) {
+        this.registerSubscriber(subscriber, alias, "");
     }
 
-    protected void registerSubscriber(ISubscriber subscriber, String event, String alias, IExecuteCondition iExecuteCondition){
-        if (!this.subscribers.containsKey(event)) {
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
+        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
 
-            Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
-            subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, iExecuteCondition));
+    }
 
-            this.subscribers.put(event, subscriberMap);
-        } else {
-            Map<String, SubscriberInfo> stringISubscriberMap = this.subscribers.get(event);
+    @Override
+    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
+        this.registerSubscriber(subscriber, alias, condition, "");
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber,
+                                   String alias,
+                                   IExecuteCondition condition,
+                                   String dependSubscriber) {
+        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
+        if (this.subscribers.containsKey(event.eventName)) {
+
+            Map<String, SubscriberInfo> stringISubscriberMap = this.subscribers.get(event.eventName);
             if (stringISubscriberMap.containsKey(alias)) {
                 throw new IllegalArgumentException(alias + " is duplication");
             }
 
-            this.subscribers.get(event).put(alias, new SubscriberInfo(subscriber, alias, iExecuteCondition));
+            this.subscribers.get(event.eventName).put(alias,
+                    new SubscriberInfo(subscriber, alias, condition));
+
+        } else {
+
+            Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
+            subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, condition));
+            this.subscribers.put(event.eventName, subscriberMap);
+
+        }
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(event.eventName,
+                    alias,
+                    dependSubscriber);
         }
     }
 }

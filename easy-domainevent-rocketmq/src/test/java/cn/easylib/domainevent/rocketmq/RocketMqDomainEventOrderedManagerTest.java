@@ -23,7 +23,6 @@ public class RocketMqDomainEventOrderedManagerTest {
     public void randomExecuteTest() throws InterruptedException {
 
         CountDownLatch countDownLatch = new CountDownLatch(4);
-//        ISubscriberFactory factory = new RocketmqSubscriberFactory();
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(
                 new ProducerCreator("localhost:9876"),
                 new ConsumerCreator("localhost:9876"), "",

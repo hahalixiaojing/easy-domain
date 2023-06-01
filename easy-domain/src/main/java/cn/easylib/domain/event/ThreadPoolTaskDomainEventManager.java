@@ -2,6 +2,7 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.*;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,17 +20,14 @@ import static java.util.stream.Collectors.toMap;
 /**
  * 基于线程池的事件任务处理器
  */
-public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
+public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager {
 
-    private final ConcurrentHashMap<String, Map<String, SubscriberInfo>> subscribersMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, ScheduledThreadPoolExecutor> taskTheadMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Integer> domainEventAndThreadMap = new ConcurrentHashMap<>();
 
-    private final IOrderedPerformManager performManager;
     /**
      * 订阅默认执行条件
      */
-    private static final DefaultExecuteCondition<IDomainEvent> condition = new DefaultExecuteCondition<>();
 
     private final int maxRetryTimes;
     private final int retryDelayTime;
@@ -42,10 +40,12 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
     public ThreadPoolTaskDomainEventManager(int initThreadCount, int maxRetryTimes, int retryDelayTime,
                                             IOrderedPerformManager iOrderedPerformManager) {
+
+        super("", iOrderedPerformManager);
         this.initThreadCount = initThreadCount;
         this.maxRetryTimes = maxRetryTimes;
         this.retryDelayTime = retryDelayTime;
-        this.performManager = iOrderedPerformManager;
+//        this.performManager = iOrderedPerformManager;
 
         ThreadFactory threadFactory = this.createThreadFactory();
 
@@ -79,7 +79,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     @Override
     public Map<String, List<String>> allEvents() {
 
-        return this.subscribersMap.entrySet()
+        return this.subscribers.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         v -> v.getValue().values().stream().map(SubscriberInfo::getAlias)
@@ -95,119 +95,34 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     @Override
     public void registerDomainEvent(Class<?> domainEventType) {
 
-        String domainEventName = domainEventType.getName();
-        this.subscribersMap.computeIfAbsent(domainEventName, s -> new HashMap<>());
-        this.domainEventAndThreadMap.computeIfAbsent(domainEventName, s -> RandomUtils.nextInt(0, this.initThreadCount));
-    }
+        EventNameInfo eventName = this.getEventName(domainEventType);
 
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias) {
-        this.registerSubscriber(subscriber, alias, "");
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
-        this.registerSubscriber(subscriber, alias, condition, "");
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition,
-                                   String dependSubscriber) {
-        String domainEventName = subscriber.subscribedToEventType().getName();
-
-        if (this.subscribersMap.containsKey(domainEventName)) {
-
-            Map<String, SubscriberInfo> subscriberMap = this.subscribersMap.get(domainEventName);
-            if (subscriberMap.containsKey(alias)) {
-
-                throw new IllegalArgumentException(alias + " is duplication");
-            }
-
-            this.subscribersMap.get(domainEventName).put(
-                    alias,
-                    new SubscriberInfo(subscriber, alias, condition)
-            );
-        }
-
-        if (this.performManager != null) {
-
-            this.performManager.registerSubscriber(domainEventName,
-                    alias,
-                    dependSubscriber);
-        }
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias) {
-        this.registerSubscriber(subscriber, alias, condition);
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, ISubscriberKey dependSubscriber) {
-        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, IExecuteCondition condition) {
-        this.registerSubscriber(subscriber, alias, condition, null);
-
-    }
-
-    @Override
-    public void registerSubscriber(ISubscriber subscriber, ISubscriberKey alias, IExecuteCondition condition,
-                                   ISubscriberKey dependSubscriber) {
-
-        String domainEventName = subscriber.subscribedToEventType().getName();
-
-        if (this.subscribersMap.containsKey(domainEventName)) {
-
-            Map<String, SubscriberInfo> subscriberMap = this.subscribersMap.get(domainEventName);
-            if (subscriberMap.containsKey(alias.keyName())) {
-
-                throw new IllegalArgumentException(alias.keyName() + " is duplication");
-            }
-
-            this.subscribersMap.get(domainEventName).put(alias.keyName(),
-                    new SubscriberInfo(subscriber,
-                            alias.keyName(),
-                            alias, condition)
-            );
-        }
-
-        if (this.performManager != null) {
-            this.performManager.registerSubscriber(
-                    subscriber.subscribedToEventType().getName(),
-                    alias,
-                    dependSubscriber);
-        }
+        this.subscribers.computeIfAbsent(eventName.eventName, s -> new HashMap<>());
+        this.domainEventAndThreadMap.computeIfAbsent(eventName.eventName, s -> RandomUtils.nextInt(0, this.initThreadCount));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj) {
 
-        String domainEventName = obj.getClass().getName();
-        Map<String, SubscriberInfo> subscriberMap = this.subscribersMap.get(domainEventName);
+        EventNameInfo eventName = this.getEventName(obj.getClass());
+
+        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
         if (subscriberMap == null) {
             return;
         }
 
         //如果有执行顺序管理，先查找到根
         if (this.performManager != null) {
-            List<String> rootSubscribers = this.performManager.selectRootSubscribers(domainEventName);
+            List<String> rootSubscribers = this.performManager.selectRootSubscribers(eventName.eventName);
             subscriberMap = subscriberMap.entrySet()
                     .stream()
                     .filter(s -> rootSubscribers.contains(s.getKey()))
                     .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
-        Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
-        if(pooledIndex == null){
+        Integer pooledIndex = this.domainEventAndThreadMap.get(eventName.eventName);
+        if (pooledIndex == null) {
             return;
         }
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);
@@ -221,7 +136,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
                 Task<T> task = this.buildTask(
                         subscribedTo,
                         obj,
-                        domainEventName,
+                        eventName.eventName,
                         entry.getKey(),
                         threadPoolExecutor,
                         false);
@@ -239,12 +154,14 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
-        String domainEventName = obj.getClass().getName();
-        Map<String, SubscriberInfo> subscriberMap = this.subscribersMap.get(domainEventName);
+        EventNameInfo eventName = this.getEventName(obj.getClass());
+
+
+        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
         if (subscriberMap == null) {
             return;
         }
-        Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
+        Integer pooledIndex = this.domainEventAndThreadMap.get(eventName.eventName);
         if (pooledIndex == null) {
             return;
         }
@@ -259,7 +176,7 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
 
                 Task<T> task = this.buildTask(subscribedTo,
                         obj,
-                        domainEventName,
+                        eventName.eventName,
                         entry.getKey(),
                         threadPoolExecutor,
                         onlyThis);

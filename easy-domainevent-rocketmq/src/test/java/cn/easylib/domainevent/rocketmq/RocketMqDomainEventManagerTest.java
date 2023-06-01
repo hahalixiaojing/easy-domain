@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RocketMqDomainEventManagerTest {
     /**
-     * 使用类名做为Topic的发布订阅实现
+     * 使用类名做为Topic的发布订阅实现,输出abctest1和abctest2
      *
      * @throws InterruptedException
      */
@@ -55,7 +55,7 @@ public class RocketMqDomainEventManagerTest {
 
     /**
      * 使用共享topic的发布订阅测试，
-     * 多个领域事件共享一个topic
+     * 多个领域事件共享一个topic 输出shareshareTest1和shareshareTest2
      *
      * @throws InterruptedException
      */
@@ -93,7 +93,7 @@ public class RocketMqDomainEventManagerTest {
     }
 
     /**
-     * 带条件的订阅测试
+     * 带条件的订阅测试输出 test2和test1
      *
      * @throws InterruptedException
      */
