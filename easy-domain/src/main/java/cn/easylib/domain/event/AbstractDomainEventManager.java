@@ -4,8 +4,12 @@ import cn.easylib.domain.application.subscriber.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractDomainEventManager implements IDomainEventManager {
 
@@ -48,6 +52,22 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    @Override
+    public List<OrderedPerformManager.OrderData> findEventSubscriberInfo(String eventName) {
+        return this.performManager.selectEventSubscriberInfo(eventName);
+    }
+
+    @Override
+    public Map<String, List<String>> allEvents() {
+
+        return this.subscribers.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        v -> v.getValue().values().stream().map(SubscriberInfo::getAlias)
+                                .collect(toList()))
+                );
     }
 
     @Override

@@ -76,22 +76,6 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
     }
 
     @Override
-    public Map<String, List<String>> allEvents() {
-
-        return this.subscribers.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        v -> v.getValue().values().stream().map(SubscriberInfo::getAlias)
-                                .collect(toList()))
-                );
-    }
-
-    @Override
-    public List<OrderedPerformManager.OrderData> findEventSubscriberInfo(String eventName) {
-        return this.performManager.selectEventSubscriberInfo(eventName);
-    }
-
-    @Override
     public void registerDomainEvent(Class<?> domainEventType) {
 
         EventNameInfo eventName = this.getEventName(domainEventType);
