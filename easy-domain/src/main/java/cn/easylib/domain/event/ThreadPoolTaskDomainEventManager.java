@@ -207,8 +207,10 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
         }
 
         Integer pooledIndex = this.domainEventAndThreadMap.get(domainEventName);
+        if(pooledIndex == null){
+            return;
+        }
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);
-
 
         for (Map.Entry<String, SubscriberInfo> entry : subscriberMap.entrySet()) {
 
@@ -223,20 +225,6 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
                         entry.getKey(),
                         threadPoolExecutor,
                         false);
-
-//                Task<T> task = new Task<>(subscribedTo, obj,
-//                        this.maxRetryTimes,
-//                        this.retryDelayTime,
-//                        threadPoolExecutor, s -> {
-//
-//                    if (this.performManager != null) {
-//                        List<String> nextSubscriberList = this.performManager.selectNextSubscribers(
-//                                domainEventName,
-//                                entry.getKey()
-//                        );
-//                        nextSubscriberList.forEach(ss -> this.publishEvent(obj, ss, false));
-//                    }
-//                });
                 threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
             }
         }
@@ -275,18 +263,6 @@ public class ThreadPoolTaskDomainEventManager implements IDomainEventManager {
                         entry.getKey(),
                         threadPoolExecutor,
                         onlyThis);
-
-//                Task<T> task = new Task<>(subscribedTo, obj, this.maxRetryTimes, this.retryDelayTime,
-//                        threadPoolExecutor, s -> {
-//                    if (this.performManager != null && !onlyThis) {
-//
-//                        List<String> nextSubscriberList = this.performManager.selectNextSubscribers(
-//                                domainEventName, entry.getKey()
-//                        );
-//
-//                        nextSubscriberList.forEach(ss -> this.publishEvent(obj, ss, false));
-//                    }
-//                });
                 threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
                 break;
             }
