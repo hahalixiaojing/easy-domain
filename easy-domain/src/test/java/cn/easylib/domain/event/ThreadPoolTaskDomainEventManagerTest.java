@@ -36,7 +36,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(1);
+            System.out.println("sub1");
 
         }), "sub1", "sub2");
 
@@ -44,14 +44,14 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(2);
+            System.out.println("sub2");
         }), "sub2", "sub3");
 
         manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(3);
+            System.out.println("sub3");
         }), "sub3");
         //发布事件，执行sub2的订阅，并执行依赖sub2的订阅sub1
         manager.publishEvent(new TestDomainEvent("111"), "sub2");
@@ -80,7 +80,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(1);
+            System.out.println("sub1");
 
         }), "sub1", "sub2");
 
@@ -88,14 +88,14 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(2);
+            System.out.println("sub2");
         }), "sub2", "sub3");
 
         manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
-            System.out.println(3);
+            System.out.println("sub3");
         }), "sub3");
         //发布事件，但只执行sub2的订阅，不执行依赖sub2的sub1的订阅
         manager.publishEvent(new TestDomainEvent(""), "sub2", true);
