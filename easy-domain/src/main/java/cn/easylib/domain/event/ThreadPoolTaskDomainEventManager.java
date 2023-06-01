@@ -45,7 +45,6 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
         this.initThreadCount = initThreadCount;
         this.maxRetryTimes = maxRetryTimes;
         this.retryDelayTime = retryDelayTime;
-//        this.performManager = iOrderedPerformManager;
 
         ThreadFactory threadFactory = this.createThreadFactory();
 
@@ -204,15 +203,6 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
         });
     }
 
-    private boolean executeCheck(final IDomainEvent t, IExecuteCondition iExecuteCondition) {
-        try {
-
-            return iExecuteCondition.isExecute(t);
-
-        } catch (Exception ex) {
-            return false;
-        }
-    }
 
     public void close() {
         for (ScheduledThreadPoolExecutor executor : this.taskTheadMap.values()) {

@@ -144,7 +144,7 @@ public class RocketMqDomainEventManager extends AbstractDomainEventManager imple
             return null;
         }
         IExecuteCondition condition = subscriberInfo.getCondition();
-        if (!condition.isExecute(obj)) {
+        if (!this.executeCheck(obj, condition)) {
             return null;
         }
 

@@ -40,6 +40,16 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
         return new EventNameInfo(evtName, shareTopicName);
     }
 
+    protected boolean executeCheck(final IDomainEvent t, IExecuteCondition iExecuteCondition) {
+        try {
+
+            return iExecuteCondition.isExecute(t);
+
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias) {
         this.registerSubscriber(subscriber, alias, "");
