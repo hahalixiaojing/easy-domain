@@ -1,7 +1,7 @@
 package cn.easylib.domainevent.rocketmq;
 
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
-import cn.easylib.domain.application.subscriber.ISubscriberFactory;
+import cn.easylib.domain.application.subscriber.ISubscriberKey;
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.event.SubscriberFactory;
 import org.junit.Assert;
@@ -32,17 +32,17 @@ public class RocketMqDomainEventOrderedManagerTest {
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r1");
-        }), "r1");
+        }), MyDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r2");
-        }), "r2");
+        }), MyDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r3");
-        }), "r3");
+        }), MyDomainEventSubscriberKey.R3);
         //发布该事件 执行r1 r2 r3 全部订阅
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("全部执行"));
         //发布带第二个参数的事件，中执行 r3
@@ -54,7 +54,7 @@ public class RocketMqDomainEventOrderedManagerTest {
     }
 
     /**
-     * 验证按顺序执行 test3->test2-> test1  ，输出 3 -> 2 -> 1
+     * 验证按顺序执行 r3->r2->r1  ，输出 3 -> 2 -> 1
      *
      * @throws InterruptedException
      */
@@ -69,23 +69,23 @@ public class RocketMqDomainEventOrderedManagerTest {
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(1);
-        }), "test1", "test2");
+        }), MyDomainEventSubscriberKey.R1, MyDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(2);
-        }), "test2", "test3");
+        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R3);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(3);
-        }), "test3");
+        }), MyDomainEventSubscriberKey.R3);
         //发布该事件，按顺序执行 test3->test2->test1
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行全部事件订阅"));
         //只执行test2,不执行test1,最后一个参数true表示只执行当前
-        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，不执行依赖当前订阅的订阅"), "test2", true);
+        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，不执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2.keyName(), true);
         //执行 test2，以及依赖test2的test1
-        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，同时执行依赖当前订阅的订阅"), "test2", false);
+        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，同时执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2.keyName(), false);
 
         countDownLatch.await(30000, TimeUnit.SECONDS);
         //需要等待mq 更新消费位点
@@ -95,16 +95,15 @@ public class RocketMqDomainEventOrderedManagerTest {
     }
 
     /**
-     * 验证按顺序执行订阅  shareTest1、shareTest3  依赖 shareTest2 执行完成之后再执行
-     * shareTest2 ->  shareTest1
-     * ->  shareTest3
+     * 验证按顺序执行订阅  r1、r3  依赖 r2 执行完成之后再执行
+     * r2 ->  r1
+     * ->  r3
      *
      * @throws InterruptedException
      */
     @Test
     public void orderExecuteTest2() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
 
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
@@ -113,24 +112,24 @@ public class RocketMqDomainEventOrderedManagerTest {
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest1");
+            System.out.println(s.name + "r1");
 
-        }), "shareTest1", "shareTest2");
+        }), ShareDomainEventSubscriberKey.R1, ShareDomainEventSubscriberKey.R2);
 
         //ShareDomainEvent事件订阅
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest2");
+            System.out.println(s.name + "r2");
 
-        }), "shareTest2");
+        }), ShareDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest3");
+            System.out.println(s.name + "r3");
 
-        }), "shareTest3", "shareTest2");
+        }), ShareDomainEventSubscriberKey.R3, ShareDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "share"));
 
@@ -144,53 +143,51 @@ public class RocketMqDomainEventOrderedManagerTest {
     /**
      * 验证两个时间执行指定订阅
      * MyDomainEvent 执行顺序
-     * sub1 -> sub2
-     * -> sub3
+     * r1 -> r2
+     * -> r3
      * ShareDomainEvent 执行顺序
-     * shareTest2-> shareTest1 -> shareTest3
+     * r2-> r1 -> r3
      *
      * @throws InterruptedException
      */
     @Test
     public void towEventOrderExecute() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(3);
-//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
-
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
-            System.out.println("sub1");
+            System.out.println("MyDomainEvent r1");
 
-        }), "sub1");
+        }), MyDomainEventSubscriberKey.R1);
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
-            System.out.println("sub2");
+            System.out.println("MyDomainEvent r2");
 
-        }), "sub2", "sub1");
+        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R1);
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
-            System.out.println("sub3");
+            System.out.println("MyDomainEvent r3");
 
-        }), "sub3", "sub1");
+        }), MyDomainEventSubscriberKey.R3, MyDomainEventSubscriberKey.R1);
 
         //ShareDomainEvent事件订阅
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest1");
-        }), "shareTest1", "shareTest2");
+            System.out.println(s.name + "ShareDomainEvent r1");
+        }), ShareDomainEventSubscriberKey.R1, ShareDomainEventSubscriberKey.R2);
 
         //ShareDomainEvent事件订阅
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest2");
-        }), "shareTest2");
+            System.out.println(s.name + "ShareDomainEvent r2");
+        }), ShareDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
-            System.out.println(s.name + "shareTest3");
+            System.out.println(s.name + "ShareDomainEvent r3");
 
-        }), "shareTest3", "shareTest1");
+        }), ShareDomainEventSubscriberKey.R3, ShareDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "share"));
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
@@ -205,22 +202,20 @@ public class RocketMqDomainEventOrderedManagerTest {
     @Test
     public void orderExecuteWithConditionTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
-
-//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
                     countDownLatch.countDown();
-                    System.out.println("sub1");
-                }), "sub1", "sub2"
+                    System.out.println("r1");
+                }), MyDomainEventSubscriberKey.R1, MyDomainEventSubscriberKey.R2
         );
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
                     countDownLatch.countDown();
-                    System.out.println("sub2");
-                }), "sub2", (IExecuteCondition<MyDomainEvent>) evt -> evt.name.equals("100")
+                    System.out.println("2");
+                }), MyDomainEventSubscriberKey.R2, (IExecuteCondition<MyDomainEvent>) evt -> evt.name.equals("100")
         );
         //发布事件 name=100 执行 sub2 ,sub1
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
@@ -236,14 +231,13 @@ public class RocketMqDomainEventOrderedManagerTest {
 
     /**
      * 测试重试执行,
-     * sub2 依赖 sub1
-     * sub2执行重试，直到重试成功后 再执行sub1
+     * r2 依赖 r1
+     * r2执行重试，直到重试成功后 再执行r1
      *
      * @throws InterruptedException
      */
     @Test
     public void retryOrderExecuteTest() throws InterruptedException {
-//        RocketmqSubscriberFactory factory = new RocketmqSubscriberFactory();
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), "", new OrderedPerformManager());
 
 
@@ -260,12 +254,12 @@ public class RocketMqDomainEventOrderedManagerTest {
             }
             System.out.println("run ok");
 
-        }), "sub1");
+        }), MyDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
-            System.out.println("run ok sub2");
+            System.out.println("run ok r2");
 
-        }), "sub2", "sub1");
+        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
 
@@ -279,3 +273,55 @@ public class RocketMqDomainEventOrderedManagerTest {
 
 
 }
+
+
+enum MyDomainEventSubscriberKey implements ISubscriberKey {
+
+    R3("r3", "r3的订阅"),
+    R2("r2", "r2的订阅"),
+    R1("r1", "r1的订阅");
+
+    private final String keyName;
+    private final String description;
+
+    MyDomainEventSubscriberKey(String keyName, String description) {
+        this.keyName = keyName;
+        this.description = description;
+    }
+
+    @Override
+    public String keyName() {
+        return this.keyName;
+    }
+
+    @Override
+    public String description() {
+        return this.description;
+    }
+}
+
+enum ShareDomainEventSubscriberKey implements ISubscriberKey {
+
+    R3("r3", "r3的订阅"),
+    R2("r2", "r2的订阅"),
+    R1("r1", "r1的订阅");
+
+    private final String keyName;
+    private final String description;
+
+    ShareDomainEventSubscriberKey(String keyName, String description) {
+        this.keyName = keyName;
+        this.description = description;
+    }
+
+    @Override
+    public String keyName() {
+        return this.keyName;
+    }
+
+    @Override
+    public String description() {
+        return this.description;
+    }
+}
+

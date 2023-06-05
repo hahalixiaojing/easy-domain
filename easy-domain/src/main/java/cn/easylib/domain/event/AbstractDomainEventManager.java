@@ -24,7 +24,7 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
         this.performManager = performManager;
     }
 
-    protected EventNameInfo getEventName(Class<?> eventType){
+    protected EventNameInfo getEventName(Class<?> eventType) {
         EventName alias = eventType.getAnnotation(EventName.class);
         String evtName;
         String shareTopicName;
@@ -106,6 +106,60 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
 
             Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
             subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, condition));
+            this.subscribers.put(event.eventName, subscriberMap);
+
+        }
+        if (this.performManager != null) {
+            this.performManager.registerSubscriber(event.eventName,
+                    alias,
+                    dependSubscriber);
+        }
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber,
+                                   ISubscriberKey alias) {
+
+        this.registerSubscriber(subscriber, alias, condition, null);
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber,
+                                   ISubscriberKey alias,
+                                   ISubscriberKey dependSubscriber) {
+
+        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber,
+                                   ISubscriberKey alias,
+                                   IExecuteCondition condition) {
+
+        this.registerSubscriber(subscriber, alias, condition, null);
+    }
+
+    @Override
+    public void registerSubscriber(ISubscriber subscriber,
+                                   ISubscriberKey alias,
+                                   IExecuteCondition condition,
+                                   ISubscriberKey dependSubscriber) {
+
+        EventNameInfo event = getEventName(subscriber.subscribedToEventType());
+        if (this.subscribers.containsKey(event.eventName)) {
+
+            Map<String, SubscriberInfo> stringISubscriberMap = this.subscribers.get(event.eventName);
+            if (stringISubscriberMap.containsKey(alias.keyName())) {
+                throw new IllegalArgumentException(alias + " is duplication");
+            }
+
+            this.subscribers.get(event.eventName).put(alias.keyName(),
+                    new SubscriberInfo(subscriber, alias.keyName(), alias, condition));
+
+        } else {
+
+            Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
+            subscriberMap.put(alias.keyName(), new SubscriberInfo(subscriber, alias.keyName(), alias, condition));
             this.subscribers.put(event.eventName, subscriberMap);
 
         }
