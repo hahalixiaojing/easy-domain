@@ -6,10 +6,12 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public abstract class AbstractDomainEventManager implements IDomainEventManager {
 
@@ -19,9 +21,39 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
 
     protected final IOrderedPerformManager performManager;
 
-    public AbstractDomainEventManager(String environmentName, IOrderedPerformManager performManager) {
+    protected AbstractDomainEventManager(String environmentName, IOrderedPerformManager performManager) {
         this.environmentName = environmentName;
         this.performManager = performManager;
+    }
+
+    protected Map<String, SubscriberInfo> filterSubscriberInfoMap(EventNameInfo eventNameInfo) {
+
+        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventNameInfo.eventName);
+
+        if (subscriberMap != null && this.performManager != null) {
+            List<String> rootSubscribers = this.performManager.selectRootSubscribers(eventNameInfo.eventName);
+            //如果有执行顺序管理，先查找到根
+            return subscriberMap.entrySet().stream()
+                    .filter(s -> rootSubscribers.contains(s.getKey()))
+                    .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+        return Optional.ofNullable(subscriberMap).orElse(new HashMap<>());
+    }
+
+    protected <T extends IDomainEvent> SubscriberInfo findSubscriberInfo(T obj,String subscriber,EventNameInfo eventName){
+        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
+        if (subscriberMap == null) {
+            return null;
+        }
+        SubscriberInfo subscriberInfo = subscriberMap.get(subscriber);
+        if (subscriberInfo == null) {
+            return null;
+        }
+        IExecuteCondition condition = subscriberInfo.getCondition();
+        if (!this.executeCheck(obj, condition)) {
+            return null;
+        }
+        return subscriberInfo;
     }
 
     protected EventNameInfo getEventName(Class<?> eventType) {

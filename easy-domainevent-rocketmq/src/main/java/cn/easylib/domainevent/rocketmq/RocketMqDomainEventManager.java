@@ -1,9 +1,14 @@
 package cn.easylib.domainevent.rocketmq;
 
-import cn.easylib.domain.application.subscriber.*;
-import cn.easylib.domain.event.*;
+import cn.easylib.domain.application.subscriber.EventNameInfo;
+import cn.easylib.domain.application.subscriber.IOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
+import cn.easylib.domain.application.subscriber.SubscribeData;
+import cn.easylib.domain.event.AbstractMQDomainEventManager;
+import cn.easylib.domain.event.IDomainEvent;
+import cn.easylib.domain.event.PublishEventException;
+import cn.easylib.domain.event.RegisterDomainEventException;
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.MQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -14,29 +19,26 @@ import org.apache.rocketmq.common.message.MessageExt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.stream.Collectors;
 
 
-public class RocketMqDomainEventManager extends AbstractDomainEventManager implements MessageListenerConcurrently {
+public class RocketMqDomainEventManager extends AbstractMQDomainEventManager implements MessageListenerConcurrently {
 
     private final Set<String> eventNameUseTopicList = new HashSet<>();
     private final Set<String> sharedTopicList = new HashSet<>();
-
-
     private final IConsumerCreator consumerCreator;
     private final IProducerCreator producerCreator;
-
     private final List<MQPushConsumer> mqPushConsumerList = new ArrayList<>();
-
     private final Map<String, MQProducer> mqProducerMap = new HashMap<>();
 
     public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName) {
         this(producerCreator, consumerCreator, environmentName, new OrderedPerformManager());
     }
 
-    public RocketMqDomainEventManager(IProducerCreator producerCreator, IConsumerCreator consumerCreator, String environmentName, IOrderedPerformManager performManager) {
+    public RocketMqDomainEventManager(IProducerCreator producerCreator,
+                                      IConsumerCreator consumerCreator,
+                                      String environmentName,
+                                      IOrderedPerformManager performManager) {
         super(environmentName, performManager);
         this.consumerCreator = consumerCreator;
         this.producerCreator = producerCreator;
@@ -86,77 +88,6 @@ public class RocketMqDomainEventManager extends AbstractDomainEventManager imple
         }
     }
 
-    private String getTopicName(EventNameInfo eventNameInfo) {
-        String topic;
-
-        if (eventNameInfo.shareTopicName == null || eventNameInfo.shareTopicName.equals("")) {
-            topic = eventNameInfo.eventName;
-        } else {
-            topic = eventNameInfo.shareTopicName;
-        }
-        return topic;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends IDomainEvent> List<Message> getSendMessages(final T obj, EventNameInfo eventNameInfo) {
-
-        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventNameInfo.eventName);
-        if (subscriberMap != null) {
-            String topic = this.getTopicName(eventNameInfo);
-
-            if (this.performManager != null) {
-                List<String> rootSubscribers = this.performManager.selectRootSubscribers(eventNameInfo.eventName);
-
-                //如果有执行顺序管理，先查找到根
-                subscriberMap = subscriberMap.entrySet().stream()
-                        .filter(s -> rootSubscribers.contains(s.getKey()))
-                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-            }
-
-            //为每一个事件的订阅创建一个MQ消息
-            List<Message> messages = new ArrayList<>(subscriberMap.size());
-            for (Map.Entry<String, SubscriberInfo> entry : subscriberMap.entrySet()) {
-
-                if (entry.getValue().getCondition().isExecute(obj)) {
-
-                    SubscribeData subscribeData = this.createSubscribeData(obj, eventNameInfo, entry.getKey(), false);
-                    String text = JSON.toJSONString(subscribeData);
-                    byte[] bytes = this.stringToByte(text);
-
-                    Message message = new Message(topic, null, obj.getBusinessId(), bytes);
-                    messages.add(message);
-                }
-            }
-            return messages;
-        }
-        return new ArrayList<>(0);
-    }
-
-    private <T extends IDomainEvent> Message getSendMessage(final T obj, String subscriber, EventNameInfo eventNameInfo, Boolean onlyThis) {
-
-
-        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventNameInfo.eventName);
-        if (subscriberMap == null) {
-            return null;
-        }
-        SubscriberInfo subscriberInfo = subscriberMap.get(subscriber);
-        if (subscriberInfo == null) {
-            return null;
-        }
-        IExecuteCondition condition = subscriberInfo.getCondition();
-        if (!this.executeCheck(obj, condition)) {
-            return null;
-        }
-
-        final SubscribeData subscribeData = this.createSubscribeData(obj, eventNameInfo, subscriber, onlyThis);
-        final String topic = this.getTopicName(eventNameInfo);
-
-        String text = JSON.toJSONString(subscribeData);
-        byte[] bytes = this.stringToByte(text);
-
-        return new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
-    }
-
     private byte[] stringToByte(String text) {
         try {
             return text.getBytes(StandardCharsets.UTF_8);
@@ -165,29 +96,21 @@ public class RocketMqDomainEventManager extends AbstractDomainEventManager imple
         }
     }
 
-    private <T extends IDomainEvent> SubscribeData createSubscribeData(final T obj, EventNameInfo eventNameInfo, String subscriber, Boolean onlyThis) {
-        final String realEventName;
-        if (eventNameInfo.shareTopicName != null && !eventNameInfo.shareTopicName.equals("")) {
-            realEventName = eventNameInfo.eventName;
-        } else {
-            realEventName = "";
-        }
-        String jsonData = JSON.toJSONString(obj);
-        return new SubscribeData(subscriber, jsonData, realEventName, onlyThis);
-    }
-
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj) {
 
-        EventNameInfo eventNameInfo = getEventName(obj.getClass());
+        final String topic = this.getTopicName(obj.getClass());
 
+        final List<Message> messages = this.buildSubscribeDataList(obj).stream().map(s -> {
+            final String text = JSON.toJSONString(s);
+            final byte[] bytes = this.stringToByte(text);
+            return new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
+        }).collect(Collectors.toList());
 
-        List<Message> sendMessages = this.getSendMessages(obj, eventNameInfo);
         try {
-            if (!sendMessages.isEmpty()) {
+            if (!messages.isEmpty()) {
 
-                String topicName = this.getTopicName(eventNameInfo);
-                this.mqProducerMap.get(topicName).send(sendMessages);
+                this.mqProducerMap.get(topic).send(messages);
             }
         } catch (Exception e) {
             throw new PublishEventException(obj.getBusinessId(), e);
@@ -203,13 +126,16 @@ public class RocketMqDomainEventManager extends AbstractDomainEventManager imple
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
 
-        EventNameInfo eventNameInfo = getEventName(obj.getClass());
-        final Message sendMessage = this.getSendMessage(obj, subscriber, eventNameInfo, onlyThis);
+        SubscribeData subscribeData = this.buildSubscribeData(obj, subscriber, onlyThis);
+        if (subscribeData == null) {
+            return;
+        }
+        final String topic = this.getTopicName(obj.getClass());
+        final String text = JSON.toJSONString(subscribeData);
+        final byte[] bytes = this.stringToByte(text);
+        Message message = new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
         try {
-            if (sendMessage != null) {
-                String topicName = this.getTopicName(eventNameInfo);
-                this.mqProducerMap.get(topicName).send(sendMessage);
-            }
+            this.mqProducerMap.get(topic).send(message);
         } catch (Exception e) {
             throw new PublishEventException(obj.getBusinessId(), e);
         }
@@ -221,26 +147,8 @@ public class RocketMqDomainEventManager extends AbstractDomainEventManager imple
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         }
         for (MessageExt msg : msgList) {
-
             String data = new String(msg.getBody(), StandardCharsets.UTF_8);
-            SubscribeData subscribeData = JSON.parseObject(data, SubscribeData.class);
-            String event = msg.getTopic();
-            if (subscribeData.getRealEventName() != null && !subscribeData.getRealEventName().equals("")) {
-                event = subscribeData.getRealEventName();
-            }
-            Map<String, SubscriberInfo> subscriberList = this.subscribers.get(event);
-            AbstractDomainEventSubscriber subscriber = (AbstractDomainEventSubscriber) subscriberList.get(subscribeData.getName()).getSubscriber();
-            if (subscriber != null) {
-                subscriber.handleEvent(subscribeData.getEventData());
-
-                if (this.performManager != null && !subscribeData.getOnlyThis()) {
-
-                    List<String> nextSubscribers = this.performManager.selectNextSubscribers(event, subscribeData.getName());
-                    IDomainEvent iDomainEvent = subscriber.parseEvent(subscribeData.getEventData());
-                    nextSubscribers.forEach(s -> this.publishEvent(iDomainEvent, s, subscribeData.getOnlyThis()));
-
-                }
-            }
+            this.handleEvent(data, msg.getTopic());
         }
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }

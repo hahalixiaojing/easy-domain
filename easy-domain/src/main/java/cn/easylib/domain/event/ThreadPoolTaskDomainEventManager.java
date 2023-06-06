@@ -2,7 +2,6 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.*;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +11,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * 基于线程池的事件任务处理器
@@ -89,20 +84,7 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
     public <T extends IDomainEvent> void publishEvent(T obj) {
 
         EventNameInfo eventName = this.getEventName(obj.getClass());
-
-        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
-        if (subscriberMap == null) {
-            return;
-        }
-
-        //如果有执行顺序管理，先查找到根
-        if (this.performManager != null) {
-            List<String> rootSubscribers = this.performManager.selectRootSubscribers(eventName.eventName);
-            subscriberMap = subscriberMap.entrySet()
-                    .stream()
-                    .filter(s -> rootSubscribers.contains(s.getKey()))
-                    .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
+        Map<String, SubscriberInfo> subscriberMap = this.filterSubscriberInfoMap(eventName);
 
         Integer pooledIndex = this.domainEventAndThreadMap.get(eventName.eventName);
         if (pooledIndex == null) {
@@ -137,36 +119,27 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
+
         EventNameInfo eventName = this.getEventName(obj.getClass());
-
-
-        Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
-        if (subscriberMap == null) {
+        SubscriberInfo subscriberInfo = this.findSubscriberInfo(obj, subscriber, eventName);
+        if (subscriberInfo == null) {
             return;
         }
+
         Integer pooledIndex = this.domainEventAndThreadMap.get(eventName.eventName);
         if (pooledIndex == null) {
             return;
         }
         ScheduledThreadPoolExecutor threadPoolExecutor = this.taskTheadMap.get(pooledIndex);
 
-        for (Map.Entry<String, SubscriberInfo> entry : subscriberMap.entrySet()) {
-
-            IDomainEventSubscriber<T> subscribedTo = (IDomainEventSubscriber<T>) entry.getValue().getSubscriber();
-
-            if (subscribedTo != null && entry.getKey().equals(subscriber) &&
-                    this.executeCheck(obj, entry.getValue().getCondition())) {
-
-                Task<T> task = this.buildTask(subscribedTo,
-                        obj,
-                        eventName.eventName,
-                        entry.getKey(),
-                        threadPoolExecutor,
-                        onlyThis);
-                threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
-                break;
-            }
-        }
+        IDomainEventSubscriber<T> subscribedTo = (IDomainEventSubscriber<T>) subscriberInfo.getSubscriber();
+        Task<T> task = this.buildTask(subscribedTo,
+                obj,
+                eventName.eventName,
+                subscriber,
+                threadPoolExecutor,
+                onlyThis);
+        threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
     }
 
     private <T extends IDomainEvent> Task<T> buildTask(IDomainEventSubscriber<T> subscribedTo,
