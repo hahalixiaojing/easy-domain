@@ -1,6 +1,9 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.*;
+import cn.easylib.domain.application.subscriber.EventNameInfo;
+import cn.easylib.domain.application.subscriber.IOrderedPerformManager;
+import cn.easylib.domain.application.subscriber.SubscribeData;
+import cn.easylib.domain.application.subscriber.SubscriberInfo;
 import com.alibaba.fastjson.JSON;
 
 import java.util.List;
@@ -13,6 +16,9 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
         super(environmentName, performManager);
     }
 
+    /**
+     * 构造一个事件下需要发送消息对象
+     */
     @SuppressWarnings("unchecked")
     protected <T extends IDomainEvent> List<SubscribeData> buildSubscribeDataList(T obj) {
 
@@ -29,6 +35,9 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    /**
+     * 构造一个MQ消息需要的对象
+     */
     protected <T extends IDomainEvent> SubscribeData buildSubscribeData(final T obj,
                                                                         String subscriber,
                                                                         Boolean onlyThis) {
@@ -40,6 +49,9 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
         return this.createSubscribeData(obj, eventName, subscriber, onlyThis);
     }
 
+    /**
+     * 构造MQ消息发送需要的对象
+     */
     private <T extends IDomainEvent> SubscribeData createSubscribeData(final T obj,
                                                                        EventNameInfo eventNameInfo,
                                                                        String subscriber,
@@ -66,7 +78,12 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
     }
 
 
-
+    /**
+     * MQ机制下处理一个MQ消息
+     *
+     * @param data    MQ消息
+     * @param mqTopic MQ的主题
+     */
     protected void handleEvent(String data, String mqTopic) {
 
         SubscribeData subscribeData = JSON.parseObject(data, SubscribeData.class);
@@ -75,8 +92,8 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
             event = subscribeData.getRealEventName();
         }
         Map<String, SubscriberInfo> subscriberList = this.subscribers.get(event);
-        AbstractDomainEventSubscriber subscriber =
-                (AbstractDomainEventSubscriber) subscriberList.get(subscribeData.getName()).getSubscriber();
+        AbstractDomainEventSubscriber<?> subscriber =
+                (AbstractDomainEventSubscriber<?>) subscriberList.get(subscribeData.getName()).getSubscriber();
         if (subscriber != null) {
             subscriber.handleEvent(subscribeData.getEventData());
 
