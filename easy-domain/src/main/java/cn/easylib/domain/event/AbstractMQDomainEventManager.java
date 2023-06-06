@@ -75,7 +75,8 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
             event = subscribeData.getRealEventName();
         }
         Map<String, SubscriberInfo> subscriberList = this.subscribers.get(event);
-        AbstractDomainEventSubscriber subscriber = (AbstractDomainEventSubscriber) subscriberList.get(subscribeData.getName()).getSubscriber();
+        AbstractDomainEventSubscriber subscriber =
+                (AbstractDomainEventSubscriber) subscriberList.get(subscribeData.getName()).getSubscriber();
         if (subscriber != null) {
             subscriber.handleEvent(subscribeData.getEventData());
 
