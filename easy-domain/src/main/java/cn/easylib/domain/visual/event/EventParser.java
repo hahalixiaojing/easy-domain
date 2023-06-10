@@ -38,7 +38,7 @@ public class EventParser {
                     EventName eventName = evt.getAnnotation(EventName.class);
 
                     List<OrderedPerformManager.OrderData> eventSubscriberInfoList =
-                            iDomainEventManager.findEventSubscriberInfo(evt.getName());
+                            iDomainEventManager.findEventSubscriberInfo(eventName.value());
 
 
                     List<EventSubscriberDescriptor> subscriberDescriptorList = eventSubscriberInfoList.stream().map(s -> {
