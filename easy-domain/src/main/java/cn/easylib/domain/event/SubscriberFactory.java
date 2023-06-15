@@ -1,14 +1,17 @@
 package cn.easylib.domain.event;
 
+import cn.easylib.domain.application.subscriber.IExecuteCondition;
+import cn.easylib.domain.application.subscriber.IHandle;
 import cn.easylib.domain.application.subscriber.ISubscriber;
-import cn.easylib.domain.application.subscriber.ISubscriberFactory;
+
+import java.util.function.Predicate;
 
 public class SubscriberFactory {
 
     private SubscriberFactory() {
     }
 
-    public static <T extends IDomainEvent> ISubscriber build(Class<T> cls, ISubscriberFactory.Handle<T> handle) {
+    public static <T extends IDomainEvent> ISubscriber build(Class<T> cls, IHandle<T> handle) {
         return new AbstractDomainEventSubscriber<T>() {
             @Override
             public Class<T> subscribedToEventType() {
@@ -20,5 +23,13 @@ public class SubscriberFactory {
                 handle.handleEvent(aDomainEvent);
             }
         };
+    }
+
+    public static <T extends IDomainEvent> IExecuteCondition<T> buildCondition(Class<T> cls,
+                                                                               Predicate<T> predicate) {
+
+        return predicate::test;
+
+
     }
 }

@@ -40,7 +40,6 @@ public interface IDomainEventManager {
                                     IExecuteCondition condition,
                                     String dependSubscriber) {
     }
-
     default void registerSubscriber(ISubscriber subscriber,
                                     ISubscriberKey alias) {
     }

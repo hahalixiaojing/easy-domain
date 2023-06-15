@@ -1,7 +1,7 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -241,7 +241,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
     public void orderExecuteWithConditionTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200, new OrderedPerformManager());
 
         manager.registerDomainEvent(TestDomainEvent.class);
 
@@ -280,7 +280,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
 
         //最大重试次数，不算首次调用
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200, new OrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
         manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
@@ -298,5 +298,48 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         Assert.assertEquals(4, atomicInteger.get());
 
+    }
+
+    @Test
+    public void useSubscriberRegisterCls() throws InterruptedException {
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1,
+                3, 200, new OrderedPerformManager());
+
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        SubBaa subBaa = new SubBaa(TestDomainEvent.class, countDownLatch);
+
+        new BaseEventInitSubscriber<TestDomainEvent>(manager, TestDomainEvent.class) {
+            @Override
+            protected void initEventHandler(Class<TestDomainEvent> eventClass) {
+
+                evtManager.registerSubscriber(
+                        subBaa.run(), "sub1",
+                        subBaa.runCondition());
+            }
+        };
+
+        manager.publishEvent(new TestDomainEvent("name123"));
+
+        countDownLatch.await();
+    }
+}
+
+class SubBaa extends AbstractSubscriberRunner<TestDomainEvent> {
+    private final CountDownLatch countDownLatch;
+
+    public SubBaa(Class<TestDomainEvent> cls, CountDownLatch countDownLatch) {
+        super(cls);
+        this.countDownLatch = countDownLatch;
+    }
+
+    @Override
+    protected void run(TestDomainEvent event) {
+        System.out.println(event.getName());
+        countDownLatch.countDown();
+    }
+
+    @Override
+    public boolean runCondition(TestDomainEvent event) {
+        return event.getName().equals("name123");
     }
 }

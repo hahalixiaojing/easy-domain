@@ -40,7 +40,7 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
         return Optional.ofNullable(subscriberMap).orElse(new HashMap<>());
     }
 
-    protected <T extends IDomainEvent> SubscriberInfo findSubscriberInfo(T obj,String subscriber,EventNameInfo eventName){
+    protected <T extends IDomainEvent> SubscriberInfo findSubscriberInfo(T obj, String subscriber, EventNameInfo eventName) {
         Map<String, SubscriberInfo> subscriberMap = this.subscribers.get(eventName.eventName);
         if (subscriberMap == null) {
             return null;
@@ -117,7 +117,6 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
     public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
         this.registerSubscriber(subscriber, alias, condition, "");
     }
-
     @Override
     public void registerSubscriber(ISubscriber subscriber,
                                    String alias,

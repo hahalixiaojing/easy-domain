@@ -2,7 +2,7 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 
-public abstract class BaseEventInitSubscriber<T extends BaseDomainEvent> {
+public abstract class BaseEventInitSubscriber<T extends IDomainEvent> {
     protected final IDomainEventManager evtManager;
 
     protected BaseEventInitSubscriber(IDomainEventManager evtManager,
