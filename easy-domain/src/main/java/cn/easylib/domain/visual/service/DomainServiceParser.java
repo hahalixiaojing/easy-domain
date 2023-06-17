@@ -18,9 +18,9 @@ public class DomainServiceParser {
     public <T extends EntityBase<?>> List<DomainServiceDescriptor> parse(Class<T> cls) {
 
         List<Class<?>> domainServiceClsList = Optional.ofNullable(this.domainServiceMap.get(cls))
-                .map(f->f.findList(cls)).orElse(null);
+                .map(f->f.findList(cls)).orElse(Collections.emptyList());
 
-        return Optional.ofNullable(domainServiceClsList).orElse(Collections.emptyList()).stream().map(s -> {
+        return domainServiceClsList.stream().map(s -> {
 
             if (Arrays.stream(s.getInterfaces()).anyMatch(inter -> inter == IDomainService.class)) {
 

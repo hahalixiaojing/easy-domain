@@ -28,10 +28,9 @@ public class EventParser {
 
 
         List<Class<?>> baseDomainEvents = Optional.ofNullable(this.eventFinderMap.get(cls))
-                .map(t -> t.findersList(cls)).orElse(null);
+                .map(t -> t.findersList(cls)).orElse(Collections.emptyList());
 
-        return Optional.ofNullable(baseDomainEvents)
-                .orElse(Collections.emptyList())
+        return baseDomainEvents
                 .stream().map(evt -> {
 
                     DomainEventVisual domainEventDescriptor = evt.getAnnotation(DomainEventVisual.class);

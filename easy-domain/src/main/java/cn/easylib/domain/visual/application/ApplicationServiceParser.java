@@ -18,7 +18,10 @@ public class ApplicationServiceParser {
 
     public <T extends EntityBase<?>> List<ApplicationDescriptor> parser(Class<T> cls) {
 
-        List<Class<?>> list = this.applicationServiceFinderMap.get(cls).findList(cls);
+        List<Class<?>> list = Optional.ofNullable(this.applicationServiceFinderMap.get(cls))
+                .map(s -> s.findList(cls))
+                .orElse(Collections.emptyList());
+
 
         return list.stream()
                 .map(s -> Arrays.stream(s.getMethods())

@@ -250,7 +250,7 @@ public class EntityAndEntityRuleTest {
         }
     }
 
-    static class TestRule extends AbstractParamRuleBuilder<Data> {
+    static class TestRule implements IParamRuleBuilder<Data> {
 
         @Override
         public IParamRule<Data> rule() {
