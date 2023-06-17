@@ -7,6 +7,7 @@ import cn.easylib.domain.visual.rule.EntityRuleVisual;
 public class MockEntityRule extends EntityRule<MockEntity> {
     public MockEntityRule() {
         super();
+        this.init();
     }
 
     @Override
@@ -16,6 +17,6 @@ public class MockEntityRule extends EntityRule<MockEntity> {
 
             return t.showName() != null;
 
-        }, MockEntityBrokenRuleMessage.Name_Error, "");
+        }, MockEntityBrokenRuleMessage.Name_Error);
     }
 }

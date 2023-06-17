@@ -24,7 +24,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.failFast = failFast;
         this.rules = new ConcurrentHashMap<>();
         this.classRules = new ArrayList<>();
-        this.init();
     }
 
     public List<RuleItem<T>> allRuleItems() {
@@ -55,7 +54,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
     }
 
     public void appendRule(String property, IRule<T> rule,
-                           String alias,
                            String appendMessageKey,
                            String relativeMessageKey,
                            int appendPosition,
@@ -64,44 +62,41 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         //appendPosition 0= last 1= before 2=after
 
         List<RuleItem<T>> ruleItems = this.rules.get(property);
-        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, condition);
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, "", condition);
 
         this.appendRule(ruleItems, tRuleItem, relativeMessageKey, appendPosition);
     }
 
     public void appendWithParamRule(String property, IParamRule<T> rule,
-                                    String alias,
                                     String appendMessageKey,
                                     String relativeMessageKey,
                                     int appendPosition,
                                     IActiveRuleCondition<T> condition) {
         List<RuleItem<T>> ruleItems = this.rules.get(property);
-        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, "", Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
         this.appendRule(ruleItems, tRuleItem, relativeMessageKey, appendPosition);
 
     }
 
     public void appendRule(IRule<T> rule,
-                           String alias,
                            String appendMessageKey,
                            String relativeMessageKey,
                            int appendPosition,
                            IActiveRuleCondition<T> condition) {
 
-        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, "", Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
         this.appendRule(classRules, tRuleItem, relativeMessageKey, appendPosition);
     }
 
     public void appendWithParamRule(IParamRule<T> rule,
-                                    String alias,
                                     String appendMessageKey,
                                     String relativeMessageKey,
                                     int appendPosition,
                                     IActiveRuleCondition<T> condition) {
 
-        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, alias, Optional.ofNullable(condition)
+        RuleItem<T> tRuleItem = new RuleItem<>(rule, appendMessageKey, "", Optional.ofNullable(condition)
                 .orElse(this.defaultCondition));
         this.appendRule(classRules, tRuleItem, relativeMessageKey, appendPosition);
 
@@ -136,7 +131,6 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
     }
 
     public void replaceRule(String property, IRule<T> rule, String replaceMessageKey, String newMessageKey,
-                            String alias,
                             IActiveRuleCondition<T> condition) {
 
         List<RuleItem<T>> ruleItems = this.rules.get(property);
@@ -145,32 +139,31 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         }
         for (int i = 0; i < ruleItems.size(); i++) {
             if (ruleItems.get(i).getMessageKey().equals(replaceMessageKey)) {
-                ruleItems.set(i, new RuleItem<>(rule, newMessageKey, alias, condition));
+                ruleItems.set(i, new RuleItem<>(rule, newMessageKey, "", condition));
                 break;
             }
         }
     }
 
     public void replaceRule(String property, IRule<T> rule, String replaceMessageKey,
-                            String newMessageKey,
-                            String alias) {
-        this.replaceRule(property, rule, replaceMessageKey, newMessageKey, alias, defaultCondition);
+                            String newMessageKey) {
+        this.replaceRule(property, rule, replaceMessageKey, newMessageKey, defaultCondition);
     }
 
     public void replaceRule(IRule<T> rule, String replaceMessageKey,
-                            String newMessageKey, String alias) {
-        this.replaceRule(rule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
+                            String newMessageKey) {
+        this.replaceRule(rule, replaceMessageKey, newMessageKey, this.defaultCondition);
     }
 
     public void replaceRule(IRule<T> rule, String replaceMessageKey,
-                            String newMessageKey, String alias, IActiveRuleCondition<T> condition) {
+                            String newMessageKey, IActiveRuleCondition<T> condition) {
 
-        this.replaceClassRule(replaceMessageKey, new RuleItem<>(rule, newMessageKey, alias, condition));
+        this.replaceClassRule(replaceMessageKey, new RuleItem<>(rule, newMessageKey, "", condition));
 
     }
 
     public void replaceWithParamRule(String property, IParamRule<T> paramRule, String replaceMessageKey,
-                                     String newMessageKey, String alias,
+                                     String newMessageKey,
                                      IActiveRuleCondition<T> condition) {
 
 
@@ -180,28 +173,26 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         }
         for (int i = 0; i < ruleItems.size(); i++) {
             if (ruleItems.get(i).getMessageKey().equals(replaceMessageKey)) {
-                ruleItems.set(i, new RuleItem<>(paramRule, newMessageKey, alias, condition));
+                ruleItems.set(i, new RuleItem<>(paramRule, newMessageKey, "", condition));
             }
         }
     }
 
     public void replaceWithParamRule(String property, IParamRule<T> paramRule, String replaceMessageKey,
-                                     String newMessageKey, String alias) {
-        this.replaceWithParamRule(property, paramRule, replaceMessageKey, newMessageKey, alias, this.defaultCondition);
+                                     String newMessageKey) {
+        this.replaceWithParamRule(property, paramRule, replaceMessageKey, newMessageKey, this.defaultCondition);
     }
 
     public void replaceWithParamRule(IParamRule<T> paramRule, String replaceMessageKey, String newMessageKey,
-                                     String alias,
                                      IActiveRuleCondition<T> condition) {
 
-        this.replaceClassRule(replaceMessageKey, new RuleItem<>(paramRule, newMessageKey, alias, condition));
+        this.replaceClassRule(replaceMessageKey, new RuleItem<>(paramRule, newMessageKey, "", condition));
     }
 
-    public void replaceWithParamRule(IParamRule<T> paramRule, String replaceMessageKey, String newMessageKey,
-                                     String alias) {
+    public void replaceWithParamRule(IParamRule<T> paramRule, String replaceMessageKey, String newMessageKey) {
 
 
-        this.replaceClassRule(replaceMessageKey, new RuleItem<>(paramRule, newMessageKey, alias,
+        this.replaceClassRule(replaceMessageKey, new RuleItem<>(paramRule, newMessageKey, "",
                 this.defaultCondition));
 
     }
@@ -229,101 +220,113 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
                 .ifPresent(classRules::remove);
     }
 
-    public void isBlank(String property, String messageKey, String alias) {
+    public void isBlank(String property, String messageKey) {
         IsBlankRule<T> rule = new IsBlankRule<>(property);
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
 
-    public void email(String property, String messageKey, String alias) {
+    public void email(String property, String messageKey) {
         EmailRule<T> rule = new EmailRule<>(property);
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
 
     public <V extends Number> void numberShouldGreaterThan(String property,
-                                                           V v, String messageKey, String alias) {
+                                                           V v, String messageKey) {
         NumberShouldGreaterThanRule<T, V> rule = new NumberShouldGreaterThanRule<>(
                 property, v);
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
+
     public <V extends Number> void numberShouldLessThan(String property,
-                                                        V v, String messageKey, String alias) {
+                                                        V v, String messageKey) {
         NumberShouldLessThanRule<T, V> rule = new NumberShouldLessThanRule<>(
                 property, v);
 
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
 
     public void dateShouldGreaterThan(String property, Date date,
-                                      String messageKey, String alias) {
+                                      String messageKey) {
         DateShouldGreaterThanRule<T> rule = new DateShouldGreaterThanRule<>(
                 property, date);
 
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
-    public void dateShouldLessThan(String property, Date date, String messageKey, String alias) {
+
+    public void dateShouldLessThan(String property, Date date, String messageKey) {
         DateShouldLessThanRule<T> rule = new DateShouldLessThanRule<>(
                 property, date);
 
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
 
     }
 
     public void booleanShouldEqual(String property, boolean bool,
-                                   String messageKey, String alias) {
+                                   String messageKey) {
         BooleanRule<T> rule = new BooleanRule<>(property, bool);
-        this.addRule(property, rule, messageKey, alias, this.defaultCondition);
+        this.addRule(property, rule, messageKey, this.defaultCondition);
     }
 
     public <V extends Number> void numberShouldEqual(String property,
-                                                     V value, String messageKey, String alias) {
+                                                     V value, String messageKey) {
         NumberEqualRule<T, V> rule = new NumberEqualRule<>(
                 property, value);
-        this.addRule(property, rule, messageKey, alias, defaultCondition);
+        this.addRule(property, rule, messageKey, defaultCondition);
     }
 
-    public void addRule(String property, IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
+    public void addRule(String property, IRule<T> rule, String messageKey, IActiveRuleCondition<T> condition) {
         if (this.rules.containsKey(property)) {
-            this.rules.get(property).add(new RuleItem<>(rule, messageKey, alias, condition));
+            this.rules.get(property).add(new RuleItem<>(rule, messageKey, "", condition));
         } else {
             List<RuleItem<T>> ruleItems = new ArrayList<>();
-            ruleItems.add(new RuleItem<>(rule, messageKey, alias, condition));
+            ruleItems.add(new RuleItem<>(rule, messageKey, "", condition));
 
             this.rules.put(property, ruleItems);
         }
     }
 
-    public void addRule(String property, IRule<T> rule, String messageKey, String alias) {
-        this.addRule(property, rule, messageKey, alias, this.defaultCondition);
+    public void addRule(String property, IRule<T> rule, String messageKey) {
+        this.addRule(property, rule, messageKey, this.defaultCondition);
     }
 
 
-    public void addRule(IRule<T> rule, String messageKey, String alias) {
-        this.addRule(rule, messageKey, alias, this.defaultCondition);
+    public void addRule(IRule<T> rule, String messageKey) {
+        this.addRule(rule, messageKey, this.defaultCondition);
     }
 
-    public void addRule(IRule<T> rule, String messageKey, String alias, IActiveRuleCondition<T> condition) {
-        this.classRules.add(new RuleItem<>(rule, messageKey, alias, condition));
+    public void addRule(IRule<T> rule, String messageKey, IActiveRuleCondition<T> condition) {
+        this.classRules.add(new RuleItem<>(rule, messageKey, "", condition));
 
     }
 
-    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey, String alias,
+    public void addRule(AbstractRuleBuilder<T> rule, String messageKey) {
+        IActiveRuleCondition<T> condition = Optional.ofNullable(rule.ruleCondition()).orElse(defaultCondition);
+        this.classRules.add(new RuleItem<>(rule.rule(), messageKey, "", condition));
+    }
+
+    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey,
                              IActiveRuleCondition<T> condition) {
         if (this.rules.containsKey(property)) {
-            this.rules.get(property).add(new RuleItem<>(paramRule, messageKey, alias, condition));
+            this.rules.get(property).add(new RuleItem<>(paramRule, messageKey, "", condition));
         }
     }
 
-    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey, String alias) {
-        this.addParamRule(property, paramRule, messageKey, alias, this.defaultCondition);
+    public void addParamRule(String property, IParamRule<T> paramRule, String messageKey) {
+        this.addParamRule(property, paramRule, messageKey, this.defaultCondition);
     }
 
-    public void addParamRule(IParamRule<T> paramRule, String messageKey, String alias,
+    public void addParamRule(IParamRule<T> paramRule, String messageKey,
                              IActiveRuleCondition<T> condition) {
-        this.classRules.add(new RuleItem<>(paramRule, messageKey, alias, condition));
+        this.classRules.add(new RuleItem<>(paramRule, messageKey, "", condition));
     }
 
-    public void addParamRule(IParamRule<T> paramRule, String messageKey, String alias) {
-        this.addParamRule(paramRule, messageKey, alias, this.defaultCondition);
+    public void addParamRule(AbstractParamRuleBuilder<T> paramRule,String messageKey){
+        IActiveRuleCondition<T> condition = Optional.ofNullable(paramRule.ruleCondition()).orElse(defaultCondition);
+        this.classRules.add(new RuleItem<>(paramRule.rule(), messageKey, "", condition));
+    }
+
+    public void addParamRule(IParamRule<T> paramRule, String messageKey) {
+        this.addParamRule(paramRule, messageKey, this.defaultCondition);
     }
 
 

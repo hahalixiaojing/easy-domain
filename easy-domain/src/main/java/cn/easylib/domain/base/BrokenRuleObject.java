@@ -47,7 +47,9 @@ public abstract class BrokenRuleObject {
         this.addParamBrokenRule(messageKey, "", params, "", isAutoFormat);
     }
 
-    public void addParamBrokenRule(String messageKey, String property, Object[] params, String alias, boolean isAutoFormat) {
+    public void addParamBrokenRule(String messageKey, String property, Object[] params,
+                                   String alias,
+                                   boolean isAutoFormat) {
 
         final String message = this.brokenRuleMessage.getRuleDescription(messageKey);
         String realMessage;

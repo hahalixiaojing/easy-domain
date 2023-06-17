@@ -54,7 +54,7 @@ class DemoData extends EntityBase<Long> implements ICustomValidator<DemoData> {
 class DemoEntityRule extends EntityRule<DemoData> {
 
     public DemoEntityRule() {
-        this.isBlank("name", DemoDataBrokeRuleMessage.Name_Error, "");
+        this.isBlank("name", DemoDataBrokeRuleMessage.Name_Error);
     }
 }
 

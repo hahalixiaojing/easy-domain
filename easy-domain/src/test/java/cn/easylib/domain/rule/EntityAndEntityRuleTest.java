@@ -1,11 +1,15 @@
 package cn.easylib.domain.rule;
 
-import cn.easylib.domain.base.*;
+import cn.easylib.domain.base.BrokenRule;
+import cn.easylib.domain.base.BrokenRuleException;
+import cn.easylib.domain.base.BrokenRuleMessage;
+import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
 
 import static cn.easylib.domain.rule.EntityAndEntityRuleTest.DataBrokenRuleMessage.*;
 
@@ -34,12 +38,12 @@ public class EntityAndEntityRuleTest {
         Data data = new Data();
 
         Assert.assertFalse(data.validate());
-        Assert.assertEquals(3, data.getBrokenRules().size());
+        Assert.assertEquals(2, data.getBrokenRules().size());
 
         data.clearBrokenRules();
         data.setStatus(1);
         data.validate();
-        Assert.assertEquals(3, data.getBrokenRules().size());
+        Assert.assertEquals(2, data.getBrokenRules().size());
 
         data.clearBrokenRules();
         data.setPrice(10.9);
@@ -83,7 +87,7 @@ public class EntityAndEntityRuleTest {
 
         dataEntityRule.replaceRule("price", s -> {
             return s.getPrice().equals(3.0);
-        }, price_equal_error, price_equal_error, "¬");
+        }, price_equal_error, price_equal_error);
 
         data.clearBrokenRules();
 
@@ -94,7 +98,7 @@ public class EntityAndEntityRuleTest {
 
         dataEntityRule.removeRule(price_equal_error);
 
-        dataEntityRule.replaceRule(s -> s.getPrice() < 0, PRICE_ZERO_ERROR, PRICE_ZERO_1_ERROR, "");
+        dataEntityRule.replaceRule(s -> s.getPrice() < 0, PRICE_ZERO_ERROR, PRICE_ZERO_1_ERROR);
 
         boolean satisfy2 = dataEntityRule.isSatisfy(data);
         Assert.assertFalse(satisfy2);
@@ -202,6 +206,7 @@ public class EntityAndEntityRuleTest {
 
         public DataEntityFailFastRule2(boolean failFast) {
             super(failFast);
+            this.init();
         }
 
         @Override
@@ -209,20 +214,20 @@ public class EntityAndEntityRuleTest {
 
             this.addRule("name", s -> {
                 return !Objects.equals(s.getName(), "");
-            }, NAME_EMPTY_ERROR, "");
+            }, NAME_EMPTY_ERROR);
 
             this.addRule("price", s -> {
                 return s.getPrice() > 0;
-            }, PRICE_ZERO_ERROR, "");
+            }, PRICE_ZERO_ERROR);
 
 
 //            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
             //在特定条件下，参与验证
-            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR,
                     model -> model.getStatus() == 1);
             //带参数的方式验证
             this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
-                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+                    DataBrokenRuleMessage.NAME_USED_ERROR, model -> !model.getName().isEmpty());
         }
     }
 
@@ -231,39 +236,54 @@ public class EntityAndEntityRuleTest {
 
         public DataEntityFailFastRule(boolean failFast) {
             super(failFast);
+            this.init();
         }
 
         @Override
         public void init() {
-            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
+            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR);
             //在特定条件下，参与验证
-            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR,
                     model -> model.getStatus() == 1);
             //带参数的方式验证
-            this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
-                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+            this.addParamRule(new TestRule(), NAME_USED_ERROR);
+        }
+    }
+
+    static class TestRule extends AbstractParamRuleBuilder<Data> {
+
+        @Override
+        public IParamRule<Data> rule() {
+            return t -> new Pair(true, new Object[]{t.getName()});
+        }
+
+        @Override
+        public IActiveRuleCondition<Data> ruleCondition() {
+            return t -> !t.getName().isEmpty();
         }
     }
 
 
     static class DataEntityRule extends EntityRule<Data> {
-
+        public DataEntityRule() {
+            this.init();
+        }
 
         @Override
         public void init() {
             //基本验证
-            this.isBlank("name", DataBrokenRuleMessage.NAME_EMPTY_ERROR, "");
+            this.isBlank("name", DataBrokenRuleMessage.NAME_EMPTY_ERROR);
             //自定以验证
-            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR, "");
+            this.addRule(model -> model.getPrice() > 0, PRICE_ZERO_ERROR);
 
-            this.numberShouldEqual("price", 2.0, price_equal_error, "");
+            this.numberShouldEqual("price", 2.0, price_equal_error);
 
             //在特定条件下，参与验证
-            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR, "",
+            this.addRule(Data::getBoolInfo, DataBrokenRuleMessage.BOOLEAN_INFO_ERROR,
                     model -> model.getStatus() == 1);
             //带参数的方式验证
             this.addParamRule(model -> new Pair(true, new Object[]{model.getName()}),
-                    DataBrokenRuleMessage.NAME_USED_ERROR, "", model -> !model.getName().isEmpty());
+                    DataBrokenRuleMessage.NAME_USED_ERROR, model -> !model.getName().isEmpty());
 
         }
     }

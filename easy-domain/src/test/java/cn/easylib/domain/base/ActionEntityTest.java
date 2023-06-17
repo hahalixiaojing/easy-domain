@@ -55,7 +55,7 @@ class MyEntityRule extends EntityRule<MyEntity> {
 
         this.addRule(s -> {
                     return true;
-                }, "", "",
+                }, "",
                 model -> model.actionCollector.containActions(MyEntityAction.alter));
 
     }

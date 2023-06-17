@@ -9,15 +9,20 @@ import java.math.BigDecimal;
  * @date 2021/3/1 5:30 下午
  */
 class OrderEntityRule extends EntityRule<Order> {
+
+    public OrderEntityRule() {
+        this.init();
+    }
+
     @Override
     public void init() {
-        this.isBlank("pin", OrderBrokenRuleMessages.PIN_IS_EMPTY, "");
+        this.isBlank("pin", OrderBrokenRuleMessages.PIN_IS_EMPTY);
 
         this.addRule("totalPrice", model -> model.getTotalPrice().compareTo(BigDecimal.ZERO) > 0,
-                OrderBrokenRuleMessages.TOTAL_PRICE_ERROR, "");
+                OrderBrokenRuleMessages.TOTAL_PRICE_ERROR);
 
         this.addRule(model -> model.getOrderItemList().size() > 0 && model.getOrderItemList().size() < 100,
-                OrderBrokenRuleMessages.ORDER_ITEM_ERROR, "",
+                OrderBrokenRuleMessages.ORDER_ITEM_ERROR,
                 model -> model.getStatus() == 1);
     }
 }
