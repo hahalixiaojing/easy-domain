@@ -9,13 +9,12 @@ public abstract class BaseEventInitSubscriber<T extends IDomainEvent> {
                                       Class<T> eventClass) {
         this.evtManager = evtManager;
         this.initDomainEvent(eventClass);
-        this.initEventHandler(eventClass);
     }
 
     protected void initDomainEvent(Class<T> eventClass) {
         evtManager.registerDomainEvent(eventClass);
     }
 
-    protected abstract void initEventHandler(Class<T> eventClass);
+    protected abstract void initEventHandler();
 }
 

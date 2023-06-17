@@ -310,7 +310,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
 
         new BaseEventInitSubscriber<TestDomainEvent>(manager, TestDomainEvent.class) {
             @Override
-            protected void initEventHandler(Class<TestDomainEvent> eventClass) {
+            protected void initEventHandler() {
 
                 evtManager.registerSubscriber(
                         subBaa.run(), "sub1",
