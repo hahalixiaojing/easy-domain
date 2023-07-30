@@ -256,6 +256,8 @@ class Order extends EntityBase<Long> {
 4. 在实体类中，还需要重写getBrokenRuleMessages(),直接返回实体业务规则异常描述类的一个实例，如以上的
    2.2，一般情况下，实体业务规则异常描述类，是线程安全的，因此，也可以定义单例模式，在getBrokenRuleMessages()方法中返回单例对象。
 
+#### 获取实体规则异常的方式
+
 ```java
 public class MainTestClass {
     @Test
@@ -346,14 +348,27 @@ class Order extends EntityBase<Long> {
      *
      * @return 返回订单已支持事件
      */
-    public OrderPayedEvent payment() {
+    public void payment() {
         this.status = 3;
-        return new OrderPayedEvent(this.getId());
+        this.eventCollector.pushEvent(new OrderPayedEvent(this.getId()));
     }
 }
 ```
 
-1. 领域事件需要结合实体业务操作方法一起使用，实体上的业务操作方法在操作完成后，返回对应的事件对象，如果操作失败，返NULL，表示没有事件发生。
+1. 领域事件需要结合实体业务操作方法一起使用，实体上的业务操作方法在操作完成后，可以产生相应业务方法的对应的事件，一个实体业务操作方法可以产生一个或者多个领域事件。
+2. 领域事件对象通过实体上的eventCollector#pushEvent方法进行收集，最后通过应用层事件管理进行发布，以触发相关事件订阅者执行不同业务逻辑。
+3. 在eventCollector上除了pushEvent方法用来收集事件外，还提供了pushDelayGenerateEvent方法，用于延时构建事件的场景。以下示例演示在构造函数中发布事件时，若事件需要的this.getId()值，是在持久化之后才能产生，可以通过此种方式延时构建事件，以保证事件值能够正确的获取。
+```java
+class Order extends EntityBase<Long>{
+    
+    public Order(){
+       this.eventCollector.pushDelayGenerateEvent(() -> new OrderPayedEvent(this.getId()));
+    }
+}
+
+
+```
+
 
 ### 应用服务层
 
@@ -367,13 +382,18 @@ class Order extends EntityBase<Long> {
 
 ```java
 // 1
-class OrderApplicationService extends BaseApplication {
+class OrderPaymentCommandService {
 
-    private IOrderRepository orderRepository;
+    private final IOrderRepository orderRepository;
+    private final IDomainEventManager iDomainEventManager;
 
     // 2
-    public OrderApplicationService() {
-        this.initSubscriber();
+    public OrderPaymentCommandService(
+            IOrderRepository orderRepository,
+            IDomainEventManager iDomainEventManager) {
+        
+        this.orderRepository = orderRepository;
+        this.iDomainEventManager = iDomainEventManager;
     }
 
     public void payment(long orderId) {
@@ -381,13 +401,14 @@ class OrderApplicationService extends BaseApplication {
         Order order = this.orderRepository.findByOrderId(orderId);
         if (order != null) {
             // 4
-            OrderPayedEvent orderPayedEvent = order.payment();
+            order.payment();
             // 5
             if (order.validate()) {
                 // 6
                 this.orderRepository.update(order);
                 // 7
-                this.publishEvent(orderPayedEvent);
+               order.allEvents().forEach(this.iDomainEventManager::publishEvent);
+               
             } else {
                 // 8
                 throw order.exceptionCause();
@@ -397,13 +418,11 @@ class OrderApplicationService extends BaseApplication {
 }
 ```
 
-1. 在应用服务层，需要有一个对实体操作的服务类(一个实体对应一个)，该类的命名规则一般使用<实体>ApplicationService,并且该类需要继承BaseApplication。如，上例中 1处
-   OrderApplicationService
-2. BaseApplication内部默认使用了一个基本线程池的发布订阅能力实现，ThreadPoolTaskDomainEventManager()
-   ,也可以自行实现IDomainEventManager接口，替换默认实现。如，可以使用Kafka、RabbitMQ做为底层发布订阅能力支持，以保证更高的可靠性。使用BaseApplication带构造函数版本传入自定义实现。
-3. 实体操作服务类中的方法，用于实现业务用例，如上例中 payment()方法，是一个典型应用服务层实现用例的写法。代码3处首先从数据仓库中查询出订单实体对象，代码4处，调用实体类payment()
-   实现实体对象的状态变更，并返回订单已支付的领域事件，代码5处，对订单实体对象的最终状态进行合法性验证，如果验证通过，代码6处实现此实体对象的持久化，
-   并在代码7处，发布订单已经支付的领域事件。如果订单验证不通过，则在代码8处，抛出业务规则异常。
+1. 在应用服务层，围绕着实体会对应多个用于操作实体的CommandService命令服务类，命令服务类通过调用实体上的方法完成对实体的操作，然后调用业务规则验证类EntityRule实现对改变后的实体进行业务规则验证，通过后调用仓储接口完成实体数据的持久化,最后通过实体上allEvents()方法获取需要发布所有领域事件，并通过的iDomainEventManager::publishEvent方法完成发布。
+2. IDomainEventManager接口是事件发布器接口，有ThreadPoolTaskDomainEventManager()和RocketMqDomainEventManager()两种实现，
+   ,也可以自行实现IDomainEventManager接口，替换默认实现。如，可以使用Kafka、RabbitMQ做为底层发布订阅能力支持，以保证更高的可靠性。
+3. 若实体规则验证不通过，则可以通过throw 实体上的exceptionCause()抛出异常业务规则BrokenRuleException。
+
 
 #### 领域事件订阅实现
 

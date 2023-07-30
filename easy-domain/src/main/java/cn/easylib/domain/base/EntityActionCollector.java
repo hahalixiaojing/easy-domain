@@ -24,16 +24,37 @@ public class EntityActionCollector {
         this.actionHashMap.put(action.getActionCode(), action);
     }
 
+    /**
+     * 包含所有Action
+     */
     public boolean containActions(Action... actions) {
         return actionHashMap.keySet().containsAll(Arrays.stream(actions).map(Action::getActionCode)
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * 包含任何一个Action
+     */
+    public boolean containAnyAction(Action... actions){
+        return Arrays.stream(actions).anyMatch(this::containAction);
+    }
+
+    /**
+     * 包含指定的Action
+     */
     public boolean containAction(Action action) {
         return actionHashMap.containsKey(action.getActionCode());
     }
 
+    /**
+     * 不包含指定的Action
+     */
     public boolean notContainAction(Action action) {
         return !actionHashMap.containsKey(action.getActionCode());
     }
+
+    public void clear(){
+        this.actionHashMap.clear();
+    }
+
 }
