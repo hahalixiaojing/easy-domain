@@ -313,7 +313,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
             protected void initEventHandler() {
 
                 evtManager.registerSubscriber(
-                        subBaa.run(), "sub1",
+                        subBaa.handle(), "sub1",
                         subBaa.runCondition());
             }
         };
@@ -324,7 +324,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
     }
 }
 
-class SubBaa extends AbstractSubscriberRunner<TestDomainEvent> {
+class SubBaa extends AbstractSubscriberHandler<TestDomainEvent> {
     private final CountDownLatch countDownLatch;
 
     public SubBaa(Class<TestDomainEvent> cls, CountDownLatch countDownLatch) {
@@ -333,7 +333,7 @@ class SubBaa extends AbstractSubscriberRunner<TestDomainEvent> {
     }
 
     @Override
-    protected void run(TestDomainEvent event) {
+    protected void handle(TestDomainEvent event) {
         System.out.println(event.getName());
         countDownLatch.countDown();
     }

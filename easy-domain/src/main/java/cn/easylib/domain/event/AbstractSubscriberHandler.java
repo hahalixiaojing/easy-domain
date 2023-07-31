@@ -3,22 +3,22 @@ package cn.easylib.domain.event;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriber;
 
-public abstract class AbstractSubscriberRunner<T extends IDomainEvent> {
+public abstract class AbstractSubscriberHandler<T extends IDomainEvent> {
 
     private final Class<T> cls;
 
-    public AbstractSubscriberRunner(Class<T> cls) {
+    public AbstractSubscriberHandler(Class<T> cls) {
         this.cls = cls;
     }
 
-    protected abstract void run(T event);
+    protected abstract void handle(T event);
 
     public boolean runCondition(T event) {
         return true;
     }
 
-    public ISubscriber run() {
-        return SubscriberFactory.build(cls, this::run);
+    public ISubscriber handle() {
+        return SubscriberFactory.build(cls, this::handle);
     }
 
     public IExecuteCondition<T> runCondition() {
