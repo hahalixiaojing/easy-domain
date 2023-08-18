@@ -28,8 +28,10 @@ public class ActionEntityTest {
 
 class MyEntity extends EntityBase<Long> {
 
+    private String name = "zs";
+
     public void alter() {
-        this.actionCollector.put(MyEntityAction.alter);
+        this.actionCollector.put(MyEntityAction.alter, name);
     }
 
 
@@ -54,7 +56,10 @@ class MyEntityRule extends EntityRule<MyEntity> {
     public MyEntityRule() {
 
         this.addRule(s -> {
-                    return true;
+
+                    String s1 = s.actionCollector.obtainActionParam(MyEntityAction.alter, String.class);
+                    return s1.equals("zs");
+
                 }, "",
                 model -> model.actionCollector.containActions(MyEntityAction.alter));
 
