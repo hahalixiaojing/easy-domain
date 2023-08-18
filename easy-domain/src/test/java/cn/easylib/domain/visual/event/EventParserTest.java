@@ -1,5 +1,6 @@
 package cn.easylib.domain.visual.event;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.MockDomainEventManager;
 import cn.easylib.domain.visual.MockEntity;
@@ -17,7 +18,12 @@ public class EventParserTest {
     @Test
     public void eventParserTest() {
 
-        EventParser eventParser = new EventParser(MockDomainEventManager.mockIDomainEventManager());
+        EventParser eventParser = new EventParser(MockDomainEventManager.mockIDomainEventManager(), new AbstractSubscriberKey() {
+            @Override
+            protected void populateKeys() {
+
+            }
+        });
         eventParser.registerDomainEvent(MockEntity.class, mockEventFinder());
         List<EventDescriptor> parse = eventParser.parse(MockEntity.class);
 

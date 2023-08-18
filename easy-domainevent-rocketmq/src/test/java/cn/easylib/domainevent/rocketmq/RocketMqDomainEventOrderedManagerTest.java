@@ -1,5 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriberKey;
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
@@ -83,9 +84,9 @@ public class RocketMqDomainEventOrderedManagerTest {
         //发布该事件，按顺序执行 test3->test2->test1
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行全部事件订阅"));
         //只执行test2,不执行test1,最后一个参数true表示只执行当前
-        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，不执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2.keyName(), true);
+        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，不执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2, true);
         //执行 test2，以及依赖test2的test1
-        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，同时执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2.keyName(), false);
+        rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行指定的事件订阅，同时执行依赖当前订阅的订阅"), MyDomainEventSubscriberKey.R2, false);
 
         countDownLatch.await(30000, TimeUnit.SECONDS);
         //需要等待mq 更新消费位点
@@ -275,53 +276,31 @@ public class RocketMqDomainEventOrderedManagerTest {
 }
 
 
-enum MyDomainEventSubscriberKey implements ISubscriberKey {
+class MyDomainEventSubscriberKey extends AbstractSubscriberKey {
 
-    R3("r3", "r3的订阅"),
-    R2("r2", "r2的订阅"),
-    R1("r1", "r1的订阅");
+    public static final String R3 = "r3";
+    public static final String R2 = "r2";
+    public static final String R1 = "r1";
 
-    private final String keyName;
-    private final String description;
+    protected void populateKeys() {
 
-    MyDomainEventSubscriberKey(String keyName, String description) {
-        this.keyName = keyName;
-        this.description = description;
-    }
+        this.getKeys().put(R3, buildKeySetting("r3的订阅"));
+        this.getKeys().put(R2, buildKeySetting("r2的订阅"));
+        this.getKeys().put(R1, buildKeySetting("r1的订阅"));
 
-    @Override
-    public String keyName() {
-        return this.keyName;
-    }
-
-    @Override
-    public String description() {
-        return this.description;
     }
 }
 
-enum ShareDomainEventSubscriberKey implements ISubscriberKey {
+class ShareDomainEventSubscriberKey extends AbstractSubscriberKey {
 
-    R3("r3", "r3的订阅"),
-    R2("r2", "r2的订阅"),
-    R1("r1", "r1的订阅");
-
-    private final String keyName;
-    private final String description;
-
-    ShareDomainEventSubscriberKey(String keyName, String description) {
-        this.keyName = keyName;
-        this.description = description;
-    }
-
+    public static final String R3 = "r3";
+    public static final String R2 = "r2";
+    public static final String R1 = "r1";
     @Override
-    public String keyName() {
-        return this.keyName;
-    }
-
-    @Override
-    public String description() {
-        return this.description;
+    protected void populateKeys() {
+        this.getKeys().put(R3, buildKeySetting("r3的订阅"));
+        this.getKeys().put(R2, buildKeySetting("r2的订阅"));
+        this.getKeys().put(R1, buildKeySetting("r1的订阅"));
     }
 }
 

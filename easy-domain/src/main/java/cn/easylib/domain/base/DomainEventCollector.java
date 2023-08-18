@@ -27,7 +27,10 @@ public class DomainEventCollector {
 
     public List<BaseDomainEvent> getEventList() {
 
-        List<BaseDomainEvent> delayDomainEventList = this.delayGenerateEventList.stream().map(Supplier::get).collect(Collectors.toList());
+        List<BaseDomainEvent> delayDomainEventList = this.delayGenerateEventList
+                .stream()
+                .map(Supplier::get)
+                .collect(Collectors.toList());
 
         List<BaseDomainEvent> returnedList = new ArrayList<>(this.domainEventList);
         returnedList.addAll(delayDomainEventList);

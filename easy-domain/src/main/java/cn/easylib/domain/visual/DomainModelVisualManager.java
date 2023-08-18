@@ -1,5 +1,6 @@
 package cn.easylib.domain.visual;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.application.ApplicationServiceParser;
@@ -24,10 +25,10 @@ public class DomainModelVisualManager {
     private final DomainServiceParser domainServiceParser;
 
 
-    public DomainModelVisualManager(IDomainEventManager iDomainEventManager) {
+    public DomainModelVisualManager(IDomainEventManager iDomainEventManager, AbstractSubscriberKey abstractSubscriberKey) {
         this.applicationServiceParser = new ApplicationServiceParser();
         this.entityParser = new EntityParser();
-        this.eventParser = new EventParser(iDomainEventManager);
+        this.eventParser = new EventParser(iDomainEventManager, abstractSubscriberKey);
         this.ruleParser = new RuleParser();
         this.domainServiceParser = new DomainServiceParser();
     }

@@ -1,27 +1,18 @@
 package cn.easylib.domain.visual;
 
-import cn.easylib.domain.application.subscriber.ISubscriberKey;
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 
-public enum TestEventSubscriberKey implements ISubscriberKey {
-    SUB1("sub1", "sub1描述"),
-    SUB2("sub2", "sub2描述"),
-    SUB3("sub3", "sub3描述");
+public class TestEventSubscriberKey extends AbstractSubscriberKey {
+    public static final String SUB1 = "sub1";
+    public static final String SUB2 = "sub2";
+    public static final String SUB3 = "sub3";
 
-    TestEventSubscriberKey(String keyName, String description) {
-        this.keyName = keyName;
-        this.description = description;
-    }
-
-    private final String keyName;
-    private final String description;
+    public static final TestEventSubscriberKey subscriberKey = new TestEventSubscriberKey();
 
     @Override
-    public String keyName() {
-        return this.keyName;
-    }
-
-    @Override
-    public String description() {
-        return this.description;
+    protected void populateKeys() {
+        this.getKeys().put(SUB1, buildKeySetting("sub1描述"));
+        this.getKeys().put(SUB2, buildKeySetting("sub2描述"));
+        this.getKeys().put(SUB3, buildKeySetting("sub3描述"));
     }
 }

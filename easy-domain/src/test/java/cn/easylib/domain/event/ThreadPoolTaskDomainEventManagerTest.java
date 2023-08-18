@@ -309,6 +309,9 @@ public class ThreadPoolTaskDomainEventManagerTest {
         SubBaa subBaa = new SubBaa(TestDomainEvent.class, countDownLatch);
 
         new BaseEventInitSubscriber<TestDomainEvent>(manager, TestDomainEvent.class) {
+            {
+                initEventHandler();
+            }
             @Override
             protected void initEventHandler() {
 

@@ -1,5 +1,6 @@
 package cn.easylib.domain.visual;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.event.SubscriberFactory;
 import cn.easylib.domain.event.ThreadPoolTaskDomainEventManager;
@@ -22,5 +23,13 @@ public class MockDomainEventManager {
 
         return manager;
 
+    }
+    public static AbstractSubscriberKey mockAbstractSubscriberKey(){
+        return new AbstractSubscriberKey() {
+            @Override
+            protected void populateKeys() {
+
+            }
+        };
     }
 }

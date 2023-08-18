@@ -1,30 +1,22 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.ISubscriberKey;
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 
-public enum SubscriberKey implements ISubscriberKey {
+public class SubscriberKey extends AbstractSubscriberKey {
 
-    SUB1("sub1", "订阅Sub1"),
-    SUB2("sub2", "订阅Sub2"),
-    SUB3("sub3", "订阅Sub3");
-
-
-    private final String keyName;
-    private final String description;
+    public static final String SUB1 = "sub1";
+    public static final String SUB2 = "sub2";
+    public static final String SUB3 = "sub3";
 
 
-    SubscriberKey(String keyName, String description) {
-        this.keyName = keyName;
-        this.description = description;
-    }
+    public static final SubscriberKey subscriberKey = new SubscriberKey();
 
     @Override
-    public String keyName() {
-        return this.keyName;
-    }
+    protected void populateKeys() {
 
-    @Override
-    public String description() {
-        return this.description;
+        this.getKeys().put(SUB1, buildKeySetting("订阅Sub1"));
+        this.getKeys().put(SUB2, buildKeySetting("订阅Sub2"));
+        this.getKeys().put(SUB3, buildKeySetting("订阅Sub3"));
+
     }
 }

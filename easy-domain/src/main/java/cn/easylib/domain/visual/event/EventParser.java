@@ -1,7 +1,7 @@
 package cn.easylib.domain.visual.event;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
-import cn.easylib.domain.application.subscriber.ISubscriberKey;
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.event.EventName;
@@ -12,11 +12,14 @@ import java.util.stream.Collectors;
 public class EventParser {
 
     private final IDomainEventManager iDomainEventManager;
+    private final AbstractSubscriberKey abstractSubscriberKey;
 
     private final Map<Class<?>, IEventFinder> eventFinderMap = new HashMap<>();
 
-    public EventParser(IDomainEventManager iDomainEventManager) {
+    public EventParser(IDomainEventManager iDomainEventManager,
+                       AbstractSubscriberKey abstractSubscriberKey) {
         this.iDomainEventManager = iDomainEventManager;
+        this.abstractSubscriberKey = abstractSubscriberKey;
     }
 
     public <T extends EntityBase<?>> void registerDomainEvent(Class<T> entityClass,
@@ -41,16 +44,16 @@ public class EventParser {
 
 
                     List<EventSubscriberDescriptor> subscriberDescriptorList = eventSubscriberInfoList.stream().map(s -> {
-
                         OrderedPerformManager.OrderData parent = this.findParent(eventSubscriberInfoList,
-                                s.getChildSubscriberKey().keyName());
+                                s.childSubscriberAlias);
 
                         String dependOn = Optional.ofNullable(parent)
-                                .map(OrderedPerformManager.OrderData::getCurrentSubscriberKey)
-                                .map(ISubscriberKey::keyName).orElse("");
+                                .map(t -> t.currentSubscriberAlias)
+                                .orElse("");
 
-                        return new EventSubscriberDescriptor(s.getChildSubscriberKey().keyName(),
-                                s.getChildSubscriberKey().description(),
+                        return new EventSubscriberDescriptor(s.childSubscriberAlias,
+                                Optional.ofNullable(abstractSubscriberKey.getKeyInfo(s.childSubscriberAlias))
+                                        .map(AbstractSubscriberKey.KeySetting::getDescription).orElse(""),
                                 dependOn);
 
 
@@ -74,7 +77,7 @@ public class EventParser {
     private OrderedPerformManager.OrderData findParent(List<OrderedPerformManager.OrderData> orderDataList,
                                                        String childKey) {
 
-        return orderDataList.stream().filter(s -> s.getChildSubscriberKey().keyName().equals(childKey))
+        return orderDataList.stream().filter(s -> s.childSubscriberAlias.equals(childKey))
                 .findFirst()
                 .orElse(null);
 

@@ -22,17 +22,18 @@ public class DomainModelVisualManagerTest {
     public void build() {
 
         DomainModelVisualManager domainModelVisualManager =
-                new DomainModelVisualManager(MockDomainEventManager.mockIDomainEventManager());
+                new DomainModelVisualManager(MockDomainEventManager.mockIDomainEventManager(),
+                        MockDomainEventManager.mockAbstractSubscriberKey());
 
         domainModelVisualManager.registerDomainEntity(MockEntity.class, new AbstractEntityFieldFinder() {
             @Override
             protected void initFieldList() {
 
-                addField(MockEntity::getAge,"年龄");
-                addField(MockEntity::getMockValueObject,"模拟值对象");
-                addField(MockEntity::getName,"姓名");
-                addField(MockValueObject::isYes,"是");
-                addField(MockValueObject::getName,"MockValue的姓名");
+                addField(MockEntity::getAge, "年龄");
+                addField(MockEntity::getMockValueObject, "模拟值对象");
+                addField(MockEntity::getName, "姓名");
+                addField(MockValueObject::isYes, "是");
+                addField(MockValueObject::getName, "MockValue的姓名");
 
             }
         });

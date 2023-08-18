@@ -15,25 +15,16 @@ public class SubscriberInfo {
      */
     private final String alias;
 
-    private final ISubscriberKey subscriberKey;
     /**
      * 执行条件
      */
     private final IExecuteCondition condition;
 
-    public SubscriberInfo(ISubscriber subscriber,
-                          String alias,
-                          IExecuteCondition condition) {
-
-        this(subscriber,alias,null,condition);
-    }
 
     public SubscriberInfo(ISubscriber subscriber, String alias,
-                          ISubscriberKey subscriberKey,
                           IExecuteCondition condition) {
         this.subscriber = subscriber;
         this.alias = alias;
-        this.subscriberKey = subscriberKey;
         this.condition = condition;
     }
 
@@ -47,9 +38,5 @@ public class SubscriberInfo {
 
     public IExecuteCondition getCondition() {
         return condition;
-    }
-
-    public ISubscriberKey getSubscriberKey() {
-        return subscriberKey;
     }
 }

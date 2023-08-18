@@ -40,31 +40,15 @@ public interface IDomainEventManager {
                                     IExecuteCondition condition,
                                     String dependSubscriber) {
     }
-    default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias) {
-    }
-
-    default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias,
-                                    ISubscriberKey dependSubscriber) {
-    }
-
-    default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias,
-                                    IExecuteCondition condition) {
-    }
-
-    default void registerSubscriber(ISubscriber subscriber,
-                                    ISubscriberKey alias,
-                                    IExecuteCondition condition,
-                                    ISubscriberKey dependSubscriber) {
-    }
-
     <T extends IDomainEvent> void publishEvent(T obj);
 
 
     <T extends IDomainEvent> void publishEvent(T obj, String subscriber);
 
     default <T extends IDomainEvent> void publishEvent(T obj, String subscriber, boolean onlyThis) {
+    }
+
+    default <T extends IDomainEvent> void publishEventList(List<T> evtObjectList) {
+
     }
 }
