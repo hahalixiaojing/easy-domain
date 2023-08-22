@@ -2,7 +2,6 @@ package cn.easylib.domainevent.rocketmq;
 
 import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
-import cn.easylib.domain.application.subscriber.ISubscriberKey;
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import cn.easylib.domain.event.SubscriberFactory;
 import org.junit.Assert;
