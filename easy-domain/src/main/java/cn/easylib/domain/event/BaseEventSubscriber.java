@@ -2,11 +2,11 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 
-public abstract class BaseEventInitSubscriber<T extends IDomainEvent> {
+public abstract class BaseEventSubscriber<T extends IDomainEvent> {
     protected final IDomainEventManager evtManager;
 
-    protected BaseEventInitSubscriber(IDomainEventManager evtManager,
-                                      Class<T> eventClass) {
+    protected BaseEventSubscriber(IDomainEventManager evtManager,
+                                  Class<T> eventClass) {
         this.evtManager = evtManager;
         this.initDomainEvent(eventClass);
     }
@@ -15,6 +15,7 @@ public abstract class BaseEventInitSubscriber<T extends IDomainEvent> {
         evtManager.registerDomainEvent(eventClass);
     }
 
-    protected abstract void initEventHandler();
+    protected void initEventHandler() {
+    }
 }
 

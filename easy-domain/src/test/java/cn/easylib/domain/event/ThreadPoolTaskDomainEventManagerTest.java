@@ -308,7 +308,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         SubBaa subBaa = new SubBaa(TestDomainEvent.class, countDownLatch);
 
-        new BaseEventInitSubscriber<TestDomainEvent>(manager, TestDomainEvent.class) {
+        new BaseEventSubscriber<TestDomainEvent>(manager, TestDomainEvent.class) {
             {
                 initEventHandler();
             }
@@ -327,7 +327,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
     }
 }
 
-class SubBaa extends AbstractSubscriberHandler<TestDomainEvent> {
+class SubBaa extends BaseEventHandler<TestDomainEvent> {
     private final CountDownLatch countDownLatch;
 
     public SubBaa(Class<TestDomainEvent> cls, CountDownLatch countDownLatch) {
