@@ -299,7 +299,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
 
     }
 
-    public void addRule(IRuleBuilder<T> rule, String messageKey) {
+    public void addRule(BaseRuleValidator<T> rule, String messageKey) {
         IActiveRuleCondition<T> condition = Optional.ofNullable(rule.ruleCondition()).orElse(defaultCondition);
         this.classRules.add(new RuleItem<>(rule.rule(), messageKey, "", condition));
     }
@@ -320,7 +320,7 @@ public class EntityRule<T extends BrokenRuleObject> implements IRule<T>, IRuleBu
         this.classRules.add(new RuleItem<>(paramRule, messageKey, "", condition));
     }
 
-    public void addParamRule(IParamRuleBuilder<T> paramRule,String messageKey){
+    public void addParamRule(IParamRuleBuilder<T> paramRule, String messageKey) {
         IActiveRuleCondition<T> condition = Optional.ofNullable(paramRule.ruleCondition()).orElse(defaultCondition);
         this.classRules.add(new RuleItem<>(paramRule.rule(), messageKey, "", condition));
     }
