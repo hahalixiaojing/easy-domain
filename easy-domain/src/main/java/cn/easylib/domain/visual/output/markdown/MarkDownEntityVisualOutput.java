@@ -92,6 +92,9 @@ public class MarkDownEntityVisualOutput implements IEntityVisualOutput {
             classStringBuilder.append(f.getType());
             classStringBuilder.append(" ");
             classStringBuilder.append(f.getFieldName());
+            classStringBuilder.append("[");
+            classStringBuilder.append(f.getDescription());
+            classStringBuilder.append("]");
             classStringBuilder.append(SystemUtils.LINE_SEPARATOR);
 
         });
