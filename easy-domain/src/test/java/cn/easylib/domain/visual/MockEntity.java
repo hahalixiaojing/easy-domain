@@ -6,6 +6,8 @@ import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.entity.EntityActionVisual;
 import cn.easylib.domain.visual.entity.EntityVisual;
 
+import java.util.List;
+
 @EntityVisual(description = "这个一个模拟测试类")
 public class MockEntity extends EntityBase<Long> {
 
@@ -29,6 +31,8 @@ public class MockEntity extends EntityBase<Long> {
     private String name;
     private Integer age;
     private int ageTest;
+
+    private List<EntityItem> entityItems;
 
     private MockValueObject mockValueObject;
 
@@ -90,6 +94,10 @@ public class MockEntity extends EntityBase<Long> {
 
     public void setMockValueObject(MockValueObject mockValueObject) {
         this.mockValueObject = mockValueObject;
+    }
+
+    public List<EntityItem> getEntityItems() {
+        return entityItems;
     }
 }
 

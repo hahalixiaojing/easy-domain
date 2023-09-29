@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public interface FieldGetter<T, R> extends Function<T, R>, Serializable {
     Pattern compile = Pattern.compile("\\(L(.+);\\)");
 
-    default FieldInfo getFieldName(String description) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+    default FieldInfo getFieldName(String description, boolean collection, Class<?> collectionType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         Method method = this.getClass().getDeclaredMethod("writeReplace");
         method.setAccessible(true);
         SerializedLambda serializedLambda = (SerializedLambda) method.invoke(this);
@@ -27,9 +27,14 @@ public interface FieldGetter<T, R> extends Function<T, R>, Serializable {
         Class<?> aClass = Class.forName(replace);
 
 
-        int lastIndex = serializedLambda.getInstantiatedMethodType().lastIndexOf("/");
-        String returnType = serializedLambda.getInstantiatedMethodType().substring(lastIndex + 1,
-                serializedLambda.getInstantiatedMethodType().length() - 1);
+        String returnType;
+        if (collection) {
+            returnType = collectionType.getSimpleName();
+        } else {
+            int lastIndex = serializedLambda.getInstantiatedMethodType().lastIndexOf("/");
+            returnType = serializedLambda.getInstantiatedMethodType().substring(lastIndex + 1,
+                    serializedLambda.getInstantiatedMethodType().length() - 1);
+        }
 
 
         if (methodName.startsWith("get")) {
@@ -40,7 +45,7 @@ public interface FieldGetter<T, R> extends Function<T, R>, Serializable {
 
         String fixMethodName = methodName.substring(0, 1).toLowerCase() + methodName.substring(1);
 
-        return new FieldInfo(fixMethodName, description, returnType, aClass);
+        return new FieldInfo(fixMethodName, description, returnType, aClass, collection);
 
     }
 }

@@ -6,12 +6,15 @@ public class FieldInfo {
     private final String description;
     private final String type;
     private final Class<?> clsType;
+    public final boolean collection;
 
-    public FieldInfo(String fieldName, String description, String type, Class<?> clsType) {
+
+    public FieldInfo(String fieldName, String description, String type, Class<?> clsType, boolean collection) {
         this.fieldName = fieldName;
         this.description = description;
         this.type = type;
         this.clsType = clsType;
+        this.collection = collection;
     }
 
 

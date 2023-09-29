@@ -5,7 +5,6 @@ import cn.easylib.domain.base.IEntity;
 import cn.easylib.domain.visual.VisualException;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -31,9 +30,9 @@ public class EntityParser {
         return this.privateParse(cls);
     }
 
-    private FieldInfo getFieldName(Pair<FieldGetter<?, ?>, String> p) {
+    private FieldInfo getFieldName(IEntityFieldFinder.EntityFieldInfo p) {
         try {
-            return p.getKey().getFieldName(p.getRight());
+            return p.fieldGetter.getFieldName(p.name,p.collection,p.collectionType);
         } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new VisualException(e);

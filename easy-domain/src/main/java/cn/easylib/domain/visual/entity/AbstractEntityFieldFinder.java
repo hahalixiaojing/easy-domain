@@ -1,14 +1,11 @@
 package cn.easylib.domain.visual.entity;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractEntityFieldFinder implements IEntityFieldFinder {
 
-    private final List<Pair<FieldGetter<?, ?>, String>> fieldGetterList = new ArrayList<>();
+    private final List<EntityFieldInfo> fieldGetterList = new ArrayList<>();
 
     protected AbstractEntityFieldFinder() {
 
@@ -18,11 +15,15 @@ public abstract class AbstractEntityFieldFinder implements IEntityFieldFinder {
     protected abstract void initFieldList();
 
     protected <T, R> void addField(FieldGetter<T, R> fieldGetter, String description) {
-        fieldGetterList.add(new MutablePair<>(fieldGetter, description));
+        fieldGetterList.add(new EntityFieldInfo(fieldGetter, description));
+    }
+
+    protected <T, R> void addField(FieldGetter<T, R> fieldGetter, String description, Class<?> collectionType) {
+        fieldGetterList.add(new EntityFieldInfo(fieldGetter, description, true, collectionType));
     }
 
     @Override
-    public List<Pair<FieldGetter<?, ?>, String>> fieldGetterList() {
+    public List<EntityFieldInfo> fieldGetterList() {
         return fieldGetterList;
     }
 }
