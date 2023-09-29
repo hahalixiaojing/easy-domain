@@ -76,6 +76,12 @@ public class MarkDownEntityVisualOutput implements IEntityVisualOutput {
 
         classStringBuilder.append("class ");
         classStringBuilder.append(entityDescriptor.getClsName());
+        classStringBuilder.append("[\"");
+        classStringBuilder.append(entityDescriptor.getClsName());
+        classStringBuilder.append("(");
+        classStringBuilder.append(entityDescriptor.getDescription());
+        classStringBuilder.append(")");
+        classStringBuilder.append("\"]");
         classStringBuilder.append(SystemUtils.LINE_SEPARATOR);
 
         entityDescriptor.getFieldInfoList().forEach(f -> {

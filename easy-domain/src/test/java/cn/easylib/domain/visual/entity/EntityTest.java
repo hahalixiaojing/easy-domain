@@ -22,10 +22,10 @@ public class EntityTest {
 //                addField(MockEntity::getName, "名称");
 //                addField(MockEntity::getAgeTest, "年龄");
 //                addField(MockEntity::getAge, "年龄");
-//                addField(MockEntity::getMockValueObject, "模拟值对象");
+                addField(MockEntity::getMockValueObject, "模拟值对象");
 //                addField(MockValueObject::getName, "模拟值对象名称");
 //                addField(MockValueObject::isYes, "模拟值对象Yes");
-                addField(MockEntity::getEntityItems, "集合测试", EntityItem.class);
+//                addField(MockEntity::getEntityItems, "集合测试", EntityItem.class);
                 addField(EntityItem::getA, "A");
             }
         };

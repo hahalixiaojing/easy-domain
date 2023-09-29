@@ -23,101 +23,8 @@ public class MarkDownEntityVisualOutputTest {
 
         String jsonString = "[\n" +
                 "      {\n" +
-                "        \"clsName\": \"PayInfo\",\n" +
-                "        \"description\": \"\",\n" +
-                "        \"entityActionDescriptorList\": [\n" +
-                "          \n" +
-                "        ],\n" +
-                "        \"fieldInfoList\": [\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"支付时间\",\n" +
-                "            \"fieldName\": \"payTime\",\n" +
-                "            \"type\": \"DateTime\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"支付流水号\",\n" +
-                "            \"fieldName\": \"payNo\",\n" +
-                "            \"type\": \"String\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"支付方式0=微信 1=支付宝\",\n" +
-                "            \"fieldName\": \"payType\",\n" +
-                "            \"type\": \"PayType\"\n" +
-                "          }\n" +
-                "        ],\n" +
-                "        \"root\": false\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"clsName\": \"Point\",\n" +
-                "        \"description\": \"\",\n" +
-                "        \"entityActionDescriptorList\": [\n" +
-                "          \n" +
-                "        ],\n" +
-                "        \"fieldInfoList\": [\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.Point\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"经度\",\n" +
-                "            \"fieldName\": \"lat\",\n" +
-                "            \"type\": \"Double\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.Point\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"纬度\",\n" +
-                "            \"fieldName\": \"lng\",\n" +
-                "            \"type\": \"Double\"\n" +
-                "          }\n" +
-                "        ],\n" +
-                "        \"root\": false\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"clsName\": \"ReceiveAddress\",\n" +
-                "        \"description\": \"\",\n" +
-                "        \"entityActionDescriptorList\": [\n" +
-                "          \n" +
-                "        ],\n" +
-                "        \"fieldInfoList\": [\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"详细地址\",\n" +
-                "            \"fieldName\": \"address\",\n" +
-                "            \"type\": \"String\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"收货人姓名\",\n" +
-                "            \"fieldName\": \"name\",\n" +
-                "            \"type\": \"String\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"收货人电话\",\n" +
-                "            \"fieldName\": \"phone\",\n" +
-                "            \"type\": \"String\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
-                "            \"collection\": false,\n" +
-                "            \"description\": \"坐标\",\n" +
-                "            \"fieldName\": \"point\",\n" +
-                "            \"type\": \"Point\"\n" +
-                "          }\n" +
-                "        ],\n" +
-                "        \"root\": false\n" +
-                "      },\n" +
-                "      {\n" +
                 "        \"clsName\": \"OderDetailItem\",\n" +
-                "        \"description\": \"\",\n" +
+                "        \"description\": \"销售订单项\",\n" +
                 "        \"entityActionDescriptorList\": [\n" +
                 "          \n" +
                 "        ],\n" +
@@ -162,7 +69,7 @@ public class MarkDownEntityVisualOutputTest {
                 "      },\n" +
                 "      {\n" +
                 "        \"clsName\": \"ShippingInfo\",\n" +
-                "        \"description\": \"\",\n" +
+                "        \"description\": \"订单物流信息\",\n" +
                 "        \"entityActionDescriptorList\": [\n" +
                 "          \n" +
                 "        ],\n" +
@@ -192,6 +99,61 @@ public class MarkDownEntityVisualOutputTest {
                 "        \"root\": false\n" +
                 "      },\n" +
                 "      {\n" +
+                "        \"clsName\": \"PayInfo\",\n" +
+                "        \"description\": \"销售订单支付信息\",\n" +
+                "        \"entityActionDescriptorList\": [\n" +
+                "          \n" +
+                "        ],\n" +
+                "        \"fieldInfoList\": [\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"支付时间\",\n" +
+                "            \"fieldName\": \"payTime\",\n" +
+                "            \"type\": \"DateTime\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"支付流水号\",\n" +
+                "            \"fieldName\": \"payNo\",\n" +
+                "            \"type\": \"String\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.PayInfo\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"支付方式0=微信 1=支付宝\",\n" +
+                "            \"fieldName\": \"payType\",\n" +
+                "            \"type\": \"PayType\"\n" +
+                "          }\n" +
+                "        ],\n" +
+                "        \"root\": false\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"clsName\": \"Point\",\n" +
+                "        \"description\": \"收货地址经纬度\",\n" +
+                "        \"entityActionDescriptorList\": [\n" +
+                "          \n" +
+                "        ],\n" +
+                "        \"fieldInfoList\": [\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.Point\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"经度\",\n" +
+                "            \"fieldName\": \"lat\",\n" +
+                "            \"type\": \"Double\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.Point\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"纬度\",\n" +
+                "            \"fieldName\": \"lng\",\n" +
+                "            \"type\": \"Double\"\n" +
+                "          }\n" +
+                "        ],\n" +
+                "        \"root\": false\n" +
+                "      },\n" +
+                "      {\n" +
                 "        \"clsName\": \"Order\",\n" +
                 "        \"description\": \"销售订单\",\n" +
                 "        \"entityActionDescriptorList\": [\n" +
@@ -204,16 +166,16 @@ public class MarkDownEntityVisualOutputTest {
                 "          },\n" +
                 "          {\n" +
                 "            \"description\": \"\",\n" +
-                "            \"methodName\": \"shipResult\",\n" +
+                "            \"methodName\": \"payResult\",\n" +
                 "            \"triggerEvents\": [\n" +
-                "              \"OrderShippingEvent\"\n" +
+                "              \"OrderPayedEvent\"\n" +
                 "            ]\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"description\": \"\",\n" +
-                "            \"methodName\": \"payResult\",\n" +
+                "            \"methodName\": \"shipResult\",\n" +
                 "            \"triggerEvents\": [\n" +
-                "              \"OrderPayedEvent\"\n" +
+                "              \"OrderShippingEvent\"\n" +
                 "            ]\n" +
                 "          },\n" +
                 "          {\n" +
@@ -311,6 +273,44 @@ public class MarkDownEntityVisualOutputTest {
                 "          }\n" +
                 "        ],\n" +
                 "        \"root\": true\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"clsName\": \"ReceiveAddress\",\n" +
+                "        \"description\": \"收货地址\",\n" +
+                "        \"entityActionDescriptorList\": [\n" +
+                "          \n" +
+                "        ],\n" +
+                "        \"fieldInfoList\": [\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"详细地址\",\n" +
+                "            \"fieldName\": \"address\",\n" +
+                "            \"type\": \"String\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"收货人姓名\",\n" +
+                "            \"fieldName\": \"name\",\n" +
+                "            \"type\": \"String\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"收货人电话\",\n" +
+                "            \"fieldName\": \"phone\",\n" +
+                "            \"type\": \"String\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"clsType\": \"cn.easylib.ddd.sample.domain.order.entity.valueobject.ReceiveAddress\",\n" +
+                "            \"collection\": false,\n" +
+                "            \"description\": \"坐标\",\n" +
+                "            \"fieldName\": \"point\",\n" +
+                "            \"type\": \"Point\"\n" +
+                "          }\n" +
+                "        ],\n" +
+                "        \"root\": false\n" +
                 "      }\n" +
                 "    ]";
 
