@@ -18,12 +18,7 @@ public class EventParserTest {
     @Test
     public void eventParserTest() {
 
-        EventParser eventParser = new EventParser(MockDomainEventManager.mockIDomainEventManager(), new AbstractSubscriberKey() {
-            @Override
-            protected void populateKeys() {
-
-            }
-        });
+        EventParser eventParser = new EventParser(MockDomainEventManager.mockIDomainEventManager());
         eventParser.registerDomainEvent(MockEntity.class, mockEventFinder());
         List<EventDescriptor> parse = eventParser.parse(MockEntity.class);
 
@@ -40,6 +35,16 @@ public class EventParserTest {
             @Override
             public <T extends EntityBase<?>> List<Class<?>> findersList(Class<T> cls) {
                 return Stream.of(TestEvent.class).collect(Collectors.toList());
+            }
+
+            @Override
+            public AbstractSubscriberKey eventSubscribeKey() {
+                return new AbstractSubscriberKey() {
+                    @Override
+                    protected void populateKeys() {
+
+                    }
+                };
             }
         };
     }

@@ -1,6 +1,8 @@
 package cn.easylib.domain.visual;
 
+import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.base.EntityBase;
+import cn.easylib.domain.rules.EntityRule;
 import cn.easylib.domain.visual.application.IApplicationServiceFinder;
 import cn.easylib.domain.visual.application.MockCommandService;
 import cn.easylib.domain.visual.entity.AbstractEntityFieldFinder;
@@ -22,8 +24,7 @@ public class DomainModelVisualManagerTest {
     public void build() {
 
         DomainModelVisualManager domainModelVisualManager =
-                new DomainModelVisualManager(MockDomainEventManager.mockIDomainEventManager(),
-                        MockDomainEventManager.mockAbstractSubscriberKey());
+                new DomainModelVisualManager(MockDomainEventManager.mockIDomainEventManager());
 
         domainModelVisualManager.registerDomainEntity(MockEntity.class, new AbstractEntityFieldFinder() {
             @Override
@@ -52,8 +53,8 @@ public class DomainModelVisualManagerTest {
 
         @Override
         public <T extends EntityBase<?>> RuleFinderObject findEntityRuleList(Class<T> cls) {
-            ArrayList<Class<?>> classes = new ArrayList<>();
-            classes.add(MockEntityRule.class);
+            ArrayList<EntityRule<?>> classes = new ArrayList<>();
+            classes.add(new MockEntityRule());
             return new RuleFinderObject(classes, MockEntityBrokenRuleMessage.message);
         }
     }
@@ -63,6 +64,11 @@ public class DomainModelVisualManagerTest {
         @Override
         public <T extends EntityBase<?>> List<Class<?>> findersList(Class<T> cls) {
             return Stream.of(TestEvent.class).collect(Collectors.toList());
+        }
+
+        @Override
+        public AbstractSubscriberKey eventSubscribeKey() {
+            return  MockDomainEventManager.mockAbstractSubscriberKey();
         }
     }
 

@@ -1,6 +1,7 @@
 package cn.easylib.domain.visual.rule;
 
 import cn.easylib.domain.base.EntityBase;
+import cn.easylib.domain.rules.EntityRule;
 import cn.easylib.domain.visual.MockEntity;
 import cn.easylib.domain.visual.MockEntityBrokenRuleMessage;
 import cn.easylib.domain.visual.MockEntityRule;
@@ -22,8 +23,8 @@ public class RuleTest {
             @Override
             public <T extends EntityBase<?>> RuleFinderObject findEntityRuleList(Class<T> cls) {
 
-                ArrayList<Class<?>> classes = new ArrayList<>();
-                classes.add(MockEntityRule.class);
+                ArrayList<EntityRule<?>> classes = new ArrayList<>();
+                classes.add(new MockEntityRule());
                 return new RuleFinderObject(classes, MockEntityBrokenRuleMessage.message);
             }
         });

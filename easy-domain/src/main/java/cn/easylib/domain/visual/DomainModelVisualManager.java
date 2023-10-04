@@ -25,10 +25,10 @@ public class DomainModelVisualManager {
     private final DomainServiceParser domainServiceParser;
 
 
-    public DomainModelVisualManager(IDomainEventManager iDomainEventManager, AbstractSubscriberKey abstractSubscriberKey) {
+    public DomainModelVisualManager(IDomainEventManager iDomainEventManager) {
         this.applicationServiceParser = new ApplicationServiceParser();
         this.entityParser = new EntityParser();
-        this.eventParser = new EventParser(iDomainEventManager, abstractSubscriberKey);
+        this.eventParser = new EventParser(iDomainEventManager);
         this.ruleParser = new RuleParser();
         this.domainServiceParser = new DomainServiceParser();
     }

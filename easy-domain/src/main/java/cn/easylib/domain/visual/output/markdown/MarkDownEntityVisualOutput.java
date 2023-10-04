@@ -17,7 +17,7 @@ public class MarkDownEntityVisualOutput implements IEntityVisualOutput {
     private static final String CLASS_MARK_STRING = "classDiagram" + SystemUtils.LINE_SEPARATOR;
 
     @Override
-    public String output(List<EntityDescriptor> entityDescriptorList, EntityActionDescriptor actionDescriptor) {
+    public String output(List<EntityDescriptor> entityDescriptorList) {
 
         StringBuilder markDownString = new StringBuilder();
         markDownString.append(START);

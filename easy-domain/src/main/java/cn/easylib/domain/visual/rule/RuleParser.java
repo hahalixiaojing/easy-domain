@@ -29,30 +29,24 @@ public class RuleParser {
 
         return Optional.ofNullable(entityRuleInfo).map(IRuleFinder.RuleFinderObject::getEntityRuleCls)
                 .orElse(Collections.emptyList()).stream().map(s ->
-                        Arrays.stream(s.getConstructors())
-                                .filter(c -> c.getParameterTypes().length == 0)
-                                .findFirst()
-                                .map(c -> buildRuleDescriptor(entityRuleInfo.getBrokenRuleMessage(), c))
-                                .orElse(null))
+                        buildRuleDescriptor(entityRuleInfo.getBrokenRuleMessage(),s)
+                )
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends EntityBase<?>> RuleDescriptorGroup buildRuleDescriptor(BrokenRuleMessage brokenRuleMessage,
-
-                                                                              Constructor<?> constructor) {
+    private RuleDescriptorGroup buildRuleDescriptor(BrokenRuleMessage brokenRuleMessage,
+                                                    EntityRule<?> entityRule) {
 
         try {
 
-            EntityRuleVisual annotation = constructor.getDeclaringClass().getAnnotation(EntityRuleVisual.class);
+            EntityRuleVisual annotation = entityRule.getClass().getAnnotation(EntityRuleVisual.class);
 
             String entityRuleDescription = "";
             if (annotation != null) {
                 entityRuleDescription = annotation.description();
             }
 
-            EntityRule<T> entityRule = (EntityRule<T>) constructor.newInstance();
-            List<RuleItem<T>> ruleItems = entityRule.allRuleItems();
+            List<? extends RuleItem<?>> ruleItems = entityRule.allRuleItems();
 
             List<RuleDescriptor> collect = ruleItems.stream().map(r -> {
                 String ruleDescription = brokenRuleMessage.getRuleDescription(r.getMessageKey());

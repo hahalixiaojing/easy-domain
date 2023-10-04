@@ -12,14 +12,10 @@ import java.util.stream.Collectors;
 public class EventParser {
 
     private final IDomainEventManager iDomainEventManager;
-    private final AbstractSubscriberKey abstractSubscriberKey;
-
     private final Map<Class<?>, IEventFinder> eventFinderMap = new HashMap<>();
 
-    public EventParser(IDomainEventManager iDomainEventManager,
-                       AbstractSubscriberKey abstractSubscriberKey) {
+    public EventParser(IDomainEventManager iDomainEventManager) {
         this.iDomainEventManager = iDomainEventManager;
-        this.abstractSubscriberKey = abstractSubscriberKey;
     }
 
     public <T extends EntityBase<?>> void registerDomainEvent(Class<T> entityClass,
@@ -30,8 +26,14 @@ public class EventParser {
     public <T extends EntityBase<?>> List<EventDescriptor> parse(Class<T> cls) {
 
 
-        List<Class<?>> baseDomainEvents = Optional.ofNullable(this.eventFinderMap.get(cls))
-                .map(t -> t.findersList(cls)).orElse(Collections.emptyList());
+        IEventFinder iEventFinder = this.eventFinderMap.get(cls);
+        if (iEventFinder == null) {
+            return Collections.emptyList();
+        }
+
+
+        List<Class<?>> baseDomainEvents = Optional.ofNullable(iEventFinder.findersList(cls))
+                .orElse(Collections.emptyList());
 
         return baseDomainEvents
                 .stream().map(evt -> {
@@ -43,21 +45,22 @@ public class EventParser {
                             iDomainEventManager.findEventSubscriberInfo(eventName.value());
 
 
-                    List<EventSubscriberDescriptor> subscriberDescriptorList = eventSubscriberInfoList.stream().map(s -> {
-                        OrderedPerformManager.OrderData parent = this.findParent(eventSubscriberInfoList,
-                                s.childSubscriberAlias);
+                    List<EventSubscriberDescriptor> subscriberDescriptorList = eventSubscriberInfoList.stream()
+                            .map(s -> {
+                                OrderedPerformManager.OrderData parent = this.findParent(eventSubscriberInfoList,
+                                        s.childSubscriberAlias);
 
-                        String dependOn = Optional.ofNullable(parent)
-                                .map(t -> t.currentSubscriberAlias)
-                                .orElse("");
+                                String dependOn = Optional.ofNullable(parent)
+                                        .map(t -> t.currentSubscriberAlias)
+                                        .orElse("");
 
-                        return new EventSubscriberDescriptor(s.childSubscriberAlias,
-                                Optional.ofNullable(abstractSubscriberKey.getKeyInfo(s.childSubscriberAlias))
-                                        .map(AbstractSubscriberKey.KeySetting::getDescription).orElse(""),
-                                dependOn);
+                                return new EventSubscriberDescriptor(s.childSubscriberAlias,
+                                        Optional.ofNullable(iEventFinder.eventSubscribeKey().getKeyInfo(s.childSubscriberAlias))
+                                                .map(AbstractSubscriberKey.KeySetting::getDescription).orElse(""),
+                                        dependOn);
 
 
-                    }).collect(Collectors.toList());
+                            }).collect(Collectors.toList());
 
 
                     return new EventDescriptor(eventName.value(),

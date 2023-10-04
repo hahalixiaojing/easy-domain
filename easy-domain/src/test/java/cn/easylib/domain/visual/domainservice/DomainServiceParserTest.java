@@ -33,7 +33,7 @@ public class DomainServiceParserTest {
         System.out.println(JSON.toJSONString(parse));
 
 
-        DomainModelVisualManager domainModelVisualManager = new DomainModelVisualManager(null, null);
+        DomainModelVisualManager domainModelVisualManager = new DomainModelVisualManager(null);
         domainModelVisualManager.registerDomainEntity(MockEntity.class, null);
 
 
