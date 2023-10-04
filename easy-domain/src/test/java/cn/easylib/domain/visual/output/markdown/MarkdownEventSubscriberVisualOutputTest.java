@@ -6,14 +6,14 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class MarkDownEventSubscriberVisualOutputTest {
+public class MarkdownEventSubscriberVisualOutputTest {
 
     @Test
     public void outputTest() {
 
         List<EventDescriptor> eventDescriptors = mockData();
 
-        MarkDownEventSubscriberVisualOutput markDownEventSubscriberVisualOutput = new MarkDownEventSubscriberVisualOutput();
+        MarkdownEventSubscriberVisualOutput markDownEventSubscriberVisualOutput = new MarkdownEventSubscriberVisualOutput();
 
         String output = markDownEventSubscriberVisualOutput.output(eventDescriptors);
 

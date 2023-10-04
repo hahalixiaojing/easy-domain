@@ -7,13 +7,13 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class MarkDownEventVisualOutputTest {
+public class MarkdownEventVisualOutputTest {
 
     @Test
     public void outputTest() {
 
 
-        MarkDownEventVisualOutput markDownEventVisualOutput = new MarkDownEventVisualOutput();
+        MarkdownEventVisualOutput markDownEventVisualOutput = new MarkdownEventVisualOutput();
 
 
         List<EventDescriptor> eventDescriptors = this.mockData();

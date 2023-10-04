@@ -9,7 +9,7 @@ import org.apache.commons.lang3.SystemUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MarkDownEventVisualOutput implements IEventVisualOutput {
+public class MarkdownEventVisualOutput implements IEventVisualOutput {
     @Override
     public String output(List<EventDescriptor> eventDescriptorList, EntityDescriptor entityDescriptor) {
 

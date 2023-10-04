@@ -6,15 +6,15 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class MarkDownEntityVisualOutputTest {
+public class MarkdownEntityVisualOutputTest {
 
     @Test
     public void outPutTest() {
 
         List<EntityDescriptor> entityDescriptors = this.mockData();
 
-        MarkDownEntityVisualOutput markDownEntityVisualOutput = new MarkDownEntityVisualOutput();
-        String output = markDownEntityVisualOutput.output(entityDescriptors, null);
+        MarkdownEntityVisualOutput markDownEntityVisualOutput = new MarkdownEntityVisualOutput();
+        String output = markDownEntityVisualOutput.output(entityDescriptors);
 
         System.out.println(output);
     }

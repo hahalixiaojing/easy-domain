@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class MarkDownEntityRuleVisualOutputTest {
+public class MarkdownEntityRuleVisualOutputTest {
 
     @Test
     public void outputTest() {
-        MarkDownEntityRuleVisualOutput markDownEntityRuleVisualOutput = new MarkDownEntityRuleVisualOutput();
+        MarkdownEntityRuleVisualOutput markDownEntityRuleVisualOutput = new MarkdownEntityRuleVisualOutput();
 
         List<RuleDescriptorGroup> ruleDescriptorGroup = this.mockData();
         String output = markDownEntityRuleVisualOutput.output(ruleDescriptorGroup);

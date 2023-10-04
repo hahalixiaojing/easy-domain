@@ -6,11 +6,14 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class MarkDownApplicationServiceVisualOutputTest {
+/**
+ *
+ */
+public class MarkdownApplicationServiceVisualOutputTest {
 
     @Test
     public void outputTest(){
-        MarkDownApplicationServiceVisualOutput output = new MarkDownApplicationServiceVisualOutput();
+        MarkdownApplicationServiceVisualOutput output = new MarkdownApplicationServiceVisualOutput();
 
         List<ApplicationDescriptor> applicationDescriptors = this.mockData();
 

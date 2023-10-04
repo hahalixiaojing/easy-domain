@@ -6,7 +6,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.util.List;
 
-public class MarkDownApplicationServiceVisualOutput implements IApplicationServiceVisualOutput {
+public class MarkdownApplicationServiceVisualOutput implements IApplicationServiceVisualOutput {
     @Override
     public String output(List<ApplicationDescriptor> applicationDescriptorList) {
 

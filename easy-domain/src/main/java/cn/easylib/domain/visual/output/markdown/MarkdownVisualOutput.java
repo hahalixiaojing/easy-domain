@@ -10,7 +10,7 @@ import cn.easylib.domain.visual.event.IEventVisualOutput;
 import cn.easylib.domain.visual.rule.IEntityRuleVisualOutput;
 import org.apache.commons.lang3.SystemUtils;
 
-public class MarkDownVisualOutput implements IVisualOutput {
+public class MarkdownVisualOutput implements IVisualOutput {
 
     private final IApplicationServiceVisualOutput applicationServiceVisualOutput;
     private final IEventVisualOutput eventVisualOutput;
@@ -18,13 +18,13 @@ public class MarkDownVisualOutput implements IVisualOutput {
     private final IEntityRuleVisualOutput entityRuleVisualOutput;
     private final IEntityVisualOutput entityVisualOutput;
 
-    public MarkDownVisualOutput() {
+    public MarkdownVisualOutput() {
 
-        applicationServiceVisualOutput = new MarkDownApplicationServiceVisualOutput();
-        eventVisualOutput = new MarkDownEventVisualOutput();
-        eventSubscriberVisualOutput = new MarkDownEventSubscriberVisualOutput();
-        entityRuleVisualOutput = new MarkDownEntityRuleVisualOutput();
-        entityVisualOutput = new MarkDownEntityVisualOutput();
+        applicationServiceVisualOutput = new MarkdownApplicationServiceVisualOutput();
+        eventVisualOutput = new MarkdownEventVisualOutput();
+        eventSubscriberVisualOutput = new MarkdownEventSubscriberVisualOutput();
+        entityRuleVisualOutput = new MarkdownEntityRuleVisualOutput();
+        entityVisualOutput = new MarkdownEntityVisualOutput();
     }
 
     @Override
@@ -63,7 +63,8 @@ public class MarkDownVisualOutput implements IVisualOutput {
 
         stringBuilder.append("## * 应用服务");
         stringBuilder.append(SystemUtils.LINE_SEPARATOR);
-        applicationServiceVisualOutput.output(domainModelVisualInfo.getApplicationDescriptors());
+
+        stringBuilder.append(applicationServiceVisualOutput.output(domainModelVisualInfo.getApplicationDescriptors()));
 
         return stringBuilder.toString();
     }

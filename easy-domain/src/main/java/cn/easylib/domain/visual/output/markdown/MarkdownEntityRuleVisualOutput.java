@@ -7,7 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.util.List;
 
-public class MarkDownEntityRuleVisualOutput implements IEntityRuleVisualOutput {
+public class MarkdownEntityRuleVisualOutput implements IEntityRuleVisualOutput {
     @Override
     public String output(List<RuleDescriptorGroup> group) {
 

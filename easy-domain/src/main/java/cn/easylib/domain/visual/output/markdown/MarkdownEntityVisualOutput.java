@@ -8,7 +8,7 @@ import org.apache.commons.lang3.SystemUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MarkDownEntityVisualOutput implements IEntityVisualOutput {
+public class MarkdownEntityVisualOutput implements IEntityVisualOutput {
 
     private static final String START = "```mermaid" + SystemUtils.LINE_SEPARATOR;
     private static final String END = "```" + SystemUtils.LINE_SEPARATOR;
@@ -51,10 +51,10 @@ public class MarkDownEntityVisualOutput implements IEntityVisualOutput {
 
                     classRelationStringBuilder.append(et.getClsName());
                     if(f.collection){
-                        classRelationStringBuilder.append("\"1\" --> \"*\" ");
+                        classRelationStringBuilder.append(" \"1\" --> \"*\" ");
                     }
                     else{
-                        classRelationStringBuilder.append("\"1\" --> \"1\" ");
+                        classRelationStringBuilder.append(" \"1\" --> \"1\" ");
                     }
                     classRelationStringBuilder.append(f.getType());
                     classRelationStringBuilder.append(SystemUtils.LINE_SEPARATOR);
