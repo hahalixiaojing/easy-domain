@@ -6,7 +6,7 @@ import java.util.List;
 public class EntityDescriptor {
     private final String description;
 
-    private final Boolean isRoot;
+    private final Boolean root;
     private final String clsName;
 
     private final List<FieldInfo> fieldInfoList;
@@ -14,13 +14,13 @@ public class EntityDescriptor {
     private final List<EntityActionDescriptor> entityActionDescriptorList;
 
     public EntityDescriptor(String clsName, String description, List<FieldInfo> fieldInfoList,
-                            List<EntityActionDescriptor> entityActionDescriptorList, Boolean isRoot) {
+                            List<EntityActionDescriptor> entityActionDescriptorList, Boolean root) {
 
         this.clsName = clsName;
         this.description = description;
         this.fieldInfoList = fieldInfoList;
         this.entityActionDescriptorList = entityActionDescriptorList;
-        this.isRoot = isRoot;
+        this.root = root;
     }
 
     public String getClsName() {
@@ -32,7 +32,7 @@ public class EntityDescriptor {
     }
 
     public Boolean getRoot() {
-        return isRoot;
+        return root;
     }
 
     public List<FieldInfo> getFieldInfoList() {

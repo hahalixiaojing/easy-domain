@@ -3,6 +3,7 @@ package cn.easylib.domain.visual.entity;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.base.IEntity;
 import cn.easylib.domain.visual.VisualException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -32,7 +33,7 @@ public class EntityParser {
 
     private FieldInfo getFieldName(IEntityFieldFinder.EntityFieldInfo p) {
         try {
-            return p.fieldGetter.getFieldName(p.name,p.collection,p.collectionType);
+            return p.fieldGetter.getFieldName(p.name, p.collection, p.collectionType);
         } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new VisualException(e);
@@ -75,7 +76,7 @@ public class EntityParser {
         List<EntityActionDescriptor> constructorActionDescriptorList = Collections.emptyList();
         if (isRoot) {
             constructorActionDescriptorList = this.buildConstructorAction(
-                    t.getKey().getDeclaredConstructors());
+                    t.getKey().getDeclaredConstructors(), simpleCls);
             methodEntityActionDescriptorList = this.buildMethodAction(
                     t.getKey().getDeclaredMethods());
 
@@ -93,19 +94,20 @@ public class EntityParser {
                 isRoot);
     }
 
-    private List<EntityActionDescriptor> buildConstructorAction(Constructor<?>[] constructors) {
+    private List<EntityActionDescriptor> buildConstructorAction(Constructor<?>[] constructors, String clsName) {
 
         return Arrays.stream(constructors)
                 .filter(s -> s.getAnnotation(EntityActionVisual.class) != null)
                 .map(m -> {
 
                             EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
+                            String name = StringUtils.defaultIfBlank(ann.alias(), clsName);
                             List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
                                     .map(Class::getSimpleName)
                                     .collect(Collectors.toList());
 
-                            return new EntityActionDescriptor("Constructor",
-                                    "构造",
+                            return new EntityActionDescriptor(name,
+                                    ann.description(),
                                     triggerEvents);
                         }
 
@@ -118,14 +120,14 @@ public class EntityParser {
                 .stream(methods)
                 .filter(s -> s.getAnnotation(EntityActionVisual.class) != null)
                 .map(m -> {
-
-                    String name = m.getName();
                     EntityActionVisual ann = m.getAnnotation(EntityActionVisual.class);
+                    String name = StringUtils.defaultIfBlank(ann.alias(), m.getName());
+
                     List<String> triggerEvents = Arrays.stream(ann.triggerEvents())
                             .map(Class::getSimpleName)
                             .collect(Collectors.toList());
 
-                    return new EntityActionDescriptor(name, "", triggerEvents);
+                    return new EntityActionDescriptor(name, ann.description(), triggerEvents);
 
                 }).collect(Collectors.toList());
     }

@@ -1,6 +1,7 @@
 package cn.easylib.domain.visual.output.markdown;
 
 import cn.easylib.domain.visual.DomainModelVisualInfo;
+import cn.easylib.domain.visual.IFullViewVisualOutput;
 import cn.easylib.domain.visual.IVisualOutput;
 import cn.easylib.domain.visual.application.IApplicationServiceVisualOutput;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
@@ -18,6 +19,8 @@ public class MarkdownVisualOutput implements IVisualOutput {
     private final IEntityRuleVisualOutput entityRuleVisualOutput;
     private final IEntityVisualOutput entityVisualOutput;
 
+    private final IFullViewVisualOutput fullViewVisualOutput;
+
     public MarkdownVisualOutput() {
 
         applicationServiceVisualOutput = new MarkdownApplicationServiceVisualOutput();
@@ -25,6 +28,7 @@ public class MarkdownVisualOutput implements IVisualOutput {
         eventSubscriberVisualOutput = new MarkdownEventSubscriberVisualOutput();
         entityRuleVisualOutput = new MarkdownEntityRuleVisualOutput();
         entityVisualOutput = new MarkdownEntityVisualOutput();
+        fullViewVisualOutput = new MarkdownFullViewVisualOutput();
     }
 
     @Override
@@ -65,6 +69,11 @@ public class MarkdownVisualOutput implements IVisualOutput {
         stringBuilder.append(SystemUtils.LINE_SEPARATOR);
 
         stringBuilder.append(applicationServiceVisualOutput.output(domainModelVisualInfo.getApplicationDescriptors()));
+
+        stringBuilder.append("## * 全景视图");
+        stringBuilder.append(SystemUtils.LINE_SEPARATOR);
+
+        stringBuilder.append(fullViewVisualOutput.output(domainModelVisualInfo));
 
         return stringBuilder.toString();
     }

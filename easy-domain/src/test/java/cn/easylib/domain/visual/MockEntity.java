@@ -39,7 +39,7 @@ public class MockEntity extends EntityBase<Long> {
     public MockEntity() {
     }
 
-    @EntityActionVisual(triggerEvents = MockEntityCreatedEvent.class)
+    @EntityActionVisual(triggerEvents = MockEntityCreatedEvent.class,description = "")
     public MockEntity(String name, Integer age, int ageTest) {
 
         this.name = name;

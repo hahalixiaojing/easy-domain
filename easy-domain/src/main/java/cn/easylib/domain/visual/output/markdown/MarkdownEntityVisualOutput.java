@@ -1,6 +1,5 @@
 package cn.easylib.domain.visual.output.markdown;
 
-import cn.easylib.domain.visual.entity.EntityActionDescriptor;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
 import cn.easylib.domain.visual.entity.IEntityVisualOutput;
 import org.apache.commons.lang3.SystemUtils;
@@ -43,31 +42,26 @@ public class MarkdownEntityVisualOutput implements IEntityVisualOutput {
 
         StringBuilder classRelationStringBuilder = new StringBuilder();
 
-        entityDescriptorList.stream().forEach(et -> {
+        entityDescriptorList.forEach(et -> et.getFieldInfoList().forEach(f -> {
+            if (allClass.contains(f.getType())) {
 
-            et.getFieldInfoList().forEach(f -> {
-
-                if (allClass.contains(f.getType())) {
-
-                    classRelationStringBuilder.append(et.getClsName());
-                    if(f.collection){
-                        classRelationStringBuilder.append(" \"1\" --> \"*\" ");
-                    }
-                    else{
-                        classRelationStringBuilder.append(" \"1\" --> \"1\" ");
-                    }
-                    classRelationStringBuilder.append(f.getType());
-                    classRelationStringBuilder.append(SystemUtils.LINE_SEPARATOR);
+                classRelationStringBuilder.append(et.getClsName());
+                if (f.collection) {
+                    classRelationStringBuilder.append(" \"1\" --> \"*\" ");
+                } else {
+                    classRelationStringBuilder.append(" \"1\" --> \"1\" ");
                 }
-            });
-        });
+                classRelationStringBuilder.append(f.getType());
+                classRelationStringBuilder.append(SystemUtils.LINE_SEPARATOR);
+            }
+        }));
 
         return classRelationStringBuilder.toString();
 
     }
 
     private List<String> allClass(List<EntityDescriptor> entityDescriptorList) {
-        return entityDescriptorList.stream().map(t -> t.getClsName()).collect(Collectors.toList());
+        return entityDescriptorList.stream().map(EntityDescriptor::getClsName).collect(Collectors.toList());
     }
 
 
@@ -99,8 +93,16 @@ public class MarkdownEntityVisualOutput implements IEntityVisualOutput {
 
         });
 
+        if (Boolean.TRUE.equals(entityDescriptor.getRoot())) {
+            entityDescriptor.getEntityActionDescriptorList().forEach(action -> {
+                classStringBuilder.append(entityDescriptor.getClsName());
+                classStringBuilder.append(" : ");
+                classStringBuilder.append("+");
+                classStringBuilder.append(action.getMethodName());
+                classStringBuilder.append("()");
+                classStringBuilder.append(SystemUtils.LINE_SEPARATOR);
+            });
+        }
         return classStringBuilder.toString();
     }
-
-
 }
