@@ -3,7 +3,11 @@ package cn.easylib.domain.base;
 
 import cn.easylib.domain.event.BaseDomainEvent;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class EntityBase<T> extends BrokenRuleObject implements
         IEntity<T>, IEntityAction {
@@ -15,6 +19,13 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
 
     @Override
     protected abstract BrokenRuleMessage getBrokenRuleMessages();
+
+    protected <VALUE> VALUE setAndReturnOld(Consumer<VALUE> set, Supplier<VALUE> getOld, VALUE newValue) {
+        VALUE old = getOld.get();
+        set.accept(newValue);
+
+        return old;
+    }
 
 
     @Override
