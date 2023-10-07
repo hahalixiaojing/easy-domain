@@ -20,11 +20,19 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
     @Override
     protected abstract BrokenRuleMessage getBrokenRuleMessages();
 
-    protected <VALUE> VALUE setAndReturnOld(Consumer<VALUE> set, Supplier<VALUE> getOld, VALUE newValue) {
-        VALUE old = getOld.get();
+    protected <V> V setAndReturnOld(Consumer<V> set, Supplier<V> getOld, V newValue) {
+        V old = getOld.get();
         set.accept(newValue);
 
         return old;
+    }
+
+    protected <V> CompareAndSetInfo<V> compareAndSet(V newValue, V oldValue, Consumer<V> set) {
+        boolean equals = Objects.equals(newValue, oldValue);
+        if (!equals) {
+            set.accept(newValue);
+        }
+        return new CompareAndSetInfo<>(equals, newValue, oldValue);
     }
 
 
