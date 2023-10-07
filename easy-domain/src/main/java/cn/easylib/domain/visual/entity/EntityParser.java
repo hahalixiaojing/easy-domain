@@ -40,10 +40,6 @@ public class EntityParser {
         }
     }
 
-    public List<List<EntityDescriptor>> all() {
-        return this.entityCls.keySet().stream().map(this::privateParse).collect(Collectors.toList());
-    }
-
     private List<EntityDescriptor> privateParse(Class<?> cls) {
 
         if (!entityCls.containsKey(cls)) {

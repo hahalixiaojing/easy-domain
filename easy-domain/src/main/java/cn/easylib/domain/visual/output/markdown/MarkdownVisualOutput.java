@@ -5,6 +5,7 @@ import cn.easylib.domain.visual.IFullViewVisualOutput;
 import cn.easylib.domain.visual.IVisualOutput;
 import cn.easylib.domain.visual.application.IApplicationServiceVisualOutput;
 import cn.easylib.domain.visual.entity.EntityDescriptor;
+import cn.easylib.domain.visual.entity.IEntityActionOutput;
 import cn.easylib.domain.visual.entity.IEntityVisualOutput;
 import cn.easylib.domain.visual.event.IEventSubscriberVisualOutput;
 import cn.easylib.domain.visual.event.IEventVisualOutput;
@@ -21,6 +22,8 @@ public class MarkdownVisualOutput implements IVisualOutput {
 
     private final IFullViewVisualOutput fullViewVisualOutput;
 
+    private final IEntityActionOutput actionOutput;
+
     public MarkdownVisualOutput() {
 
         applicationServiceVisualOutput = new MarkdownApplicationServiceVisualOutput();
@@ -29,6 +32,7 @@ public class MarkdownVisualOutput implements IVisualOutput {
         entityRuleVisualOutput = new MarkdownEntityRuleVisualOutput();
         entityVisualOutput = new MarkdownEntityVisualOutput();
         fullViewVisualOutput = new MarkdownFullViewVisualOutput();
+        actionOutput = new MarkdownEntityActionOutput();
     }
 
     @Override
@@ -48,6 +52,12 @@ public class MarkdownVisualOutput implements IVisualOutput {
         stringBuilder.append(SystemUtils.LINE_SEPARATOR);
         stringBuilder.append(entityVisualOutput.output(domainModelVisualInfo.getEntityDescriptorList()));
         stringBuilder.append(SystemUtils.LINE_SEPARATOR);
+
+        stringBuilder.append("## * 实体行为");
+        stringBuilder.append(SystemUtils.LINE_SEPARATOR);
+        stringBuilder.append(actionOutput.output(first));
+        stringBuilder.append(SystemUtils.LINE_SEPARATOR);
+
 
         stringBuilder.append("## * 实体规则");
         stringBuilder.append(SystemUtils.LINE_SEPARATOR);

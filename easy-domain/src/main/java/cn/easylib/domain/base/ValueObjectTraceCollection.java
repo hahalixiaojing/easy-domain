@@ -6,12 +6,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * <association property="contractList" resultMap="ContractList"/>
+ * association property="contractList" resultMap="ContractList"
  *
- *  <resultMap id="ContractList" type="easy.domain.base.ValueObjectTraceCollection">
- *         <collection property="initCollection" ofType="BMallContract" select="BMallContractGroup.selectContractList"
- *                     column="id"/>
- *     </resultMap>
+ *  resultMap id="ContractList" type="easy.domain.base.ValueObjectTraceCollection"
+ *         collection property="initCollection" ofType="BMallContract" select="BMallContractGroup.selectContractList"
+ *                     column="id"
+ *     /resultMap
  * @param <T>
  */
 public class ValueObjectTraceCollection<T> {
