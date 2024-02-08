@@ -1,9 +1,6 @@
 package cn.easylib.domainevent.rocketmq;
 
-import cn.easylib.domain.application.subscriber.EventNameInfo;
-import cn.easylib.domain.application.subscriber.IOrderedPerformManager;
-import cn.easylib.domain.application.subscriber.OrderedPerformManager;
-import cn.easylib.domain.application.subscriber.SubscribeData;
+import cn.easylib.domain.application.subscriber.*;
 import cn.easylib.domain.event.AbstractMQDomainEventManager;
 import cn.easylib.domain.event.IDomainEvent;
 import cn.easylib.domain.event.PublishEventException;
@@ -104,17 +101,34 @@ public class RocketMqDomainEventManager extends AbstractMQDomainEventManager imp
         final List<Message> messages = this.buildSubscribeDataList(obj).stream().map(s -> {
             final String text = JSON.toJSONString(s);
             final byte[] bytes = this.stringToByte(text);
-            return new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
+            Message msg = new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
+            int delayValue = this.delayLevelParse(s.getDelayLevel());
+            if (delayValue > 0) {
+                msg.setDelayTimeLevel(delayValue);
+            }
+            return msg;
         }).collect(Collectors.toList());
 
         try {
             if (!messages.isEmpty()) {
-
-                this.mqProducerMap.get(topic).send(messages);
+                for (Message m : messages) {
+                    this.mqProducerMap.get(topic).send(m);
+                }
             }
         } catch (Exception e) {
             throw new PublishEventException(obj.getBusinessId(), e);
         }
+    }
+
+    private int delayLevelParse(SubscriberDelayLevel delayLevel) {
+        if (delayLevel == SubscriberDelayLevel.Delay1) {
+            return 1;
+        } else if (delayLevel == SubscriberDelayLevel.Delay2) {
+            return 2;
+        } else if (delayLevel == SubscriberDelayLevel.Delay3) {
+            return 3;
+        }
+        return 0;
     }
 
     @Override
@@ -134,6 +148,12 @@ public class RocketMqDomainEventManager extends AbstractMQDomainEventManager imp
         final String text = JSON.toJSONString(subscribeData);
         final byte[] bytes = this.stringToByte(text);
         Message message = new Message(topic, this.environmentName, obj.getBusinessId(), bytes);
+
+        int delayValue = this.delayLevelParse(subscribeData.getDelayLevel());
+        if (delayValue > 0) {
+            message.setDelayTimeLevel(delayValue);
+        }
+
         try {
             this.mqProducerMap.get(topic).send(message);
         } catch (Exception e) {

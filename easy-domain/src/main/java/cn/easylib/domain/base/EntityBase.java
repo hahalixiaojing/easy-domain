@@ -15,10 +15,15 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
     private T id;
 
     private boolean entityDelete;
-
+    protected boolean isNewEntity = false;
 
     @Override
     protected abstract BrokenRuleMessage getBrokenRuleMessages();
+
+    @Override
+    public Boolean validate() {
+        return false;
+    }
 
     protected <V> V setAndReturnOld(Consumer<V> set, Supplier<V> getOld, V newValue) {
         V old = getOld.get();
@@ -67,5 +72,13 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
 
     protected void setEntityDelete(boolean entityDelete) {
         this.entityDelete = entityDelete;
+    }
+
+    protected boolean isNewEntity() {
+        return isNewEntity;
+    }
+
+    public void setNewEntity(boolean newEntity) {
+        isNewEntity = newEntity;
     }
 }

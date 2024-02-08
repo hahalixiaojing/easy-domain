@@ -20,12 +20,15 @@ public class SubscriberInfo {
      */
     private final IExecuteCondition condition;
 
+    private final SubscriberDelayLevel delayLevel;
+
 
     public SubscriberInfo(ISubscriber subscriber, String alias,
-                          IExecuteCondition condition) {
+                          IExecuteCondition condition,SubscriberDelayLevel delayLevel) {
         this.subscriber = subscriber;
         this.alias = alias;
         this.condition = condition;
+        this.delayLevel = delayLevel;
     }
 
     public ISubscriber getSubscriber() {
@@ -38,5 +41,9 @@ public class SubscriberInfo {
 
     public IExecuteCondition getCondition() {
         return condition;
+    }
+
+    public SubscriberDelayLevel getDelayLevel() {
+        return delayLevel;
     }
 }

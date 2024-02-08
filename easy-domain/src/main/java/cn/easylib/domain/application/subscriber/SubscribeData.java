@@ -9,14 +9,13 @@ public class SubscribeData {
     private String eventData;
     private String realEventName;
     private Boolean onlyThis;
-
-
-
-    public SubscribeData(String name, String eventData,String realEventName,Boolean onlyThis) {
+    private SubscriberDelayLevel delayLevel;
+    public SubscribeData(String name, String eventData, String realEventName, Boolean onlyThis, SubscriberDelayLevel delayLevel) {
         this.name = name;
         this.eventData = eventData;
         this.realEventName = realEventName;
         this.onlyThis = onlyThis;
+        this.delayLevel = delayLevel;
     }
     public SubscribeData() {
     }
@@ -48,4 +47,12 @@ public class SubscribeData {
     public void setOnlyThis(Boolean onlyThis) {
         this.onlyThis = onlyThis;
     }
+    public SubscriberDelayLevel getDelayLevel() {
+        return delayLevel;
+    }
+
+    public void setDelayLevel(SubscriberDelayLevel delayLevel) {
+        this.delayLevel = delayLevel;
+    }
+
 }

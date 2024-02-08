@@ -2,6 +2,7 @@ package cn.easylib.domain.event;
 
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.OrderedPerformManager;
+import cn.easylib.domain.application.subscriber.SubscriberDelayLevel;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -268,6 +269,63 @@ public class ThreadPoolTaskDomainEventManagerTest {
     }
 
     /**
+     * 验证延时执行订阅
+     */
+    @Test
+    public void delaySubscriber() throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch(4);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+
+
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(
+                1, 3, 200, new OrderedPerformManager());
+
+        manager.registerDomainEvent(TestDomainEvent.class);
+
+
+        manager.registerDelaySubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(0);
+
+
+        }), "sub0", null, null, SubscriberDelayLevel.None);
+
+        manager.registerDelaySubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(1);
+
+
+        }), "sub1", null, null, SubscriberDelayLevel.Delay1);
+
+        manager.registerDelaySubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(2);
+
+
+        }), "sub2", null, null, SubscriberDelayLevel.Delay2);
+
+        manager.registerDelaySubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+            countDownLatch.countDown();
+            atomicInteger.incrementAndGet();
+            System.out.println(3);
+
+
+        }), "sub3", null, null, SubscriberDelayLevel.Delay3);
+
+
+        manager.publishEvent(new TestDomainEvent(""));
+
+        countDownLatch.await();
+
+        Assert.assertEquals(4, atomicInteger.get());
+
+    }
+
+    /**
      * 验证订阅执行重试 输出 1 1 1 1
      *
      * @throws InterruptedException
@@ -312,6 +370,7 @@ public class ThreadPoolTaskDomainEventManagerTest {
             {
                 initEventHandler();
             }
+
             @Override
             protected void initEventHandler() {
 

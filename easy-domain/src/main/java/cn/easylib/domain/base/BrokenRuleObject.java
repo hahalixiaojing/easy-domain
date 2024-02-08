@@ -1,6 +1,9 @@
 package cn.easylib.domain.base;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class BrokenRuleObject {
 
@@ -20,6 +23,7 @@ public abstract class BrokenRuleObject {
     protected abstract String takeEntityInfo();
 
     public abstract Boolean validate();
+
 
     public List<BrokenRule> getBrokenRules() {
         return Collections.unmodifiableList(this.brokenRules);

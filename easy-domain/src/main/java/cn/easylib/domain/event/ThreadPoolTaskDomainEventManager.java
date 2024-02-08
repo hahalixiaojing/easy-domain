@@ -97,7 +97,6 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
             IDomainEventSubscriber<T> subscribedTo = (IDomainEventSubscriber<T>) entry.getValue().getSubscriber();
 
             if (subscribedTo != null && this.executeCheck(obj, entry.getValue().getCondition())) {
-
                 Task<T> task = this.buildTask(
                         subscribedTo,
                         obj,
@@ -105,7 +104,9 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
                         entry.getKey(),
                         threadPoolExecutor,
                         false);
-                threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
+                threadPoolExecutor.schedule(task,
+                        this.delayLevelParse(entry.getValue().getDelayLevel()),
+                        TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -139,7 +140,7 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
                 subscriber,
                 threadPoolExecutor,
                 onlyThis);
-        threadPoolExecutor.schedule(task, 0, TimeUnit.MILLISECONDS);
+        threadPoolExecutor.schedule(task, this.delayLevelParse(subscriberInfo.getDelayLevel()), TimeUnit.MILLISECONDS);
     }
 
     private <T extends IDomainEvent> Task<T> buildTask(IDomainEventSubscriber<T> subscribedTo,
@@ -158,6 +159,17 @@ public class ThreadPoolTaskDomainEventManager extends AbstractDomainEventManager
                 nextSubscriberList.forEach(ss -> this.publishEvent(obj, ss, false));
             }
         });
+    }
+
+    private int delayLevelParse(SubscriberDelayLevel delayLevel) {
+        if (delayLevel == SubscriberDelayLevel.Delay1) {
+            return 500;
+        } else if (delayLevel == SubscriberDelayLevel.Delay2) {
+            return 1000;
+        } else if (delayLevel == SubscriberDelayLevel.Delay3) {
+            return 1500;
+        }
+        return 0;
     }
 
 

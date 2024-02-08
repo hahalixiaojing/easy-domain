@@ -17,7 +17,7 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
 
     protected final String environmentName;
     protected final ConcurrentHashMap<String, Map<String, SubscriberInfo>> subscribers = new ConcurrentHashMap<>();
-    private final IExecuteCondition<IDomainEvent> condition = new DefaultExecuteCondition<>();
+    private final IExecuteCondition<IDomainEvent> defaultCondition = new DefaultExecuteCondition<>();
 
     protected final IOrderedPerformManager performManager;
 
@@ -79,7 +79,7 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
     protected boolean executeCheck(final IDomainEvent t, IExecuteCondition iExecuteCondition) {
         try {
 
-            return iExecuteCondition.isExecute(t);
+            return Optional.ofNullable(iExecuteCondition).orElse(defaultCondition).isExecute(t);
 
         } catch (Exception ex) {
             return false;
@@ -109,7 +109,7 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
 
     @Override
     public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-        this.registerSubscriber(subscriber, alias, condition, dependSubscriber);
+        this.registerSubscriber(subscriber, alias, defaultCondition, dependSubscriber);
 
     }
 
@@ -117,11 +117,25 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
     public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
         this.registerSubscriber(subscriber, alias, condition, "");
     }
+
     @Override
     public void registerSubscriber(ISubscriber subscriber,
                                    String alias,
                                    IExecuteCondition condition,
                                    String dependSubscriber) {
+
+        this.registerDelaySubscriber(subscriber, alias, condition, dependSubscriber, SubscriberDelayLevel.None);
+
+    }
+
+    @Override
+    public void registerDelaySubscriber(ISubscriber subscriber,
+                                        String alias,
+                                        IExecuteCondition condition,
+                                        String dependSubscriber,
+                                        SubscriberDelayLevel delayLevel) {
+
+
         EventNameInfo event = getEventName(subscriber.subscribedToEventType());
         if (this.subscribers.containsKey(event.eventName)) {
 
@@ -131,12 +145,12 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
             }
 
             this.subscribers.get(event.eventName).put(alias,
-                    new SubscriberInfo(subscriber, alias, condition));
+                    new SubscriberInfo(subscriber, alias, condition, delayLevel));
 
         } else {
 
             Map<String, SubscriberInfo> subscriberMap = new HashMap<>();
-            subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, condition));
+            subscriberMap.put(alias, new SubscriberInfo(subscriber, alias, condition, delayLevel));
             this.subscribers.put(event.eventName, subscriberMap);
 
         }
@@ -145,5 +159,6 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
                     alias,
                     dependSubscriber);
         }
+
     }
 }

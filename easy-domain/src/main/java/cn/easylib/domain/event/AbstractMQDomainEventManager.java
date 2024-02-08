@@ -1,9 +1,6 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.EventNameInfo;
-import cn.easylib.domain.application.subscriber.IOrderedPerformManager;
-import cn.easylib.domain.application.subscriber.SubscribeData;
-import cn.easylib.domain.application.subscriber.SubscriberInfo;
+import cn.easylib.domain.application.subscriber.*;
 import com.alibaba.fastjson.JSON;
 
 import java.util.List;
@@ -25,11 +22,11 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
         EventNameInfo eventNameInfo = this.getEventName(obj.getClass());
         Map<String, SubscriberInfo> subscriberMap = this.filterSubscriberInfoMap(eventNameInfo);
         return subscriberMap.entrySet().stream().map(entry -> {
-            if (entry.getValue().getCondition().isExecute(obj)) {
+            if (this.executeCheck(obj, entry.getValue().getCondition())) {
                 return this.createSubscribeData(obj,
                         eventNameInfo,
                         entry.getKey(),
-                        false);
+                        false, entry.getValue().getDelayLevel());
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
@@ -46,7 +43,7 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
         if (subscriberInfo == null) {
             return null;
         }
-        return this.createSubscribeData(obj, eventName, subscriber, onlyThis);
+        return this.createSubscribeData(obj, eventName, subscriber, onlyThis, subscriberInfo.getDelayLevel());
     }
 
     /**
@@ -55,7 +52,8 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
     private <T extends IDomainEvent> SubscribeData createSubscribeData(final T obj,
                                                                        EventNameInfo eventNameInfo,
                                                                        String subscriber,
-                                                                       Boolean onlyThis) {
+                                                                       Boolean onlyThis,
+                                                                       SubscriberDelayLevel level) {
         final String realEventName;
         if (eventNameInfo.shareTopicName != null && !eventNameInfo.shareTopicName.equals("")) {
             realEventName = eventNameInfo.eventName;
@@ -63,7 +61,7 @@ public abstract class AbstractMQDomainEventManager extends AbstractDomainEventMa
             realEventName = "";
         }
         String jsonData = JSON.toJSONString(obj);
-        return new SubscribeData(subscriber, jsonData, realEventName, onlyThis);
+        return new SubscribeData(subscriber, jsonData, realEventName, onlyThis, level);
     }
 
     protected String getTopicName(Class<?> eventType) {

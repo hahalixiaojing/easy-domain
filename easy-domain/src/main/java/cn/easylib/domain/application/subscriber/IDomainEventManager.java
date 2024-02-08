@@ -33,6 +33,7 @@ public interface IDomainEventManager {
                                     String dependSubscriber) {
     }
 
+
     void registerSubscriber(ISubscriber subscriber, String alias,
                             IExecuteCondition condition);
 
@@ -40,6 +41,14 @@ public interface IDomainEventManager {
                                     IExecuteCondition condition,
                                     String dependSubscriber) {
     }
+
+    default void registerDelaySubscriber(ISubscriber subscriber, String alias,
+                                         IExecuteCondition condition,
+                                         String dependSubscriber,
+                                         SubscriberDelayLevel delayLevel) {
+    }
+
+
     <T extends IDomainEvent> void publishEvent(T obj);
 
 
