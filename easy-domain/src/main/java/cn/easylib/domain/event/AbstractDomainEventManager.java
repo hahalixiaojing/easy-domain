@@ -103,37 +103,36 @@ public abstract class AbstractDomainEventManager implements IDomainEventManager 
     }
 
     @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias) {
-        this.registerSubscriber(subscriber, alias, "");
+    public void registerSubscriber(String alias, ISubscriber subscriber) {
+        this.registerSubscriber(alias, subscriber, "");
     }
 
     @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, String dependSubscriber) {
-        this.registerSubscriber(subscriber, alias, defaultCondition, dependSubscriber);
+    public void registerSubscriber(String alias, ISubscriber subscriber, String dependSubscriber) {
+        this.registerSubscriber(alias, subscriber, defaultCondition, dependSubscriber);
 
     }
 
     @Override
-    public void registerSubscriber(ISubscriber subscriber, String alias, IExecuteCondition condition) {
-        this.registerSubscriber(subscriber, alias, condition, "");
+    public void registerSubscriber(String alias, ISubscriber subscriber, IExecuteCondition condition) {
+        this.registerSubscriber(alias, subscriber, condition, "");
     }
 
     @Override
-    public void registerSubscriber(ISubscriber subscriber,
-                                   String alias,
+    public void registerSubscriber(String alias, ISubscriber subscriber,
                                    IExecuteCondition condition,
                                    String dependSubscriber) {
 
-        this.registerDelaySubscriber(subscriber, alias, condition, dependSubscriber, SubscriberDelayLevel.None);
+        this.registerDelaySubscriber(alias, subscriber, condition, SubscriberDelayLevel.None, dependSubscriber);
 
     }
 
     @Override
-    public void registerDelaySubscriber(ISubscriber subscriber,
-                                        String alias,
+    public void registerDelaySubscriber(String alias, ISubscriber subscriber,
                                         IExecuteCondition condition,
-                                        String dependSubscriber,
-                                        SubscriberDelayLevel delayLevel) {
+                                        SubscriberDelayLevel delayLevel,
+                                        String dependSubscriber
+    ) {
 
 
         EventNameInfo event = getEventName(subscriber.subscribedToEventType());

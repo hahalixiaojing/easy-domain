@@ -1,14 +1,15 @@
 package cn.easylib.domain.application;
 
-import cn.easylib.domain.event.IDomainEvent;
-import cn.easylib.domain.event.ThreadPoolTaskDomainEventManager;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.application.subscriber.IExecuteCondition;
 import cn.easylib.domain.application.subscriber.ISubscriber;
+import cn.easylib.domain.event.IDomainEvent;
+import cn.easylib.domain.event.ThreadPoolTaskDomainEventManager;
 
 /**
  * 应用服务层事件基类
  */
+@Deprecated
 public abstract class BaseApplication implements IApplication {
 
     private final IDomainEventManager manager;
@@ -45,11 +46,11 @@ public abstract class BaseApplication implements IApplication {
      * @param subscriberName 订阅名称
      */
     public void registerSubscriber(ISubscriber subscriber, String subscriberName) {
-        this.manager.registerSubscriber(subscriber, subscriberName);
+        this.manager.registerSubscriber(subscriberName, subscriber);
     }
 
     public void registerSubscriber(ISubscriber subscriber, String subscriberName, String dependSubscriber) {
-        this.manager.registerSubscriber(subscriber, subscriberName, dependSubscriber);
+        this.manager.registerSubscriber(subscriberName, subscriber, dependSubscriber);
     }
 
 
@@ -61,8 +62,9 @@ public abstract class BaseApplication implements IApplication {
      * @param condition      执行条件
      */
     public void registerSubscriber(ISubscriber subscriber, String subscriberName, IExecuteCondition condition) {
-        this.manager.registerSubscriber(subscriber, subscriberName, condition);
+        this.manager.registerSubscriber(subscriberName, subscriber, condition);
     }
+
     /**
      * 发布事件
      *

@@ -25,27 +25,27 @@ public interface IDomainEventManager {
      */
     void registerDomainEvent(Class<?> domainEventType);
 
-    void registerSubscriber(ISubscriber subscriber,
-                            String alias);
+    void registerSubscriber(String alias, ISubscriber subscriber);
 
-    default void registerSubscriber(ISubscriber subscriber,
-                                    String alias,
+    default void registerSubscriber(String alias, ISubscriber subscriber,
                                     String dependSubscriber) {
     }
 
 
-    void registerSubscriber(ISubscriber subscriber, String alias,
+    void registerSubscriber(String alias, ISubscriber subscriber,
                             IExecuteCondition condition);
 
-    default void registerSubscriber(ISubscriber subscriber, String alias,
+    default void registerSubscriber(String alias, ISubscriber subscriber,
                                     IExecuteCondition condition,
                                     String dependSubscriber) {
     }
 
-    default void registerDelaySubscriber(ISubscriber subscriber, String alias,
+    default void registerDelaySubscriber(String alias, ISubscriber subscriber,
                                          IExecuteCondition condition,
-                                         String dependSubscriber,
-                                         SubscriberDelayLevel delayLevel) {
+                                         SubscriberDelayLevel delayLevel,
+                                         String dependSubscriber
+
+                                         ) {
     }
 
 

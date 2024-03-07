@@ -1,6 +1,7 @@
 package cn.easylib.domain.event;
 
-import cn.easylib.domain.application.subscriber.*;
+import cn.easylib.domain.application.subscriber.IExecuteCondition;
+import cn.easylib.domain.application.subscriber.OrderedPerformManager;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,27 +30,27 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
 
-        }), SubscriberKey.SUB1, SubscriberKey.SUB2);
+        }), SubscriberKey.SUB2);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
-        }), SubscriberKey.SUB2, SubscriberKey.SUB3);
+        }), SubscriberKey.SUB3);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB3, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(3);
-        }), SubscriberKey.SUB3);
+        }));
         //发布事件，执行sub2的订阅，并执行依赖sub2的订阅sub1
         manager.publishEvent(new TestDomainEvent(""), "sub2");
 
@@ -72,27 +73,27 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
 
-        }), SubscriberKey.SUB1, SubscriberKey.SUB2);
+        }), SubscriberKey.SUB2);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
-        }), SubscriberKey.SUB2, SubscriberKey.SUB3);
+        }), SubscriberKey.SUB3);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB3, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(3);
-        }), SubscriberKey.SUB3);
+        }));
         //发布事件，但只执行sub2的订阅，不执行依赖sub2的sub1的订阅
         manager.publishEvent(new TestDomainEvent(""), "sub2", true);
 
@@ -114,27 +115,27 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
 
-        }), SubscriberKey.SUB1, SubscriberKey.SUB2);
+        }), SubscriberKey.SUB2);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
-        }), SubscriberKey.SUB2, SubscriberKey.SUB3);
+        }), SubscriberKey.SUB3);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB3, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(3);
-        }), SubscriberKey.SUB3);
+        }));
 
         manager.publishEvent(new TestDomainEvent(""));
 
@@ -157,16 +158,16 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
             System.out.println(Thread.currentThread().getName());
 
-        }), SubscriberKey.SUB1);
+        }));
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -174,9 +175,9 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
             System.out.println(Thread.currentThread().getName());
 
 
-        }), SubscriberKey.SUB2);
+        }));
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB3, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
@@ -184,7 +185,7 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
             System.out.println(Thread.currentThread().getName());
 
 
-        }), SubscriberKey.SUB3);
+        }));
 
         manager.publishEvent(new TestDomainEvent(""));
 
@@ -206,22 +207,22 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
 
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestDomainEvent.class);
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
 
             //需要满足IExecuteCondition 条件才能执行
-        }), SubscriberKey.SUB1, (IExecuteCondition<TestDomainEvent>) iDomainEvent -> iDomainEvent.getBusinessId().equals("1"));
+        }), (IExecuteCondition<TestDomainEvent>) iDomainEvent -> iDomainEvent.getBusinessId().equals("1"));
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(2);
 
 
-        }), SubscriberKey.SUB2);
+        }));
 
         TestDomainEvent testDomainEvent = new TestDomainEvent("2");
         manager.publishEvent(testDomainEvent);
@@ -236,20 +237,20 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
     public void orderExecuteWithConditionTest() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200, new OrderedPerformManager());
 
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB1, SubscriberFactory.build(TestDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("sub1");
-                }), SubscriberKey.SUB1, SubscriberKey.SUB2
+                }), SubscriberKey.SUB2
         );
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("sub2");
-                }), SubscriberKey.SUB2, (IExecuteCondition<TestDomainEvent>) evt -> evt.getBusinessId().equals("100")
+                }), (IExecuteCondition<TestDomainEvent>) evt -> evt.getBusinessId().equals("100")
         );
         //发布事件 name=100 执行 sub2 ,sub1
         manager.publishEvent(new TestDomainEvent("100"));
@@ -274,17 +275,17 @@ public class ThreadPoolTaskDomainEventManagerUseKeyTest {
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
         //最大重试次数，不算首次调用
-        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200,new OrderedPerformManager());
+        ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager(1, 3, 200, new OrderedPerformManager());
         manager.registerDomainEvent(TestDomainEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestDomainEvent.class, s -> {
+        manager.registerSubscriber(SubscriberKey.SUB2, SubscriberFactory.build(TestDomainEvent.class, s -> {
             countDownLatch.countDown();
             atomicInteger.incrementAndGet();
             System.out.println(1);
             //模拟异常触发重试
             throw new RuntimeException();
 
-        }), SubscriberKey.SUB2);
+        }));
 
         manager.publishEvent(new TestDomainEvent(""));
 

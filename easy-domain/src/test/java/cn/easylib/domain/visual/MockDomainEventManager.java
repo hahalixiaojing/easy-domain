@@ -12,19 +12,20 @@ public class MockDomainEventManager {
         ThreadPoolTaskDomainEventManager manager = new ThreadPoolTaskDomainEventManager();
         manager.registerDomainEvent(TestEvent.class);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestEvent.class, s -> {
-        }), TestEventSubscriberKey.SUB1, TestEventSubscriberKey.SUB2);
+        manager.registerSubscriber(TestEventSubscriberKey.SUB1, SubscriberFactory.build(TestEvent.class, s -> {
+        }), TestEventSubscriberKey.SUB2);
 
-        manager.registerSubscriber(SubscriberFactory.build(TestEvent.class, s -> {
-        }), TestEventSubscriberKey.SUB2, TestEventSubscriberKey.SUB3);
-
-        manager.registerSubscriber(SubscriberFactory.build(TestEvent.class, s -> {
+        manager.registerSubscriber(TestEventSubscriberKey.SUB2, SubscriberFactory.build(TestEvent.class, s -> {
         }), TestEventSubscriberKey.SUB3);
+
+        manager.registerSubscriber(TestEventSubscriberKey.SUB3, SubscriberFactory.build(TestEvent.class, s -> {
+        }));
 
         return manager;
 
     }
-    public static AbstractSubscriberKey mockAbstractSubscriberKey(){
+
+    public static AbstractSubscriberKey mockAbstractSubscriberKey() {
         return new AbstractSubscriberKey() {
             @Override
             protected void populateKeys() {

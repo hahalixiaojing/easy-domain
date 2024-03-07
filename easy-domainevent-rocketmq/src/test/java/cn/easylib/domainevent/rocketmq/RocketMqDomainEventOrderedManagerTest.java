@@ -29,20 +29,20 @@ public class RocketMqDomainEventOrderedManagerTest {
                 new OrderedPerformManager());
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R1, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r1");
-        }), MyDomainEventSubscriberKey.R1);
+        }));
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R2, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r2");
-        }), MyDomainEventSubscriberKey.R2);
+        }));
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R3, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println("r3");
-        }), MyDomainEventSubscriberKey.R3);
+        }));
         //发布该事件 执行r1 r2 r3 全部订阅
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("全部执行"));
         //发布带第二个参数的事件，中执行 r3
@@ -66,20 +66,20 @@ public class RocketMqDomainEventOrderedManagerTest {
                 new ConsumerCreator("localhost:9876"), "",
                 new OrderedPerformManager());
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R1, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(1);
-        }), MyDomainEventSubscriberKey.R1, MyDomainEventSubscriberKey.R2);
+        }), MyDomainEventSubscriberKey.R2);
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R2, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(2);
-        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R3);
+        }), MyDomainEventSubscriberKey.R3);
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R3, SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(3);
-        }), MyDomainEventSubscriberKey.R3);
+        }));
         //发布该事件，按顺序执行 test3->test2->test1
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("执行全部事件订阅"));
         //只执行test2,不执行test1,最后一个参数true表示只执行当前
@@ -109,27 +109,27 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R1, SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "r1");
 
-        }), ShareDomainEventSubscriberKey.R1, ShareDomainEventSubscriberKey.R2);
+        }), ShareDomainEventSubscriberKey.R2);
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R2, SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "r2");
 
-        }), ShareDomainEventSubscriberKey.R2);
+        }));
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R3, SubscriberFactory.build(ShareDomainEvent.class, s -> {
 
             countDownLatch.countDown();
             System.out.println(s.name + "r3");
 
-        }), ShareDomainEventSubscriberKey.R3, ShareDomainEventSubscriberKey.R2);
+        }), ShareDomainEventSubscriberKey.R2);
 
         rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "share"));
 
@@ -158,36 +158,36 @@ public class RocketMqDomainEventOrderedManagerTest {
         rocketMqDomainEventManager.registerDomainEvent(ShareDomainEvent.class);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R1, SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("MyDomainEvent r1");
 
-        }), MyDomainEventSubscriberKey.R1);
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        }));
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R2, SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("MyDomainEvent r2");
 
-        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R1);
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        }), MyDomainEventSubscriberKey.R1);
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R3, SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("MyDomainEvent r3");
 
-        }), MyDomainEventSubscriberKey.R3, MyDomainEventSubscriberKey.R1);
+        }), MyDomainEventSubscriberKey.R1);
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R1, SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "ShareDomainEvent r1");
-        }), ShareDomainEventSubscriberKey.R1, ShareDomainEventSubscriberKey.R2);
+        }));
 
         //ShareDomainEvent事件订阅
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R2, SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "ShareDomainEvent r2");
-        }), ShareDomainEventSubscriberKey.R2);
+        }));
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(ShareDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(ShareDomainEventSubscriberKey.R3, SubscriberFactory.build(ShareDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + "ShareDomainEvent r3");
 
-        }), ShareDomainEventSubscriberKey.R3, ShareDomainEventSubscriberKey.R1);
+        }), ShareDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.publishEvent(new ShareDomainEvent("100", "share"));
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
@@ -206,16 +206,16 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R1, SubscriberFactory.build(MyDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("r1");
-                }), MyDomainEventSubscriberKey.R1, MyDomainEventSubscriberKey.R2
+                }), MyDomainEventSubscriberKey.R2
         );
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R2, SubscriberFactory.build(MyDomainEvent.class, s -> {
                     countDownLatch.countDown();
                     System.out.println("2");
-                }), MyDomainEventSubscriberKey.R2, (IExecuteCondition<MyDomainEvent>) evt -> evt.name.equals("100")
+                }), (IExecuteCondition<MyDomainEvent>) evt -> evt.name.equals("100")
         );
         //发布事件 name=100 执行 sub2 ,sub1
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
@@ -245,7 +245,7 @@ public class RocketMqDomainEventOrderedManagerTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R1, SubscriberFactory.build(MyDomainEvent.class, s -> {
 
             if (countDownLatch.getCount() > 0) {
                 countDownLatch.countDown();
@@ -254,12 +254,12 @@ public class RocketMqDomainEventOrderedManagerTest {
             }
             System.out.println("run ok");
 
-        }), MyDomainEventSubscriberKey.R1);
+        }));
 
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber(MyDomainEventSubscriberKey.R2, SubscriberFactory.build(MyDomainEvent.class, s -> {
             System.out.println("run ok r2");
 
-        }), MyDomainEventSubscriberKey.R2, MyDomainEventSubscriberKey.R1);
+        }), MyDomainEventSubscriberKey.R1);
 
         rocketMqDomainEventManager.publishEvent(new MyDomainEvent("100"));
 
@@ -295,6 +295,7 @@ class ShareDomainEventSubscriberKey extends AbstractSubscriberKey {
     public static final String R3 = "r3";
     public static final String R2 = "r2";
     public static final String R1 = "r1";
+
     @Override
     protected void populateKeys() {
         this.getKeys().put(R3, buildKeySetting("r3的订阅"));

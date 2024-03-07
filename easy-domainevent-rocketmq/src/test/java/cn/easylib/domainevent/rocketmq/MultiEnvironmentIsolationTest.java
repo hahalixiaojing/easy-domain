@@ -30,10 +30,10 @@ public class MultiEnvironmentIsolationTest {
 
         RocketMqDomainEventManager rocketMqDomainEventManager = new RocketMqDomainEventManager(new ProducerCreator("localhost:9876"), new ConsumerCreator("localhost:9876"), environmentName);
         rocketMqDomainEventManager.registerDomainEvent(MyDomainEvent.class);
-        rocketMqDomainEventManager.registerSubscriber(SubscriberFactory.build(MyDomainEvent.class, s -> {
+        rocketMqDomainEventManager.registerSubscriber("test1", SubscriberFactory.build(MyDomainEvent.class, s -> {
             countDownLatch.countDown();
             System.out.println(s.name + " = " + message);
-        }), "test1");
+        }));
 
         Thread.sleep(8000);
         System.out.println("send " + message);
