@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class EntityBase<T> extends BrokenRuleObject implements
-        IEntity<T>, IEntityAction {
+        IEntity<T>, IEntityAction,IShadowEntityObject {
 
     private T id;
 

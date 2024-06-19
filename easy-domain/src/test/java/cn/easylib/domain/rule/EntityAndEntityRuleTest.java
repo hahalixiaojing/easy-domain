@@ -1,9 +1,6 @@
 package cn.easylib.domain.rule;
 
-import cn.easylib.domain.base.BrokenRule;
-import cn.easylib.domain.base.BrokenRuleException;
-import cn.easylib.domain.base.BrokenRuleMessage;
-import cn.easylib.domain.base.EntityBase;
+import cn.easylib.domain.base.*;
 import cn.easylib.domain.rules.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -404,6 +401,15 @@ public class EntityAndEntityRuleTest {
         }
 
         public void Update() {
+
+            this.allActions().put(null,this.getShadowEntityObject());
+
+        }
+
+        @Override
+        public IBoxValueObject getShadowEntityObject() {
+            DataShadowEntityObject dataShadowEntityObject = new DataShadowEntityObject();
+            return dataShadowEntityObject;
         }
     }
 }
