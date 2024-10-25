@@ -2,15 +2,17 @@ package cn.easylib.domain.base;
 
 
 import cn.easylib.domain.event.BaseDomainEvent;
+import com.sun.org.apache.xpath.internal.objects.XObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class EntityBase<T> extends BrokenRuleObject implements
-        IEntity<T>, IEntityAction,IShadowEntityObject {
+        IEntity<T>, IEntityAction {
 
     private T id;
 
@@ -40,7 +42,6 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
         return new CompareAndSetInfo<>(equals, newValue, oldValue);
     }
 
-
     @Override
     protected String takeEntityInfo() {
         return Optional.ofNullable(this.getId()).map(Objects::toString).orElse("");
@@ -48,6 +49,7 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
 
     protected final DomainEventCollector eventCollector = new DomainEventCollector();
     protected final EntityActionCollector actionCollector = new EntityActionCollector(this.entityActions());
+    protected final EntityCopyDataCollector copyDataCollector = new EntityCopyDataCollector();
 
     @Override
     public T getId() {
@@ -56,6 +58,14 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
 
     protected void setId(T id) {
         this.id = id;
+    }
+
+    public <C> C obtainCopyData(Class<C> cls){
+        Object copyData = this.copyDataCollector.getCopyData();
+        return cls.cast(copyData);
+    }
+    public Map<String,Object> extraData(){
+        return this.copyDataCollector.getExtraParam();
     }
 
     public EntityActionCollector allActions() {

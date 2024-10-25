@@ -42,6 +42,18 @@ public class EntityTest {
     }
 
     @Test
+    public void actionParamTest() {
+        EntityTest2 entityTest2 = new EntityTest2(1L, "张三");
+
+        entityTest2.updateForUse("李四");
+
+        Boolean validate = entityTest2.validate(new EntityTest2EntityRule());
+
+
+
+    }
+
+    @Test
     public void regXTest() {
         String test = "(Lcn/easylib/domain/visual/MockEntity;)Ljava/lang/Long;";
 

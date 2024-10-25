@@ -1,7 +1,7 @@
 package cn.easylib.domain.base;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.MutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * @author lixiaojing10
  */
 public class EntityActionCollector {
-    private final HashMap<String, Pair<Action, Object>> actionHashMap = new HashMap<>();
+    private final HashMap<String, Action> actionHashMap = new HashMap<>();
     private final EntityAction entityAction;
 
     public EntityActionCollector(EntityAction entityAction) {
@@ -21,20 +21,11 @@ public class EntityActionCollector {
     }
 
     public void put(Action action) {
-        this.put(action, null);
-    }
-
-    public void put(Action action, Object param) {
         if (!this.entityAction.populateActions().containsKey(action.getActionCode())) {
             throw new ActionException("not find action in EntityAction");
         }
-        this.actionHashMap.put(action.getActionCode(), new MutablePair<>(action, param));
+        this.actionHashMap.put(action.getActionCode(),action);
     }
-
-    public <T> T obtainActionParam(Action action, Class<T> cls) {
-        return cls.cast(actionHashMap.get(action.getActionCode()).getRight());
-    }
-
     /**
      * 包含所有Action
      */

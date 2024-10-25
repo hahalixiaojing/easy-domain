@@ -31,7 +31,7 @@ class MyEntity extends EntityBase<Long> {
     private String name = "zs";
 
     public void alter() {
-        this.actionCollector.put(MyEntityAction.alter, name);
+        this.actionCollector.put(MyEntityAction.alter);
     }
 
 
@@ -57,8 +57,8 @@ class MyEntityRule extends EntityRule<MyEntity> {
 
         this.addRule(s -> {
 
-                    String s1 = s.actionCollector.obtainActionParam(MyEntityAction.alter, String.class);
-                    return s1.equals("zs");
+
+                    return true;
 
                 }, "",
                 model -> model.actionCollector.containActions(MyEntityAction.alter));

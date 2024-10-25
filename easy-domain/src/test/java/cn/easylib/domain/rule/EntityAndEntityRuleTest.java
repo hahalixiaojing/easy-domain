@@ -402,14 +402,7 @@ public class EntityAndEntityRuleTest {
 
         public void Update() {
 
-            this.allActions().put(null,this.getShadowEntityObject());
 
-        }
-
-        @Override
-        public IBoxValueObject getShadowEntityObject() {
-            DataShadowEntityObject dataShadowEntityObject = new DataShadowEntityObject();
-            return dataShadowEntityObject;
         }
     }
 }
