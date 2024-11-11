@@ -2,7 +2,6 @@ package cn.easylib.domain.base;
 
 
 import cn.easylib.domain.event.BaseDomainEvent;
-import com.sun.org.apache.xpath.internal.objects.XObject;
 
 import java.util.List;
 import java.util.Map;
@@ -84,11 +83,11 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
         this.entityDelete = entityDelete;
     }
 
-    protected boolean isNewEntity() {
+    public boolean isNewEntity() {
         return isNewEntity;
     }
 
-    public void setNewEntity(boolean newEntity) {
+    protected void setNewEntity(boolean newEntity) {
         isNewEntity = newEntity;
     }
 }

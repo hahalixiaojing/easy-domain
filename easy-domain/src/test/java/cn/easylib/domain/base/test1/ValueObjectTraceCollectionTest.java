@@ -1,5 +1,7 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.base.test1;
 
+import cn.easylib.domain.base.IValueObjectTraceCollectionHandler;
+import cn.easylib.domain.base.ValueObjectTraceCollection;
 import org.junit.Assert;
 import org.junit.Test;
 

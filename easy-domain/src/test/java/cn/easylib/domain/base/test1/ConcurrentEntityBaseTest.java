@@ -1,5 +1,7 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.base.test1;
 
+import cn.easylib.domain.base.BrokenRuleMessage;
+import cn.easylib.domain.base.ConcurrentEntityBase;
 import org.junit.Assert;
 import org.junit.Test;
 

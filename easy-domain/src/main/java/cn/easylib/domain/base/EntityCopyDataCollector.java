@@ -8,7 +8,7 @@ public class EntityCopyDataCollector {
     private Object copyData;
     private final Map<String,Object> extraParam = new HashMap<>();
 
-    public <T> EntityCopyDataCollector set(ICopyData<T> copyData) {
+    public <T> EntityCopyDataCollector initCopyData(ICopyData<T> copyData) {
         this.copyData = copyData.copy();
         return this;
     }

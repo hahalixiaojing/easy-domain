@@ -1,5 +1,8 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.base.test1;
 
+import cn.easylib.domain.base.Action;
+import cn.easylib.domain.base.EntityAction;
+import cn.easylib.domain.base.EntityActionCollector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

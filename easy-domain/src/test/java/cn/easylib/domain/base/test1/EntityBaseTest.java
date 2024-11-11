@@ -1,6 +1,8 @@
-package cn.easylib.domain.base;
+package cn.easylib.domain.base.test1;
 
+import cn.easylib.domain.base.*;
 import cn.easylib.domain.repository.*;
+import cn.easylib.domain.rules.EntityRule;
 import org.junit.Test;
 
 import java.util.Comparator;
@@ -83,7 +85,7 @@ class TestDataRepository implements IRepository<Long, TestData> {
 
 class TestDataReadRepository implements
         IIDByReadDAORepository<TestDataDAO, Long>,
-        IPageAndScrollByReadDAORepository<TestDataDAO,TestDataPageByQueryDAO,TestDataScrollByQueryDAO>,
+        IPageAndScrollByReadDAORepository<TestDataDAO, TestDataPageByQueryDAO, TestDataScrollByQueryDAO>,
         IListByReadDAORepository<TestDataDAO, TestDataListByQueryDAO> {
 
     @Override
@@ -124,6 +126,7 @@ class TestDataDAO {
 class TestDataListByQueryDAO {
 
 }
+
 class TestDataPageByQueryDAO {
 
 }
@@ -132,6 +135,44 @@ class TestDataScrollByQueryDAO {
 
 }
 
+class CopyData{}
+
+class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
+        ICustomValidator<CopyDataEntityTest>,
+        ICopyData<CopyData> {
+
+    private String abcdeE;
+
+    @Override
+    protected BrokenRuleMessage getBrokenRuleMessages() {
+        return null;
+    }
+
+    @Override
+    public Boolean validate(EntityRule<CopyDataEntityTest> rule) {
+        return null;
+    }
+
+    public void updateData() {
+        this.copyDataCollector.initCopyData(this).putExtraParam("xxxx", "xxx").putExtraParam("yyyy", "yyy");
+        this.abcdeE = "abcde";
+
+        this.eventCollector.pushEvent(null);
+        this.actionCollector.put(null);
+
+
+    }
+
+    @Override
+    public CopyData copy() {
+        return null;
+    }
+
+    @Override
+    public EntityAction entityActions() {
+        return super.entityActions();
+    }
+}
 
 
 class TestData extends EntityBase<Long> {

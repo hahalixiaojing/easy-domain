@@ -15,7 +15,7 @@ public class EntityTest2 extends EntityBase<Long> implements ICustomValidator<En
 
     public void updateForUse(String newName) {
         this.actionCollector.put(EntityTest2Action.testAction);
-        this.copyDataCollector.set(this).putExtraParam("xxx", "xxxx1");
+        this.copyDataCollector.initCopyData(this).putExtraParam("xxx", "xxxx1");
         this.setName(newName);
     }
 

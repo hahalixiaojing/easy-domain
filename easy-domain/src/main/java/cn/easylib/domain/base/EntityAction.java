@@ -28,4 +28,8 @@ public abstract class EntityAction {
     public final HashMap<String, Action> populateActions() {
         return this.actionHashMap;
     }
+
+    public final void put(Action action) {
+        this.populateActions().put(action.getActionCode(), action);
+    }
 }
