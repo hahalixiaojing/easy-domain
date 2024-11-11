@@ -6,8 +6,8 @@ import cn.easylib.domain.base.test2.boxvalueobject.PersonUpdateData;
 import cn.easylib.domain.base.test2.entity.Person;
 import cn.easylib.domain.base.test2.entity.enums.Status;
 import cn.easylib.domain.base.test2.rule.PersonEntityRule;
-import cn.easylib.domain.base.test2.rule.validator.PersonGradeValidator;
-import cn.easylib.domain.base.test2.rule.validator.PersonScoreValidator;
+import cn.easylib.domain.base.test2.rule.validator.BasePersonGradeValidator;
+import cn.easylib.domain.base.test2.rule.validator.BasePersonScoreValidator;
 import org.junit.Test;
 
 public class PersonTest {
@@ -15,8 +15,8 @@ public class PersonTest {
     @Test
     public void testCase1() {
 
-        PersonScoreValidator personScoreValidator = this.mockScoreValidator();
-        PersonGradeValidator personGradeValidator = this.mockGradeValidator();
+        BasePersonScoreValidator personScoreValidator = this.mockScoreValidator();
+        BasePersonGradeValidator personGradeValidator = this.mockGradeValidator();
 
         Person person = this.mockData();
 
@@ -27,8 +27,8 @@ public class PersonTest {
     @Test
     public void testCase2() {
 
-        PersonScoreValidator personScoreValidator = this.mockScoreValidator();
-        PersonGradeValidator personGradeValidator = this.mockGradeValidator();
+        BasePersonScoreValidator personScoreValidator = this.mockScoreValidator();
+        BasePersonGradeValidator personGradeValidator = this.mockGradeValidator();
 
         Person person = this.mockData();
         person.update(new PersonUpdateData());
@@ -42,8 +42,8 @@ public class PersonTest {
     @Test
     public void testCase3() {
 
-        PersonScoreValidator personScoreValidator = this.mockScoreValidator();
-        PersonGradeValidator personGradeValidator = this.mockGradeValidator();
+        BasePersonScoreValidator personScoreValidator = this.mockScoreValidator();
+        BasePersonGradeValidator personGradeValidator = this.mockGradeValidator();
 
         Person person = this.mockData();
         person.updateStatus(Status.END);
@@ -58,8 +58,8 @@ public class PersonTest {
     @Test
     public void testCase4() {
 
-        PersonScoreValidator personScoreValidator = this.mockScoreValidator();
-        PersonGradeValidator personGradeValidator = this.mockGradeValidator();
+        BasePersonScoreValidator personScoreValidator = this.mockScoreValidator();
+        BasePersonGradeValidator personGradeValidator = this.mockGradeValidator();
 
         Person person = this.mockData();
         person.updateStatus(Status.ILLEGAL);
@@ -85,23 +85,23 @@ public class PersonTest {
 
 
 
-    private PersonGradeValidator mockGradeValidator() {
-        return new PersonGradeValidator(){
+    private BasePersonGradeValidator mockGradeValidator() {
+        return new BasePersonGradeValidator(){
 
             @Override
             protected boolean validate(Person model) {
-                return false;
+                return true;
             }
 
         };
     }
 
-    private PersonScoreValidator mockScoreValidator() {
-        return new PersonScoreValidator(){
+    private BasePersonScoreValidator mockScoreValidator() {
+        return new BasePersonScoreValidator(){
 
             @Override
             protected boolean validate(Person model) {
-                return false;
+                return true;
             }
 
         };

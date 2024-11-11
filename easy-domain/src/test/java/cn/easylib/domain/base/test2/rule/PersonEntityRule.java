@@ -3,8 +3,8 @@ package cn.easylib.domain.base.test2.rule;
 import cn.easylib.domain.base.test2.boxvalueobject.PersonCopyData;
 import cn.easylib.domain.base.test2.entity.Person;
 import cn.easylib.domain.base.test2.entity.enums.Status;
-import cn.easylib.domain.base.test2.rule.validator.PersonGradeValidator;
-import cn.easylib.domain.base.test2.rule.validator.PersonScoreValidator;
+import cn.easylib.domain.base.test2.rule.validator.BasePersonGradeValidator;
+import cn.easylib.domain.base.test2.rule.validator.BasePersonScoreValidator;
 import cn.easylib.domain.rules.EntityRule;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,8 +14,8 @@ import static cn.easylib.domain.base.test2.rule.PersonBrokeRuleMessage.*;
 
 public class PersonEntityRule extends EntityRule<Person> {
 
-    public PersonEntityRule(PersonScoreValidator personScoreValidator,
-                            PersonGradeValidator personGradeValidator
+    public PersonEntityRule(BasePersonScoreValidator personScoreValidator,
+                            BasePersonGradeValidator personGradeValidator
     ) {
 
         super(false);
