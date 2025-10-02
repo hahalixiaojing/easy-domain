@@ -18,8 +18,8 @@ public class EntityCopyDataCollector {
         return this;
     }
 
-    public <C> C getCopyData(Class<C> cls) {
-        return cls.cast(copyData);
+    public Object getCopyData() {
+        return copyData;
     }
     public Map<String, Object> getExtraParam() {
         return extraParam;

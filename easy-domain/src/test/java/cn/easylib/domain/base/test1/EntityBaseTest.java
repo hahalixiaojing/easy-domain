@@ -160,7 +160,7 @@ class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
 
         this.abcdeE = "abcde";
 
-        CopyData copyData = copyDataCollector.getCopyData(CopyData.class);
+        CopyData copyData = this.obtainCopyData(CopyData.class);
 
         copyDataCollector.getExtraParam().get("xxx");
 
@@ -174,6 +174,7 @@ class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
     @Override
     public CopyData copy() {
         CopyData copyData = new CopyData();
+        return copyData;
 
     }
 

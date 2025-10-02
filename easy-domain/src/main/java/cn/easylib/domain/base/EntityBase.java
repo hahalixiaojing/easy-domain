@@ -59,6 +59,14 @@ public abstract class EntityBase<T> extends BrokenRuleObject implements
         this.id = id;
     }
 
+    public <C> C obtainCopyData(Class<C> cls){
+        Object copyData = this.copyDataCollector.getCopyData();
+        return cls.cast(copyData);
+    }
+    public Map<String,Object> extraData(){
+        return this.copyDataCollector.getExtraParam();
+    }
+
     public EntityActionCollector allActions() {
         return this.actionCollector;
     }
