@@ -135,7 +135,9 @@ class TestDataScrollByQueryDAO {
 
 }
 
-class CopyData{}
+class CopyData {
+    private String abcdeE;
+}
 
 class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
         ICustomValidator<CopyDataEntityTest>,
@@ -155,7 +157,13 @@ class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
 
     public void updateData() {
         this.copyDataCollector.initCopyData(this).putExtraParam("xxxx", "xxx").putExtraParam("yyyy", "yyy");
+
         this.abcdeE = "abcde";
+
+        CopyData copyData = copyDataCollector.getCopyData(CopyData.class);
+
+        copyDataCollector.getExtraParam().get("xxx");
+
 
         this.eventCollector.pushEvent(null);
         this.actionCollector.put(null);
@@ -165,7 +173,8 @@ class CopyDataEntityTest extends ConcurrentEntityBase<Long> implements
 
     @Override
     public CopyData copy() {
-        return null;
+        CopyData copyData = new CopyData();
+
     }
 
     @Override
