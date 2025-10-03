@@ -1,12 +1,13 @@
 package cn.easylib.domain.visual;
 
-import cn.easylib.domain.application.subscriber.AbstractSubscriberKey;
 import cn.easylib.domain.application.subscriber.IDomainEventManager;
 import cn.easylib.domain.base.EntityBase;
 import cn.easylib.domain.visual.application.ApplicationServiceParser;
 import cn.easylib.domain.visual.application.IApplicationServiceFinder;
 import cn.easylib.domain.visual.entity.EntityParser;
+import cn.easylib.domain.visual.entity.EnumValueParser;
 import cn.easylib.domain.visual.entity.IEntityFieldFinder;
+import cn.easylib.domain.visual.entity.IEnumValueFinder;
 import cn.easylib.domain.visual.event.EventParser;
 import cn.easylib.domain.visual.event.IEventFinder;
 import cn.easylib.domain.visual.rule.IRuleFinder;
@@ -23,6 +24,7 @@ public class DomainModelVisualManager {
     private final EventParser eventParser;
     private final RuleParser ruleParser;
     private final DomainServiceParser domainServiceParser;
+    private final EnumValueParser enumValueParser;
 
 
     public DomainModelVisualManager(IDomainEventManager iDomainEventManager) {
@@ -31,11 +33,16 @@ public class DomainModelVisualManager {
         this.eventParser = new EventParser(iDomainEventManager);
         this.ruleParser = new RuleParser();
         this.domainServiceParser = new DomainServiceParser();
+        this.enumValueParser = new EnumValueParser();
     }
 
     public <T extends EntityBase<?>> void registerDomainEntity(Class<T> entityClass,
                                                                IEntityFieldFinder finder) {
         this.entityParser.registerEntity(entityClass, finder);
+    }
+
+    public <T extends EntityBase<?>> void registerEnum(Class<T> entityClass, IEnumValueFinder finder) {
+        this.enumValueParser.registerEnum(entityClass, finder);
     }
 
     public <T extends EntityBase<?>> void registerApplicationService(Class<T> entityClass,
@@ -59,12 +66,14 @@ public class DomainModelVisualManager {
     }
 
     public <T extends EntityBase<?>> DomainModelVisualInfo build(Class<T> entityClass) {
-        return new DomainModelVisualInfo(
-                this.entityParser.parse(entityClass),
-                this.ruleParser.parse(entityClass),
-                this.eventParser.parse(entityClass),
-                this.domainServiceParser.parse(entityClass),
-                this.applicationServiceParser.parser(entityClass)
-        );
+        DomainModelVisualInfo domainModelVisualInfo = new DomainModelVisualInfo();
+        domainModelVisualInfo.setEntityDescriptorList(this.entityParser.parse(entityClass));
+        domainModelVisualInfo.setRuleDescriptorList(this.ruleParser.parse(entityClass));
+        domainModelVisualInfo.setEventDescriptors(this.eventParser.parse(entityClass));
+        domainModelVisualInfo.setDomainServiceDescriptors(this.domainServiceParser.parse(entityClass));
+        domainModelVisualInfo.setEnumInfoDescriptorList(this.enumValueParser.parse(entityClass));
+        domainModelVisualInfo.setApplicationDescriptors(this.applicationServiceParser.parser(entityClass));
+
+        return domainModelVisualInfo;
     }
 }

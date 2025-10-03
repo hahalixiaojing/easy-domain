@@ -10,7 +10,7 @@ public class MarkdownVisualOutputTest {
 
         MarkdownVisualOutput markDownVisualOutput = new MarkdownVisualOutput();
 
-        String output = markDownVisualOutput.output(new DomainModelVisualInfo(null, null, null, null, null));
+        String output = markDownVisualOutput.output(new DomainModelVisualInfo());
 
         System.out.println(output);
     }

@@ -50,7 +50,7 @@
         <dependency>
             <groupId>cn.easylib</groupId>
             <artifactId>easy-domain</artifactId>
-            <version>1.7</version>
+            <version>1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

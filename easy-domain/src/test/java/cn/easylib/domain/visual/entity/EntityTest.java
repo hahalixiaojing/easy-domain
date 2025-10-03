@@ -1,11 +1,16 @@
 package cn.easylib.domain.visual.entity;
 
+import cn.easylib.domain.base.IEnumValue;
 import cn.easylib.domain.visual.EntityItem;
 import cn.easylib.domain.visual.MockEntity;
+import cn.easylib.domain.visual.output.markdown.MarkDownEnumValueVisualOutput;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import lombok.val;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +56,29 @@ public class EntityTest {
 
 
 
+    }
+
+    @Test
+    public void enumTest(){
+
+        EnumValueParser enumValueParser = new EnumValueParser();
+        enumValueParser.registerEnum(MockEntity.class, new IEnumValueFinder() {
+            @Override
+            public List<Class<?>> findEnums() {
+                List<Class<?>> iEnumValues = new ArrayList<>();
+                iEnumValues.add(TestEnum.class);
+                return iEnumValues;
+            }
+        });
+
+        List<EnumInfoDescriptor> parse = enumValueParser.parse(MockEntity.class);
+
+        System.out.println(JSON.toJSONString(parse, SerializerFeature.PrettyFormat));
+
+        val out = new MarkDownEnumValueVisualOutput();
+
+        String output = out.output(parse);
+        System.out.println(output);
     }
 
     @Test
